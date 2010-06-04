@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<data>
+<!-- Release version from here -->
+<!-- Ver 1.0.0 -->
+<!-- Ver 1.0.1 -->
+		<system_version no="1.0.1">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/Manual/tokutei_install_manual.pdf</module_url>
+				<copy_dir>Manual/tokutei_install_manual.pdf</copy_dir>
+			</task>
+		</system_version>
+<!-- Ver 1.0.2 -->
+<!-- Ver 1.0.3 -->
+<!-- Ver 1.0.4 -->
+<!-- Ver 1.0.5 -->
+<!-- Ver 1.0.6 -->
+<!-- Ver 1.0.7 -->
+<!-- Ver 1.0.8 -->
+<!-- Ver 1.0.9 -->
+<!-- Ver 1.1.0 -->
+		<system_version no="1.1.0">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/application.properties</module_url>
+				<copy_dir>application.properties</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/file.properties</module_url>
+				<copy_dir>file.properties</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/icon.ico</module_url>
+				<copy_dir>icon.ico</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/Lib/log4j-1.2.15.jar</module_url>
+				<copy_dir>Lib/log4j-1.2.15.jar</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/PDF/inNyuryokuTemplate.pdf</module_url>
+				<copy_dir>work/PDF/inNyuryokuTemplate.pdf</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/PDF/iraisyo.pdf</module_url>
+				<copy_dir>work/PDF/iraisyo.pdf</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/PDF/13_kekkaura.pdf</module_url>
+				<copy_dir>work/PDF/13_kekkaura.pdf</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/XSD/coreschemas/datatypes_hcgv08.xsd</module_url>
+				<copy_dir>XSD/coreschemas/datatypes_hcgv08.xsd</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/XSD/coreschemas/datatypes-base_hcgv08.xsd</module_url>
+				<copy_dir>XSD/coreschemas/datatypes-base_hcgv08.xsd</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/XSD/coreschemas/voc_hcgv08.xsd</module_url>
+				<copy_dir>XSD/coreschemas/voc_hcgv08.xsd</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/CSV/CHECK.csv</module_url>
+				<copy_dir>CSV/CHECK.csv</copy_dir>
+			</task>
+		</system_version>
+<!-- Ver 1.1.1 -->
+<!-- Ver 1.1.2 -->
+		<system_version no="1.1.2">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/Manual/tokutei_claim_manual.pdf</module_url>
+				<copy_dir>Manual/tokutei_claim_manual.pdf</copy_dir>
+			</task>
+		</system_version>
+<!-- Ver 1.1.3 -->
+		<system_version no="1.1.3">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/PDF/inKekkaTemplate.pdf</module_url>
+				<copy_dir>work/PDF/inKekkaTemplate.pdf</copy_dir>
+			</task>
+		</system_version>
+<!-- Ver 1.1.4 -->
+<!-- Ver 1.1.5 -->
+<!-- Ver 1.1.6 -->
+		<system_version no="1.1.6">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/JUpdate.jar</module_url>
+				<copy_dir>JUpdate.jar</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.0.0/data096.csv</module_url>
+				<copy_dir>work/version/1.0.0/data096.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.0.0/data096-2.csv</module_url>
+				<copy_dir>work/version/1.0.0/data096-2.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.0.0/data096-3.csv</module_url>
+				<copy_dir>work/version/1.0.0/data096-3.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.0.3/data1031.csv</module_url>
+				<copy_dir>work/version/1.0.3/data1031.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.0.5/data105-1.csv</module_url>
+				<copy_dir>work/version/1.0.5/data105-1.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.0.5/data105-2.csv</module_url>
+				<copy_dir>work/version/1.0.5/data105-2.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.0.6/data106-1.csv</module_url>
+				<copy_dir>work/version/1.0.6/data106-1.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.0.6/data106-2.csv</module_url>
+				<copy_dir>work/version/1.0.6/data106-2.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.0.6/data106-3.csv</module_url>
+				<copy_dir>work/version/1.0.6/data106-3.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.0.9/data1091.csv</module_url>
+				<copy_dir>work/version/1.0.9/data1091.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.0.9/data1092.csv</module_url>
+				<copy_dir>work/version/1.0.9/data1092.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.1.3/data113.csv</module_url>
+				<copy_dir>work/version/1.1.3/data113.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.1.5/data1151.csv</module_url>
+				<copy_dir>work/version/1.1.5/data1151.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.1.5/data1152.csv</module_url>
+				<copy_dir>work/version/1.1.5/data1152.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.1.5/data1153.csv</module_url>
+				<copy_dir>work/version/1.1.5/data1153.csv</copy_dir>
+			</task>
+		</system_version>
+<!-- Ver 1.1.7 -->
+<!-- Ver 1.1.8 -->
+		<system_version no="1.1.8">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.1.8/data1181.csv</module_url>
+				<copy_dir>work/version/1.1.8/data1181.csv</copy_dir>
+			</task>
+		</system_version>
+<!-- Ver 1.1.9 -->
+		<system_version no="1.1.9">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/log4j.properties</module_url>
+				<copy_dir>log4j.properties</copy_dir>
+			</task>
+		</system_version>
+<!-- Ver 1.2.0 -->
+<!-- Ver 1.2.1 -->
+		<system_version no="1.2.1">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/DBYearAdjuster.jar</module_url>
+				<copy_dir>DBYearAdjuster.jar</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.1.9/data1191.csv</module_url>
+				<copy_dir>work/version/1.1.9/data1191.csv</copy_dir>
+			</task>
+		</system_version>
+<!-- Ver 1.2.2 -->		
+<!-- Ver 1.2.3 -->
+		<system_version no="1.2.3">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/PDF/hitokutei.pdf</module_url>
+				<copy_dir>work/PDF/hitokutei.pdf</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/PDF/seikatukihonChk.pdf</module_url>
+				<copy_dir>work/PDF/seikatukihonChk.pdf</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/PDF/nikei.pdf</module_url>
+				<copy_dir>work/PDF/nikei.pdf</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/PDF/gekei.pdf</module_url>
+				<copy_dir>work/PDF/gekei.pdf</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/PDF/shukeihyo.pdf</module_url>
+				<copy_dir>work/PDF/shukeihyo.pdf</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/Manual/tokutei_manual.pdf</module_url>
+				<copy_dir>Manual/tokutei_manual.pdf</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/Manual/tokutei_claim_manual.pdf</module_url>
+				<copy_dir>Manual/tokutei_claim_manual.pdf</copy_dir>
+			</task>
+		</system_version>
+<!-- Ver 1.2.4 -->
+		<system_version no="1.2.4">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.2.4/data1241.csv</module_url>
+				<copy_dir>work/version/1.2.4/data1241.csv</copy_dir>
+			</task>
+		</system_version>
+<!-- Ver 1.2.5 -->
+<!-- Ver 1.2.6 -->
+		<system_version no="1.2.6">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.2.6/data1261.csv</module_url>
+				<copy_dir>work/version/1.2.6/data1261.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.2.6/data1262.csv</module_url>
+				<copy_dir>work/version/1.2.6/data1262.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/JAdminSoftware.jar</module_url>
+				<copy_dir>JAdminSoftware.jar</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/DBAdjuster.jar</module_url>
+				<copy_dir>DBAdjuster.jar</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/Manual/nittoku_hokenjya_history.pdf</module_url>
+				<copy_dir>Manual/nittoku_hokenjya_history.pdf</copy_dir>
+			</task>
+		</system_version>
+<!-- Ver 1.2.7 -->
+		<system_version no="1.2.7">
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/JKenshinSoftware.jar</module_url>
+				<copy_dir>JKenshinSoftware.jar</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/update.xml</module_url>
+				<copy_dir>work/version/update.xml</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/work/version/1.2.7/data1271.csv</module_url>
+				<copy_dir>work/version/1.2.7/data1271.csv</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/ErrorMessage.properties</module_url>
+				<copy_dir>ErrorMessage.properties</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/MainVersion.properties</module_url>
+				<copy_dir>MainVersion.properties</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/SystemVersion.properties</module_url>
+				<copy_dir>SystemVersion.properties</copy_dir>
+			</task>
+			<task>
+				<module_url>http://ftp.orca.med.or.jp/pub/tokutei/bin/view.properties</module_url>
+				<copy_dir>view.properties</copy_dir>
+			</task>
+		</system_version>
+	</data>
+</root>
