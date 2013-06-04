@@ -32,8 +32,6 @@ import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 
-import jp.or.med.orca.jma_tokutei.common.component.DialogFactory;
-import jp.or.med.orca.jma_tokutei.common.component.IDialog;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.csv.JCSVReaderStream;
 import jp.or.med.orca.jma_tokutei.common.csv.JCSVWriterStream;
@@ -41,6 +39,8 @@ import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
 import jp.or.med.orca.jma_tokutei.common.event.JSingleDoubleClickEvent;
 import jp.or.med.orca.jma_tokutei.common.event.JEnterEvent;
 import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
+import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
+import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
 import jp.or.med.orca.jma_tokutei.common.scene.JScene;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.DaoFactory;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.THokenjyaDao;
@@ -85,7 +85,7 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 
 	// 検索ボタン押下時のSQLで使用
 	private static final String[] TABLE_COLUMNS = {
-		"SYOKEN_TYPE","SYOKEN_NO","SYOKEN","UPDATE_TIMESTAMP" };
+		"SYOKEN_TYPE","SYOKEN_TYPE_NAME","SYOKEN_NO","SYOKEN_NAME","UPDATE_TIMESTAMP" };
 
 	/**
 	 * @param PatternNum 編集する健診パターンの番号
@@ -131,8 +131,8 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 			comp.addKeyListener(this);
 		}
 
-		// move s.inoue 2009/12/15
-		initializeColumnWidth();
+		// del s.inoue 2010/05/18
+		// initializeColumnWidth();
 		model.setAutoCreateRowSorter(true);
 		model.refreshTable();
 	    // 初期選択
@@ -141,27 +141,27 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 	    }
 	}
 
-	// edit s.inoue 2009/12/14
-	/**
-	 * 列サイズを初期化する。
-	 */
-	private void initializeColumnWidth() {
-		this.model.setAutoResizeMode(JSimpleTable.AUTO_RESIZE_OFF);
-
-		DefaultTableColumnModel columnModel = (DefaultTableColumnModel) this.model.getColumnModel();
-		// edit s.inoue 2009/11/11
-		columnModel.getColumn(COLUMN_IDX_SYOKEN_NO).setMinWidth(0);
-		columnModel.getColumn(COLUMN_IDX_SYOKEN_NO).setPreferredWidth(0);
-		columnModel.getColumn(COLUMN_IDX_SYOKEN_NO).setMaxWidth(0);
-		columnModel.getColumn(COLUMN_IDX_SYOKEN_NO).setWidth(0);
-	}
+// del s.inoue 2010/05/18
+//	/**
+//	 * 列サイズを初期化する。
+//	 */
+//	private void initializeColumnWidth() {
+//		this.model.setAutoResizeMode(JSimpleTable.AUTO_RESIZE_OFF);
+//
+//		DefaultTableColumnModel columnModel = (DefaultTableColumnModel) this.model.getColumnModel();
+//		// edit s.inoue 2009/11/11
+//		columnModel.getColumn(COLUMN_IDX_SYOKEN_NO).setMinWidth(0);
+//		columnModel.getColumn(COLUMN_IDX_SYOKEN_NO).setPreferredWidth(0);
+//		columnModel.getColumn(COLUMN_IDX_SYOKEN_NO).setMaxWidth(0);
+//		columnModel.getColumn(COLUMN_IDX_SYOKEN_NO).setWidth(0);
+//	}
 
 	/**
 	 * テーブルのリフレッシュを行う
 	 */
 	public void refreshTable()
 	{
-		model.setPreferedColumnWidths(new int[] { 0,100, 60, 585, 200 });
+		model.setPreferedColumnWidths(new int[] { 80,100, 60, 500, 200 });
 
 		String[] row = new String[5];
 
@@ -204,14 +204,15 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 
 		try{
 			StringBuilder buffer = new StringBuilder();
-			buffer.append("SELECT SYOKEN_TYPE,");
-			buffer.append(" case SYOKEN_TYPE ");
-			buffer.append(" when 1 then 'その他の既往歴' ");
-			buffer.append(" when 2 then '自覚症状所見' ");
-			buffer.append(" when 3 then '他覚症状所見' ");
-			buffer.append(" when 4 then '心電図所見' ");
-			buffer.append(" end SYOKEN_TYPE_STR, ");
-			buffer.append(" SYOKEN_NO, SYOKEN, UPDATE_TIMESTAMP");
+			buffer.append("SELECT SYOKEN_TYPE,SYOKEN_TYPE_NAME,");
+// edit s.inoue 2010/05/18
+//			buffer.append(" case SYOKEN_TYPE ");
+//			buffer.append(" when 1 then 'その他の既往歴' ");
+//			buffer.append(" when 2 then '自覚症状所見' ");
+//			buffer.append(" when 3 then '他覚症状所見' ");
+//			buffer.append(" when 4 then '心電図所見' ");
+//			buffer.append(" end SYOKEN_TYPE_STR, ");
+			buffer.append(" SYOKEN_NO, SYOKEN_NAME, UPDATE_TIMESTAMP");
 			buffer.append(" FROM T_SYOKENMASTER ");
 			buffer.append(" ORDER BY SYOKEN_TYPE,SYOKEN_NO ");
 
@@ -221,9 +222,9 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 			{
 				ResultItem = result.get(i);
 				row[0] = new String(ResultItem.get("SYOKEN_TYPE"));
-				row[1] = new String(ResultItem.get("SYOKEN_TYPE_STR"));
+				row[1] = new String(ResultItem.get("SYOKEN_TYPE_NAME"));
 				row[2] = new String(ResultItem.get("SYOKEN_NO"));
-				row[3] = new String(ResultItem.get("SYOKEN"));
+				row[3] = new String(ResultItem.get("SYOKEN_NAME"));
 				row[4] = new String(ResultItem.get("UPDATE_TIMESTAMP").replaceAll("-", ""));
 
 				model.addData(row);
@@ -302,7 +303,8 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 			filePathDialog.setDialogSelect(true);
 			filePathDialog.setVisible(true);
 
-			// edit s.inoue 2010/03/25
+			// eidt s.inoue 2012/07/06
+			if (filePathDialog.getStatus() == null)return;
 			if (filePathDialog.getStatus().equals(RETURN_VALUE.CANCEL))
 				return;
 
@@ -345,7 +347,9 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 			CSVItems = reader.readAllTable();
 
 			try {
-				JApplication.kikanDatabase.Transaction();
+				// eidt s.inoue 2011/06/07
+				// JApplication.kikanDatabase.Transaction();
+				JApplication.kikanDatabase.getMConnection().setAutoCommit(false);
 
 				int csvCount = CSVItems.size();
 
@@ -374,14 +378,17 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 					// 定型文登録
 					teikeiMasterRegister(data);
 				}
-
-				JApplication.kikanDatabase.Commit();
+				// eidt s.inoue 2011/06/07
+				// JApplication.kikanDatabase.Commit();
+				JApplication.kikanDatabase.getMConnection().commit();
 
 				String[] messageParams = {String.valueOf(csvCount-1)};
 				JErrorMessage.show("M9915",this,messageParams);
 			} catch (SQLException e) {
 				try {
-					JApplication.kikanDatabase.rollback();
+					// eidt s.inoue 2011/06/07
+					// JApplication.kikanDatabase.rollback();
+					JApplication.kikanDatabase.getMConnection().rollback();
 				} catch (SQLException e1) {}
 				JErrorMessage.show("M9913",this);
 				logger.error(e.getMessage());
@@ -395,8 +402,9 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 			Vector<String> insertRow){
 
 		data.CSV_COLUMN_SYOKEN_TYPE = reader.rmQuart(insertRow.get(0));
-		data.CSV_COLUMN_SYOKEN_NO = reader.rmQuart(insertRow.get(1));
-		data.CSV_COLUMN_SYOKEN = reader.rmQuart(insertRow.get(2));
+		data.CSV_COLUMN_SYOKEN_TYPE_NAME = reader.rmQuart(insertRow.get(1));
+		data.CSV_COLUMN_SYOKEN_NO = reader.rmQuart(insertRow.get(2));
+		data.CSV_COLUMN_SYOKEN_NAME = reader.rmQuart(insertRow.get(3));
 	}
 
 	// edit s.inoue 2010/03/04
@@ -404,10 +412,11 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 	private boolean validateData(JImportMasterErrorTeikeiResultFrameData data) {
 
 		boolean rettanka = false;
-
+		// edit s.inoue 2010/05/19
 		rettanka= validatedData.setTeikeiType(data.CSV_COLUMN_SYOKEN_TYPE)
+			&& validatedData.setTeikeiTypeName(data.CSV_COLUMN_SYOKEN_TYPE_NAME)
 			&& validatedData.setTeikeiNumber(data.CSV_COLUMN_SYOKEN_NO)
-			&& validatedData.setTeikeibun(data.CSV_COLUMN_SYOKEN);
+			&& validatedData.setTeikeibun(data.CSV_COLUMN_SYOKEN_NAME);
 		return rettanka;
 	}
 
@@ -421,7 +430,7 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 			String query = new String("DELETE FROM T_SYOKENMASTER ");
 			JApplication.kikanDatabase.sendNoResultQuery(query);
 		} catch (SQLException e) {
-			JErrorMessage.show("M3952",this);
+			JErrorMessage.show("M9908",this);
 			e.printStackTrace();
 			logger.error(e.getMessage());
 		}
@@ -440,9 +449,10 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		String stringTimeStamp = dateFormat.format(Calendar.getInstance().getTime());
 
-		buffer.append("INSERT INTO T_SYOKENMASTER (SYOKEN_TYPE, SYOKEN_NO, SYOKEN, UPDATE_TIMESTAMP)");
+		buffer.append("INSERT INTO T_SYOKENMASTER (SYOKEN_TYPE,SYOKEN_TYPE_NAME, SYOKEN_NO, SYOKEN_NAME, UPDATE_TIMESTAMP)");
 		buffer.append("VALUES (");
 		buffer.append(JQueryConvert.queryConvertAppendComma(validatedData.getTeikeiType()));
+		buffer.append(JQueryConvert.queryConvertAppendComma(validatedData.getTeikeiTypeName()));
 		buffer.append(JQueryConvert.queryConvertAppendComma(validatedData.getTeikeiNumber()));
 		buffer.append(JQueryConvert.queryConvertAppendComma(validatedData.getTeikeibun()));
 		buffer.append(JQueryConvert.queryConvert(stringTimeStamp));
@@ -461,7 +471,7 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 	public void pushedExportButton( ActionEvent e )
 	{
 		try {
-			String saveFileName = JPath.createDirectoryUniqueName("TeikeiMaster");
+			String saveFileName = JPath.createDirectoryUniqueName("SyokenMaster");
 
 			String defaltPath = JPath.getDesktopPath() +
 			File.separator +
@@ -474,7 +484,8 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 			filePathDialog.setDialogSelect(true);
 			filePathDialog.setVisible(true);
 
-			// edit s.inoue 2010/03/25
+			// eidt s.inoue 2012/07/06
+			if (filePathDialog.getStatus() == null)return;
 			if (filePathDialog.getStatus().equals(RETURN_VALUE.CANCEL))
 				return;
 
@@ -484,7 +495,7 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 			exportCsvData(filePath);
 
 		} catch (Exception ex) {
-			JErrorMessage.show("M3953", this);
+			JErrorMessage.show("M9909", this);
 			logger.error(ex.getMessage());
 		}
 	}
@@ -500,7 +511,7 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 			writer.writeTable(getExportData());
 			writer.saveCSV(filePath,JApplication.CSV_CHARSET);
 		} catch (IOException e) {
-			JErrorMessage.show("M3953", this);
+			JErrorMessage.show("M9909", this);
 			logger.error(e.getMessage());
 		}
 	}
@@ -516,7 +527,7 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 		// add s.inoue 2010/03/04
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(" SELECT SYOKEN_TYPE, SYOKEN_NO, SYOKEN, UPDATE_TIMESTAMP ");
+		sb.append(" SELECT SYOKEN_TYPE,SYOKEN_TYPE_NAME, SYOKEN_NO, SYOKEN_NAME, UPDATE_TIMESTAMP ");
 		sb.append(" FROM T_SYOKENMASTER ");
 		sb.append(" ORDER BY SYOKEN_TYPE,SYOKEN_NO ");
 
@@ -557,7 +568,43 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 	 */
 	public void pushedAddButton( ActionEvent e )
 	{
-		JScene.CreateDialog(this, new JKekkaTeikeiMaintenanceEditFrameCtrl(),new WindowRefreshEvent());
+		JScene.CreateDialog(
+				this,
+				new JKekkaTeikeiMaintenanceEditFrameCtrl(
+						getNextShubetuNumber()),
+				new WindowRefreshEvent());
+	}
+
+	/**
+	 * 所見種別の空き番号の取得
+	 */
+	private String getNextShubetuNumber() {
+		ArrayList<Hashtable<String, String>> Items;
+		try {
+			Items = JApplication.kikanDatabase
+					.sendExecuteQuery("SELECT SYOKEN_TYPE FROM T_SYOKENMASTER");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JErrorMessage.show("M9919", this);
+			return null;
+		}
+
+		for (int i = 1; i < Integer.MAX_VALUE; i++) {
+			boolean FindFlag = false;
+
+			for (int j = 0; j < Items.size(); j++) {
+				if (Items.get(j).get("SYOKEN_TYPE").equals(String.valueOf(i))) {
+					FindFlag = true;
+				}
+			}
+
+			// trueでなければ空きがあるとする。
+			if (FindFlag == false) {
+				return String.valueOf(i);
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -567,8 +614,8 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 		public void windowClosed(WindowEvent e) {
 			//テーブルの再読み込みを行う
 			refreshTable();
-			// edit s.inoue 2009/12/14
-			initializeColumnWidth();
+			// del s.inoue 2010/05/18
+			// initializeColumnWidth();
 			model.setAutoCreateRowSorter(true);
 			model.refreshTable();
 
@@ -628,8 +675,8 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 
 			refreshTable();
 
-			// move s.inoue 2009/12/15
-			initializeColumnWidth();
+			// del s.inoue 2010/05/18
+			// initializeColumnWidth();
 			model.setAutoCreateRowSorter(true);
 			model.refreshTable();
 		    // 初期選択
@@ -670,8 +717,9 @@ public class JKekkaTeikeiMaintenanceListFrameCtrl extends JKekkaTeikeiMaintenanc
 	public void pushedClearButton( ActionEvent e )
 	{
 		refreshTable();
-		// edit s.inoue 2009/12/14
-		initializeColumnWidth();
+
+		// del s.inoue 2010/05/18
+		// initializeColumnWidth();
 		model.setAutoCreateRowSorter(true);
 		model.refreshTable();
 	    // 初期選択

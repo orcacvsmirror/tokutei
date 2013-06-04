@@ -15,7 +15,6 @@ import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.hl7.common.Utility;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.JKojinRegisterFrameCtrl;
 
 /**
  * 決済処理を行う
@@ -564,8 +563,9 @@ public class JKessaiProcess {
 			// _WKテーブルの削除
 			// deleteKesai(kessaiData.uketukeId);
 
+			// move s.inoue 2012/11/02
 			// _WKテーブルの削除
-			deleteWork(kessaiData.uketukeId);
+			// deleteWork(kessaiData.uketukeId);
 		}
 
 	}

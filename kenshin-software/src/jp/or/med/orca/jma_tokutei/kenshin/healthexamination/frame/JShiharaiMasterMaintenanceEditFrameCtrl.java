@@ -15,6 +15,7 @@ import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.validate.JValidate;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
+import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.kenshin.JKojinRegisterFrameData;
 
 /**
  * 支払代行機関情報の編集のコントロール
@@ -385,12 +386,14 @@ public class JShiharaiMasterMaintenanceEditFrameCtrl extends
 
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("SELECT ADDRESS FROM T_POST,");
-		sb.append("(SELECT SUBSTRING(POST_CD FROM 1 FOR 3) || SUBSTRING(POST_CD FROM 5 FOR 4) POSTCD,");
-		sb.append(" POST_CD SP_POSTCD FROM T_POST) SUB_POST");
-		sb.append(" where SUB_POST.POSTCD = ");
+		sb.append("SELECT ADDRESS,POST_CD FROM T_POST ");
+		// eidt s.inoue 2012/04/24
+//		sb.append("(SELECT SUBSTRING(POST_CD FROM 1 FOR 3) || SUBSTRING(POST_CD FROM 5 FOR 4) POSTCD,");
+//		sb.append(" POST_CD SP_POSTCD FROM T_POST) SUB_POST");
+//		sb.append(" where SUB_POST.POSTCD = ");
+		sb.append(" where POST_CD = ");
 		sb.append(JQueryConvert.queryConvert(zipCode));
-		sb.append(" and SUB_POST.SP_POSTCD = T_POST.POST_CD ");
+//		sb.append(" and SUB_POST.SP_POSTCD = T_POST.POST_CD ");
 
 		try {
 			result = JApplication.systemDatabase.sendExecuteQuery(sb.toString());

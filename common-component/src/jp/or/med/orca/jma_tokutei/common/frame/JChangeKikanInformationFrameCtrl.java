@@ -307,46 +307,65 @@ public class JChangeKikanInformationFrameCtrl extends JAddKikanInformationFrameC
 	 */
 	public void init()
 	{
+// eidt s.inoue 2012/07/05
+//		jLabel_Title = new TitleLabel(ViewSettingsKey.KEY_TOKUTEI_KIKAN_MASTERMAINTENANCE_EDIT_FRAME_TITLE);
+//
+//		this.jTextField_kikanNumber.setEditable(false);
+//		// edit s.inoue 2009/09/30
+//		// 修正時、フィールドの色変え
+//		Color requiedItemColor = ViewSettings.getDisableItemBgColor();
+//		this.jTextField_kikanNumber.setBackground(requiedItemColor);
+//		// add h.yoshitama 2009/09/30
+//		jLabel_disableExample.setBackground(ViewSettings.getDisableItemBgColor());
+//
+//		// edit s.inoue 2009/09/30
+//		// フォーカス制御
+//		this.focusTraversalPolicy = new JFocusTraversalPolicy();
+//		this.setFocusTraversalPolicy(this.focusTraversalPolicy);
+//		// add h.yoshitama 2009/09/30
+//		this.focusTraversalPolicy.setDefaultComponent(jTextField_kikanNumber);
+//		this.focusTraversalPolicy.setDefaultComponent(jTextField_souhumotoNumber);
+//		this.focusTraversalPolicy.addComponent(jTextField_souhumotoNumber);
+//		this.focusTraversalPolicy.addComponent(jTextField_kikanName);
+//		this.focusTraversalPolicy.addComponent(jTextField_zip);
+//		this.focusTraversalPolicy.addComponent(jTextField_address);
+//		this.focusTraversalPolicy.addComponent(jTextField_address2);
+//		this.focusTraversalPolicy.addComponent(jTextField_tel);
+//		this.focusTraversalPolicy.addComponent(jRadioButton_Yes);
+//		this.focusTraversalPolicy.addComponent(jRadioButton_No);
+//		this.focusTraversalPolicy.addComponent(jTextField_ip);
+//		this.focusTraversalPolicy.addComponent(jTextField_portNumber);
+////		this.focusTraversalPolicy.addComponent(jTextField_databaseName);
+////		this.focusTraversalPolicy.addComponent(jTextField_protocol);
+////		this.focusTraversalPolicy.addComponent(jTextField_dbUserId);
+////		this.focusTraversalPolicy.addComponent(jTextField_dbPassword);
+//		this.focusTraversalPolicy.addComponent(jTextField_nichireseUserId);
+//		this.focusTraversalPolicy.addComponent(jTextField_nichiresePassword );
+//		this.focusTraversalPolicy.addComponent(jTextField_encoding);
+//		this.focusTraversalPolicy.addComponent(jRadioButton_Yes1);
+//		this.focusTraversalPolicy.addComponent(jRadioButton_No1);
+//		this.focusTraversalPolicy.addComponent(jTextField_orcaIdDigit);
+//		this.focusTraversalPolicy.addComponent(jButton_ConnectionTest);
+//		this.focusTraversalPolicy.addComponent(jButton_Register);
+//		this.focusTraversalPolicy.addComponent(jButton_End);
+
 		jLabel_Title = new TitleLabel(ViewSettingsKey.KEY_TOKUTEI_KIKAN_MASTERMAINTENANCE_EDIT_FRAME_TITLE);
+        jTextField_kikanNumber.setEnabled(false);
+        Color color = ViewSettings.getDisableItemBgColor();
+        jTextField_kikanNumber.setBackground(color);
+        jTextField_souhumotoNumber.grabFocus();
+        Hashtable hashtable = null;
 
-		this.jTextField_kikanNumber.setEditable(false);
-		// edit s.inoue 2009/09/30
-		// 修正時、フィールドの色変え
-		Color requiedItemColor = ViewSettings.getDisableItemBgColor();
-		this.jTextField_kikanNumber.setBackground(requiedItemColor);
-		// add h.yoshitama 2009/09/30
-		jLabel_disableExample.setBackground(ViewSettings.getDisableItemBgColor());
-
-		// edit s.inoue 2009/09/30
-		// フォーカス制御
-		this.focusTraversalPolicy = new JFocusTraversalPolicy();
-		this.setFocusTraversalPolicy(this.focusTraversalPolicy);
-		// add h.yoshitama 2009/09/30
-		this.focusTraversalPolicy.setDefaultComponent(jTextField_kikanNumber);
-		this.focusTraversalPolicy.setDefaultComponent(jTextField_souhumotoNumber);
-		this.focusTraversalPolicy.addComponent(jTextField_souhumotoNumber);
-		this.focusTraversalPolicy.addComponent(jTextField_kikanName);
-		this.focusTraversalPolicy.addComponent(jTextField_zip);
-		this.focusTraversalPolicy.addComponent(jTextField_address);
-		this.focusTraversalPolicy.addComponent(jTextField_address2);
-		this.focusTraversalPolicy.addComponent(jTextField_tel);
-		this.focusTraversalPolicy.addComponent(jRadioButton_Yes);
-		this.focusTraversalPolicy.addComponent(jRadioButton_No);
-		this.focusTraversalPolicy.addComponent(jTextField_ip);
-		this.focusTraversalPolicy.addComponent(jTextField_portNumber);
-		this.focusTraversalPolicy.addComponent(jTextField_databaseName);
-		this.focusTraversalPolicy.addComponent(jTextField_protocol);
-		this.focusTraversalPolicy.addComponent(jTextField_dbUserId);
-		this.focusTraversalPolicy.addComponent(jTextField_dbPassword);
-		this.focusTraversalPolicy.addComponent(jTextField_nichireseUserId);
-		this.focusTraversalPolicy.addComponent(jTextField_nichiresePassword );
-		this.focusTraversalPolicy.addComponent(jTextField_encoding);
-		this.focusTraversalPolicy.addComponent(jRadioButton_Yes1);
-		this.focusTraversalPolicy.addComponent(jRadioButton_No1);
-		this.focusTraversalPolicy.addComponent(jTextField_orcaIdDigit);
-		this.focusTraversalPolicy.addComponent(jButton_ConnectionTest);
-		this.focusTraversalPolicy.addComponent(jButton_Register);
-		this.focusTraversalPolicy.addComponent(jButton_End);
+        try
+        {
+            hashtable = (Hashtable)KikanDatabase.sendExecuteQuery((new StringBuilder()).append("SELECT * FROM T_KIKAN WHERE TKIKAN_NO =").append(JQueryConvert.queryConvert(KikanNumber)).toString()).get(0);
+        }
+        catch(Exception exception)
+        {
+            exception.printStackTrace();
+            JErrorMessage.show("M9701", this);
+            dispose();
+        }
 
 		// 機関情報の取得
 		Hashtable<String,String> KikanItem = null;
@@ -370,7 +389,8 @@ public class JChangeKikanInformationFrameCtrl extends JAddKikanInformationFrameC
 		this.jTextField_kikanName.setText(KikanItem.get("KIKAN_NAME"));
 
 		if (zip != null && ! zip.isEmpty()) {
-			this.jTextField_zip.setText(zip);
+			// eidt s.inoue 2012/07/09
+			jTextField_zip.setPostCodeFormatText(zip);
 		}
 
 		this.jTextField_address.setText(KikanItem.get("ADR"));
@@ -416,30 +436,30 @@ public class JChangeKikanInformationFrameCtrl extends JAddKikanInformationFrameC
 				orcaPort = "";
 			}
 			this.jTextField_portNumber.setText(orcaPort);
-
-			String orcaDatabase = orcaSettings.getOrcaDatabase();
-			if (orcaDatabase == null) {
-				orcaDatabase = "";
-			}
-			this.jTextField_databaseName.setText(orcaDatabase);
-
-			String orcaProtocol = orcaSettings.getOrcaProtocol();
-			if (orcaProtocol == null) {
-				orcaProtocol = "";
-			}
-			this.jTextField_protocol.setText(orcaProtocol);
-
-			String orcaUser = orcaSettings.getOrcaUser();
-			if (orcaUser == null) {
-				orcaUser = "";
-			}
-			this.jTextField_dbUserId.setText(orcaUser);
-
-			String orcaPassword = orcaSettings.getOrcaPassword();
-			if (orcaPassword == null) {
-				orcaPassword = "";
-			}
-			this.jTextField_dbPassword.setText(orcaPassword);
+// del s.inoue 2012/07/05
+//			String orcaDatabase = orcaSettings.getOrcaDatabase();
+//			if (orcaDatabase == null) {
+//				orcaDatabase = "";
+//			}
+//			this.jTextField_databaseName.setText(orcaDatabase);
+//
+//			String orcaProtocol = orcaSettings.getOrcaProtocol();
+//			if (orcaProtocol == null) {
+//				orcaProtocol = "";
+//			}
+//			this.jTextField_protocol.setText(orcaProtocol);
+//
+//			String orcaUser = orcaSettings.getOrcaUser();
+//			if (orcaUser == null) {
+//				orcaUser = "";
+//			}
+//			this.jTextField_dbUserId.setText(orcaUser);
+//
+//			String orcaPassword = orcaSettings.getOrcaPassword();
+//			if (orcaPassword == null) {
+//				orcaPassword = "";
+//			}
+//			this.jTextField_dbPassword.setText(orcaPassword);
 
 			String nichireseUser = orcaSettings.getNichireseUser();
 			if (nichireseUser == null) {
@@ -453,11 +473,11 @@ public class JChangeKikanInformationFrameCtrl extends JAddKikanInformationFrameC
 			}
 			this.jTextField_nichiresePassword.setText(nichiresePassword);
 
-			String orcaEncode = orcaSettings.getOrcaEncode();
-			if (orcaEncode == null) {
-				orcaEncode = "";
-			}
-			this.jTextField_encoding.setText(orcaEncode);
+//			String orcaEncode = orcaSettings.getOrcaEncode();
+//			if (orcaEncode == null) {
+//				orcaEncode = "";
+//			}
+//			this.jTextField_encoding.setText(orcaEncode);
 
 			boolean useOrcaIdDigit = orcaSettings.isUseOrcaIdDigit();
 			if (useOrcaIdDigit) {

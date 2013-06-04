@@ -1,6 +1,8 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame;
 
 import java.awt.BorderLayout;
+
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import java.awt.GridLayout;
@@ -13,10 +15,13 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.*;
 
+import jp.or.med.orca.jma_tokutei.common.app.JPath;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedButton;
+import jp.or.med.orca.jma_tokutei.common.component.ExtendedImageIcon;
 import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettingsKey;
+import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenGenericButton;
 
 import javax.swing.BorderFactory;
 import java.awt.GridBagLayout;
@@ -80,8 +85,8 @@ public class JShiharaiMasterMaintenanceListFrame extends JFrame implements Actio
 			borderLayout.setVgap(2);
 			jPanel_Content = new JPanel();
 			jPanel_Content.setLayout(borderLayout);
-			jPanel_Content.add(getJPanel_ButtonArea(), BorderLayout.SOUTH);
-			jPanel_Content.add(getJPanel_NaviArea(), BorderLayout.NORTH);
+			jPanel_Content.add(getJPanel_ButtonArea(), BorderLayout.NORTH);
+			// jPanel_Content.add(getJPanel_NaviArea(), BorderLayout.NORTH);
 			jPanel_Content.add(getJPanel_MainArea(), BorderLayout.CENTER);
 		}
 		return jPanel_Content;
@@ -148,12 +153,18 @@ public class JShiharaiMasterMaintenanceListFrame extends JFrame implements Actio
 	 */
 	private ExtendedButton getJButton_End() {
 		if (jButton_End == null) {
-			jButton_End = new ExtendedButton();
-			jButton_End.setHorizontalAlignment(SwingConstants.CENTER);
-			jButton_End.setActionCommand("èIóπ");
-			jButton_End.setFont(new Font("Dialog", Font.PLAIN, 12));
-			jButton_End.setText("ñﬂÇÈ(F1)");
-			jButton_End.addActionListener(this);
+			// eidt s.inoue 2011/05/26
+//			jButton_End = new ExtendedButton();
+//			jButton_End.setHorizontalAlignment(SwingConstants.CENTER);
+//			jButton_End.setActionCommand("èIóπ");
+//			jButton_End.setFont(new Font("Dialog", Font.PLAIN, 12));
+//			jButton_End.setText("ñﬂÇÈ(F1)");
+//			jButton_End.addActionListener(this);
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Common_Back);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
+
+			jButton_End= new ExtendedButton(
+					"Close","ñﬂÇÈ(R)","ñﬂÇÈ(ALT+R)",KeyEvent.VK_R,icon);
 		}
 		return jButton_End;
 	}
@@ -283,10 +294,15 @@ public class JShiharaiMasterMaintenanceListFrame extends JFrame implements Actio
 	 */
 	private ExtendedButton getJButton_Add() {
 		if (jButton_Add == null) {
-			jButton_Add = new ExtendedButton();
-			jButton_Add.setText("í«â¡(F9)");
-			jButton_Add.setFont(new Font("Dialog", Font.PLAIN, 12));
-			jButton_Add.addActionListener(this);
+			// eidt s.inoue 2011/05/26
+//			jButton_Add = new ExtendedButton();
+//			jButton_Add.setText("í«â¡(F9)");
+//			jButton_Add.setFont(new Font("Dialog", Font.PLAIN, 12));
+//			jButton_Add.addActionListener(this);
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Common_Add);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
+			jButton_Add= new ExtendedButton(
+					"Add","í«â¡(A)","í«â¡(ALT+A)",KeyEvent.VK_A,icon);
 		}
 		return jButton_Add;
 	}

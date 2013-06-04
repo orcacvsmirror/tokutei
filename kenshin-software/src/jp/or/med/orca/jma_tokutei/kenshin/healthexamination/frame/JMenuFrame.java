@@ -415,7 +415,7 @@ public class JMenuFrame extends JFrame implements ActionListener,WindowListener,
 			jButton_InputJyusinken = new ExtendedButton();
 
 			jButton_InputJyusinken.setText("１．受診券入力（個人情報登録）(1)");
-			jButton_InputJyusinken.setPreferredSize(new Dimension(500, 50));
+			jButton_InputJyusinken.setPreferredSize(new Dimension(515, 50));
 			jButton_InputJyusinken.setFont(new Font("Dialog", Font.PLAIN, 12));
 			jButton_InputJyusinken.addActionListener(this);
 			jButton_InputJyusinken.addKeyListener(this);
@@ -449,8 +449,8 @@ public class JMenuFrame extends JFrame implements ActionListener,WindowListener,
 	private ExtendedButton getJButton_ImportData() {
 		if (jButton_ImportData == null) {
 			jButton_ImportData = new ExtendedButton();
-			jButton_ImportData.setText("２-２．検査データ取り込み(3)");
-			jButton_ImportData.setPreferredSize(new Dimension(245, 50));
+			jButton_ImportData.setText("２-２．検査データ、HL7ファイル取り込み(3)");
+			jButton_ImportData.setPreferredSize(new Dimension(260, 50));
 			// edit ver2 s.inoue 2009/04/17 9999
 			jButton_ImportData.setEnabled(false);
 			jButton_ImportData.setFont(new Font("Dialog", Font.PLAIN, 12));
@@ -469,7 +469,7 @@ public class JMenuFrame extends JFrame implements ActionListener,WindowListener,
 		if (jButton_ShowHantei == null) {
 			jButton_ShowHantei = new ExtendedButton();
 			jButton_ShowHantei.setText("３．メタボリックシンドローム判定・階層化(4)");
-			jButton_ShowHantei.setPreferredSize(new Dimension(500, 50));
+			jButton_ShowHantei.setPreferredSize(new Dimension(515, 50));
 			jButton_ShowHantei.setFont(new Font("Dialog", Font.PLAIN, 12));
 			jButton_ShowHantei.addActionListener(this);
 			jButton_ShowHantei.setMnemonic(KeyEvent.VK_4);
@@ -488,7 +488,7 @@ public class JMenuFrame extends JFrame implements ActionListener,WindowListener,
 			// edit ver2 s.inoue 2009/08/03
 			// jButton_OutputToHL7.setText("４．請求・HL7出力");
 			jButton_OutputNitiji.setText("４．日次処理（請求）(5)");
-			jButton_OutputNitiji.setPreferredSize(new Dimension(500, 50));
+			jButton_OutputNitiji.setPreferredSize(new Dimension(515, 50));
 			jButton_OutputNitiji.setFont(new Font("Dialog", Font.PLAIN, 12));
 			jButton_OutputNitiji.addActionListener(this);
 			jButton_OutputNitiji.setMnemonic(KeyEvent.VK_5);
@@ -507,7 +507,7 @@ public class JMenuFrame extends JFrame implements ActionListener,WindowListener,
 			// edit ver2 s.inoue 2009/08/03
 			// jButton_OutputToHL7.setText("４．請求・HL7出力");
 			jButton_OutputGetuji.setText("５．月次処理（請求確定/HL7出力）(6)");
-			jButton_OutputGetuji.setPreferredSize(new Dimension(500, 50));
+			jButton_OutputGetuji.setPreferredSize(new Dimension(515, 50));
 			jButton_OutputGetuji.setFont(new Font("Dialog", Font.PLAIN, 12));
 			jButton_OutputGetuji.addActionListener(this);
 			jButton_OutputGetuji.setMnemonic(KeyEvent.VK_6);
@@ -541,7 +541,7 @@ public class JMenuFrame extends JFrame implements ActionListener,WindowListener,
 		if (jButton_SystemMaintenance == null) {
 			jButton_SystemMaintenance = new ExtendedButton();
 			jButton_SystemMaintenance.setText("７．システムメンテナンス(8)");
-			jButton_SystemMaintenance.setPreferredSize(new Dimension(245, 50));
+			jButton_SystemMaintenance.setPreferredSize(new Dimension(260, 50));
 			jButton_SystemMaintenance.setFont(new Font("Dialog", Font.PLAIN, 12));
 			jButton_SystemMaintenance.addActionListener(this);
 			jButton_SystemMaintenance.setMnemonic(KeyEvent.VK_8);

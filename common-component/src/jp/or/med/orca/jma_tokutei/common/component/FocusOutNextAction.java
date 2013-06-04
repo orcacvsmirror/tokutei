@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 
-class FocusOutNextAction extends AbstractAction {
+public class FocusOutNextAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		Component c = (Component)e.getSource();
 		c.transferFocus();

@@ -37,6 +37,15 @@ public class JSimpleTableScrollPanel extends JPanel
 		// 描画オブジェクト設定
 		scrollPane.setViewportView( table );
 	}
+
+	// add s.inoue 2012/07/04
+    public JSimpleTableScrollPanel(JSimpleColorTable jsimplecolortable)
+    {
+        setLayout(new BorderLayout());
+        JScrollPane jscrollpane = new JScrollPane(20, 30);
+        add(jscrollpane, "Center");
+        jscrollpane.setViewportView(jsimplecolortable);
+    }
 }
 
 //Source Code Version Tag System v1.00  -- Do not remove --

@@ -10,9 +10,6 @@ import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.util.FiscalYearUtil;
 import jp.or.med.orca.jma_tokutei.common.validate.JValidate;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.JKekkaListFrameCtrl;
-
-
 
 /**
  * 印刷に用いる健診結果データを受け渡すクラス
@@ -287,18 +284,23 @@ public class KenshinKekka {
 			 */
 			resultSize = resultList.size();
 			for (int j =0; j < resultSize; j++){
-				resultItem = resultList.get(j);
-				tmp1.clear();
-				tmp1.put("KOUMOKU_CD", resultItem.get("KOUMOKU_CD"));
-				tmp1.put("KOUMOKU_NAME", resultItem.get("KOUMOKU_NAME"));
+				// System.out.println( j + "行目");
+				try{
+					resultItem = resultList.get(j);
+					tmp1.clear();
+					tmp1.put("KOUMOKU_CD", resultItem.get("KOUMOKU_CD"));
+					tmp1.put("KOUMOKU_NAME", resultItem.get("KOUMOKU_NAME"));
 
-				// 実施区分 0:未実施,1:実施,2:測定不可能
-				tmp1.put("KEKA_TI", resultItem.get("KEKA_TI"));
-				tmp1.put("JISI_KBN", resultItem.get("JISI_KBN"));
-				tmp1.put("KIJYUNTI_HANI", resultItem.get("KIJYUNTI_HANI"));
-				tmp1.put("DATA_TYPE", resultItem.get("DATA_TYPE"));
-				tmp1.put("TANI", resultItem.get("TANI"));
-				tmp1.put("BIKOU", resultItem.get("BIKOU"));
+					// 実施区分 0:未実施,1:実施,2:測定不可能
+					tmp1.put("KEKA_TI", resultItem.get("KEKA_TI"));
+					tmp1.put("JISI_KBN", resultItem.get("JISI_KBN"));
+					tmp1.put("KIJYUNTI_HANI", resultItem.get("KIJYUNTI_HANI"));
+					tmp1.put("DATA_TYPE", resultItem.get("DATA_TYPE"));
+					tmp1.put("TANI", resultItem.get("TANI"));
+					tmp1.put("BIKOU", resultItem.get("BIKOU"));
+				}catch(Exception ex){
+					System.out.println(ex.getMessage());
+				}
 
 				// edit ver2 s.inoue 2009/09/17
 				int data_type = 0;
@@ -411,7 +413,11 @@ public class KenshinKekka {
 		}
 		try {
 			this.KensaNengapi[0] = this.KensaNengapi[0].substring(0, 4) + "年" + this.KensaNengapi[0].substring(4, 6) + "月" + this.KensaNengapi[0].substring(6, 8) + "日";
+			// edit s.inoue 2010/05/07
+			if (this.KensaNengapi[1] != null)
 			this.KensaNengapi[1] = this.KensaNengapi[1].substring(0, 4) + "年" + this.KensaNengapi[1].substring(4, 6) + "月" + this.KensaNengapi[1].substring(6, 8) + "日";
+
+			if (this.KensaNengapi[2] != null)
 			this.KensaNengapi[2] = this.KensaNengapi[2].substring(0, 4) + "年" + this.KensaNengapi[2].substring(4, 6) + "月" + this.KensaNengapi[2].substring(6, 8) + "日";
 
 		} catch (Exception e){

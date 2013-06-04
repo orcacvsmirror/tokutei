@@ -12,8 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import jp.or.med.orca.jma_tokutei.common.component.DialogFactory;
-import jp.or.med.orca.jma_tokutei.common.component.IDialog;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.convert.JZenkakuKatakanaToHankakuKatakana;
 import jp.or.med.orca.jma_tokutei.common.csv.JCSVReaderStream;
@@ -21,6 +19,8 @@ import jp.or.med.orca.jma_tokutei.common.csv.JCSVWriterStream;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
 import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
+import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
+import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
 import jp.or.med.orca.jma_tokutei.common.scene.JScene;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.DaoFactory;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.THokenjyaDao;
@@ -313,8 +313,8 @@ public class JShiharaiMasterMaintenanceListFrameCtrl extends
 	 */
 	public void pushedChangeButton(ActionEvent e) {
 		if (model.getSelectedRowCount() == 1) {
-			String daikouNumber = (String) model
-					.getData(model.getSelectedRow()).get(0);
+			// edit s.inoue 2010/07/07
+			String daikouNumber = (String) model.getData(model.getDoubleClickedSelectedRow()).get(0);
 
 			JScene.CreateDialog(this,
 					new JShiharaiMasterMaintenanceEditFrameCtrl(daikouNumber),
@@ -372,7 +372,8 @@ public class JShiharaiMasterMaintenanceListFrameCtrl extends
 			filePathDialog.setDialogSelect(true);
 			filePathDialog.setVisible(true);
 
-			// edit s.inoue 2010/03/25
+			// eidt s.inoue 2012/07/06
+			if (filePathDialog.getStatus() == null)return;
 			if (filePathDialog.getStatus().equals(RETURN_VALUE.CANCEL))
 				return;
 
@@ -416,7 +417,9 @@ public class JShiharaiMasterMaintenanceListFrameCtrl extends
 			CSVItems = reader.readAllTable();
 
 			try {
-				JApplication.kikanDatabase.Transaction();
+				// eidt s.inoue 2011/06/07
+				// JApplication.kikanDatabase.Transaction();
+				JApplication.kikanDatabase.getMConnection().setAutoCommit(false);
 
 				int csvCount = CSVItems.size();
 
@@ -445,14 +448,17 @@ public class JShiharaiMasterMaintenanceListFrameCtrl extends
 					shiharaiMasterRegister(data);
 
 				}
-
-				JApplication.kikanDatabase.Commit();
+				// eidt s.inoue 2011/06/07
+				// JApplication.kikanDatabase.Commit();
+				JApplication.kikanDatabase.getMConnection().commit();
 
 				String[] messageParams = {String.valueOf(csvCount-1)};
 				JErrorMessage.show("M5108",this,messageParams);
 			} catch (SQLException e) {
 				try {
-					JApplication.kikanDatabase.rollback();
+					// eidt s.inoue 2011/06/07
+					// JApplication.kikanDatabase.rollback();
+					JApplication.kikanDatabase.getMConnection().rollback();
 				} catch (SQLException e1) {}
 				JErrorMessage.show("M5105",this);
 				logger.error(e.getMessage());
@@ -565,7 +571,8 @@ public class JShiharaiMasterMaintenanceListFrameCtrl extends
 			filePathDialog.setDialogSelect(true);
 			filePathDialog.setVisible(true);
 
-			// edit s.inoue 2010/03/25
+			// eidt s.inoue 2012/07/06
+			if (filePathDialog.getStatus() == null)return;
 			if (filePathDialog.getStatus().equals(RETURN_VALUE.CANCEL))
 				return;
 

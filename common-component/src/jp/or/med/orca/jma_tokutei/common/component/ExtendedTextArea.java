@@ -1,6 +1,11 @@
 package jp.or.med.orca.jma_tokutei.common.component;
 
+import java.awt.AWTKeyStroke;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -8,6 +13,7 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.text.DefaultEditorKit;
@@ -29,7 +35,10 @@ public class ExtendedTextArea extends JTextArea {
 	 * コンストラクタ
 	 */
 	public ExtendedTextArea(String text, int n, ImeMode mode, boolean handleEnterKey) {
-		super();
+
+		// edit s.inoue 2013/02/19
+		// 6列10行
+		super(6,10);
 		setFont(ViewSettings.getCommonUserInputFont());
 
 		LengthLimitableDocument doc = new LengthLimitableDocument();
@@ -40,7 +49,13 @@ public class ExtendedTextArea extends JTextArea {
 
 		this.setText(text);
 
+		// add s.inoue 2013/02/14
+		this.setAutoscrolls(true);
+		this.setLineWrap(true);
+
+		// eidt s.inoue 2012/11/05
 		initActions(handleEnterKey);
+		// addEnterPolicy(this);
 
 		this.imeController = new ImeController();
 		this.imeController.addFocusListenerForCharcterSubsets(this, mode);
@@ -48,28 +63,53 @@ public class ExtendedTextArea extends JTextArea {
 
 	public ExtendedTextArea() {
 		this("", -1, ImeMode.IME_NO_CONTROLL, true);
+//		addEnterPolicy(this);
+		initActions();
 	}
 
 	public ExtendedTextArea(boolean handleEnterKey) {
 		this("", -1, ImeMode.IME_NO_CONTROLL, handleEnterKey);
+//		addEnterPolicy(this);
+		initActions();
 	}
 
 	public ExtendedTextArea(String text, int n) {
 		this(text, n, ImeMode.IME_NO_CONTROLL, true);
+//		addEnterPolicy(this);
+		initActions();
 	}
 
 	public ExtendedTextArea(String text, int n, boolean handleEnterKey) {
 		this(text, n, ImeMode.IME_NO_CONTROLL, handleEnterKey);
+//		addEnterPolicy(this);
+		initActions();
 	}
 
 	public ExtendedTextArea(String text, int n, ImeMode mode) {
 		this(text, n, mode, true);
+//		addEnterPolicy(this);
+		initActions();
 	}
 
 	public ExtendedTextArea(ImeMode mode) {
 		this("", -1, mode, true);
+//		addEnterPolicy(this);
+		initActions();
 	}
 
+	// edit s.inoue 2012/11/05
+	private void initActions() {
+		ActionMap actions = getActionMap();
+
+		actions.put("focusOutNext", new FocusOutNextAction());
+		actions.put("focusOutPrevious", new FocusOutPreviousAction());
+
+		InputMap inputs = this.getInputMap(JComponent.WHEN_FOCUSED);
+		inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "focusOutNext");
+		// add s.inoue 2012/11/06
+		// Shift+Enterを追加
+		inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_MASK), "focusOutPrevious");
+	}
 	private void initActions(boolean handleEnterKey) {
 		ActionMap actions = getActionMap();
 		InputMap inputs = getInputMap();
@@ -82,8 +122,45 @@ public class ExtendedTextArea extends JTextArea {
 
 		if (handleEnterKey) {
 			inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "focusOutNext");
+			// add s.inoue 2012/11/06
+			// Shift+Enterを追加
+			inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_MASK), "focusOutPrevious");
 		}
 	}
+
+//	// enterキー制御
+//	private void addEnterPolicy(JComponent comp) {
+//		  //次へのフォーカス設定
+//		  Set<AWTKeyStroke> keystrokes = new HashSet<AWTKeyStroke>();
+//		  Set<AWTKeyStroke> oldKeyStrokes = comp
+//		          .getFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
+//		  if (oldKeyStrokes != null) {
+//		      //既に登録されているKeySetをがあればコピーする。
+//		  //標準であればTabKeyなどが入っているはず
+//		      for (AWTKeyStroke akw : oldKeyStrokes) {
+//		          keystrokes.add(akw);
+//		      }
+//		  }
+//
+//		  //ENTERを追加
+//		  keystrokes.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_ENTER, 0));
+//		  comp.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, keystrokes);
+//
+//		  //前へのフォーカス設定
+//		  keystrokes = new HashSet<AWTKeyStroke>();
+//		  oldKeyStrokes = comp.getFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
+//		  if (oldKeyStrokes != null) {
+//		      //既に登録されているKeySetをがあればコピーする。
+//		  //標準であればShft+TabKeyなどが入っているはず
+//		      for (AWTKeyStroke akw : oldKeyStrokes) {
+//		          keystrokes.add(akw);
+//		      }
+//		  }
+//
+//		  // Shift+Enterを追加
+//		  keystrokes.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_MASK));
+//		  comp.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, keystrokes);
+//	}
 
 	/**
 	 * エディタのプルダウンメニュー設定

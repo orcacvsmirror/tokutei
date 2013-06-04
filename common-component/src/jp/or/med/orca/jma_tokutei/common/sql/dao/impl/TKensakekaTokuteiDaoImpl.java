@@ -301,6 +301,29 @@ public class TKensakekaTokuteiDaoImpl extends DaoImpl implements
 		return null;
 	}
 
+	// add s.inoue 2012/07/04
+    public TKensakekaTokutei selectKekkaTokuteiByPrimaryKey(Long long1, Integer integer)
+    throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
+	{
+	    Connection connection = getConnection();
+	    if(connection == null)
+	        return null;
+	    PreparedStatement preparedstatement = connection.prepareStatement("SELECT TOKUTEI.*,PM.K_P_NO  FROM T_KENSAKEKA_TOKUTEI AS TOKUTEI  LEFT JOIN T_KENSHIN_P_M AS PM  ON TOKUTEI.K_P_NO = PM.K_P_NO  WHERE UKETUKE_ID=? AND KENSA_NENGAPI=? ");
+	    setNumber(preparedstatement, 1, long1, -5);
+	    setNumber(preparedstatement, 2, integer, 4);
+	    ResultSet resultset = preparedstatement.executeQuery();
+	    if(resultset.next())
+	    {
+	        return (TKensakekaTokutei)setValueForRecordModel(new TKensakekaTokutei(), resultset);
+	    } else
+	    {
+	        resultset.close();
+	        preparedstatement.close();
+	        resultset = null;
+	        preparedstatement = null;
+	        return null;
+	    }
+	}
 	// add ver2 s.inoue 2009/08/26
 	/**
 	 * 指定キー(受付ID,検査年月日)を指定してレコード取得

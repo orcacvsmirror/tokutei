@@ -312,12 +312,20 @@ public class T_f_kikanImpl extends DaoImpl implements TKojinDao {
 		stmt = null;
 	}
 
+	// add s.inoue 2010/12/01
 	/**
 	 * 受付IDの採番
-	 *
 	 * @return 受付ID
 	 */
 	public long selectNewUketukeId() throws SQLException {
+		return selectNewUketukeId(1);
+	}
+
+	/**
+	 * 受付IDの採番
+	 * @return 受付ID
+	 */
+	public long selectNewUketukeId(int diff) throws SQLException {
 		Connection con = getConnection();
 		if (con == null)
 			throw new SQLException("Not connected.");
@@ -325,7 +333,7 @@ public class T_f_kikanImpl extends DaoImpl implements TKojinDao {
 
 		Calendar calendar = Calendar.getInstance();
 		long idValue = new Long(String.format(UKETUKE_ID_FORMAT, calendar
-				.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar
+				.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + diff, calendar
 				.get(Calendar.DAY_OF_MONTH))).longValue() * 10000;
 		stmt.setLong(1, idValue);
 		ResultSet rs = stmt.executeQuery();

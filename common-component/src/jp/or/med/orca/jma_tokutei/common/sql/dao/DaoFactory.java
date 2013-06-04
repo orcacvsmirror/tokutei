@@ -14,6 +14,7 @@ import jp.or.med.orca.jma_tokutei.common.sql.dao.impl.TKensakekaSonotaDaoImpl;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.impl.TKensakekaTokuteiDaoImpl;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.impl.TKojinDaoImpl;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.impl.TNayoseDaoImpl;
+import jp.or.med.orca.jma_tokutei.common.sql.dao.impl.TShiharaiDaoImpl;
 import jp.or.med.orca.jma_tokutei.common.sql.model.JShowResultFrameModel;
 import jp.or.med.orca.jma_tokutei.common.sql.model.RecordModel;
 import jp.or.med.orca.jma_tokutei.common.sql.model.TDataTypeCode;
@@ -22,6 +23,7 @@ import jp.or.med.orca.jma_tokutei.common.sql.model.TKensakekaSonota;
 import jp.or.med.orca.jma_tokutei.common.sql.model.TKensakekaTokutei;
 import jp.or.med.orca.jma_tokutei.common.sql.model.TKojin;
 import jp.or.med.orca.jma_tokutei.common.sql.model.TNayose;
+import jp.or.med.orca.jma_tokutei.common.sql.model.TShiharai;
 
 /**
  * 各テーブルのデータアクセスオブジェクトを生成するクラス
@@ -45,6 +47,8 @@ public class DaoFactory {
 		daoMap.put(TNayose.class, TNayoseDaoImpl.class);
 		// add s.inoue 2010/01/12
 		daoMap.put(THokenjya.class, THokenjyaDaoImpl.class);
+		// add s.inoue 2010/12/01
+		daoMap.put(TShiharai.class, TShiharaiDaoImpl.class);
 	}
 
 	/**

@@ -417,10 +417,10 @@ public class FileSelectDialog extends JDialog
 
 	}
 
-	@Override
-	public String getFilePath() {
-		return this.jTextField_FileName.getText();
-	}
+//	@Override
+//	public String getFilePath() {
+//		return this.jTextField_FileName.getText();
+//	}
 
 	@Override
 	public void setEnabled(boolean enabled) {
@@ -447,6 +447,11 @@ public class FileSelectDialog extends JDialog
 	public void setSaveFileName(String title) {
 		// TODO 自動生成されたメソッド・スタブ
 		this.jLabel_FileName.setText(title);
+	}
+
+	@Override
+	public String getTextValue() {
+        return jTextField_FileName.getText();
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

@@ -5,8 +5,9 @@ import jp.or.med.orca.jma_tokutei.common.validate.JValidate;
 
 public class JKekkaTeikeiMaintenanceEditFrameData {
 	private String teikeiType = new String("");  //  @jve:decl-index=0:
+	private String teikeiTypeName = new String("");  //  @jve:decl-index=0:
 	private String teikeiNo = new String("");  //  @jve:decl-index=0:
-	private String teikeiBun = new String("");
+	private String teikeiBun = new String("");  //  @jve:decl-index=0:
 
 	private boolean isValidateAsDataSet = false;
 	/**
@@ -32,6 +33,29 @@ public class JKekkaTeikeiMaintenanceEditFrameData {
 	}
 
 	/**
+	 * @return the teikeiBun
+	 */
+	public String getTeikeiTypeName() {
+		return teikeiTypeName;
+	}
+
+	/**
+	 * @param note the teikeibun to set
+	 */
+	public boolean setTeikeiTypeName(String teikeiTypeName) {
+		this.isValidateAsDataSet = false;
+		this.teikeiTypeName = JValidate.validateTeikeibunShubetu(teikeiTypeName);
+
+		if( this.teikeiTypeName == null ) {
+			jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage.show("M9921", null);
+			return false;
+		}
+
+		return true;
+	}
+
+
+	/**
 	 * @return the teikeiNo
 	 */
 	public String getTeikeiNumber() {
@@ -43,6 +67,10 @@ public class JKekkaTeikeiMaintenanceEditFrameData {
 	 */
 	public boolean setTeikeiNumber(String teikeiNo) {
 		this.isValidateAsDataSet = false;
+		// edit s.inoue 2010/05/19
+		if (teikeiNo.length() == 1)
+			teikeiNo = "0" + teikeiNo;
+
 		this.teikeiNo = JValidate.validateTeikeiNumber(teikeiNo);
 
 		if( this.teikeiNo == null ) {

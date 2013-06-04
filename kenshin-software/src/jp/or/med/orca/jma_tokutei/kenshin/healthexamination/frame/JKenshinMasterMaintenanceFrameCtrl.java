@@ -9,14 +9,14 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import jp.or.med.orca.jma_tokutei.common.component.DialogFactory;
-import jp.or.med.orca.jma_tokutei.common.component.IDialog;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.csv.JCSVReaderStream;
 import jp.or.med.orca.jma_tokutei.common.csv.JCSVWriterStream;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
+import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
+import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
 import jp.or.med.orca.jma_tokutei.common.table.JSimpleTable;
 import jp.or.med.orca.jma_tokutei.common.table.JSimpleTableCellPosition;
 import jp.or.med.orca.jma_tokutei.common.table.JSimpleTableCellRendererData;
@@ -100,9 +100,10 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 	private static String selectDialogTitle= "csvファイルを選択してください";
 
 	// 検索ボタン押下時のSQLで使用
+	// edit s.inoue 2010/07/07
 	private static final String[] TABLE_COLUMNS = {
 		"HKNJANUM","KOUMOKU_CD","HISU_FLG",
-		"DS_JYOUGEN","DS_KAGEN","JS_JYOUGEN","JS_KAGEN","TANI","BIKOU"
+		"DS_KAGEN","DS_JYOUGEN","JS_KAGEN","JS_JYOUGEN","TANI","TANKA_KENSIN","BIKOU"
 		};
 
 	public JKenshinMasterMaintenanceFrameCtrl() {
@@ -346,7 +347,7 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 
 			String query = new String("SELECT HKNJANUM, KOUMOKU_CD, KOUMOKU_NAME, DATA_TYPE, MAX_BYTE_LENGTH, XML_PATTERN, XML_DATA_TYPE,"
 				 +	" XML_KENSA_CD, OBSERVATION, AUTHOR, AUTHOR_KOUMOKU_CD, KENSA_GROUP, KENSA_GROUP_CD, KEKKA_OID,"
-				 +	" KOUMOKU_OID, HISU_FLG, KAGEN, JYOUGEN, DS_JYOUGEN, DS_KAGEN, JS_JYOUGEN, JS_KAGEN, KIJYUNTI_HANI,"
+				 +	" KOUMOKU_OID, HISU_FLG, KAGEN, JYOUGEN, DS_KAGEN,DS_JYOUGEN, JS_KAGEN,JS_JYOUGEN, KIJYUNTI_HANI,"
 				 +	" TANI, KENSA_HOUHOU, TANKA_KENSIN, BIKOU, XMLITEM_SEQNO"
 				 +	" FROM T_KENSHINMASTER WHERE HKNJANUM = "
 				 + JQueryConvert.queryConvert(curHokenjyaNumber))
@@ -401,16 +402,23 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 					}
 				}
 
+				// edit s.inoue 2010/07/22 逆順
+				if (!limitValeDsKagen.equals("")){
+					rowcolumn[i][COLUMN_INDEX_DS_KAGEN] = JValidate.DecimalFormatValue(limitValeDsKagen,LimitFormat);
+				}else{
+					rowcolumn[i][COLUMN_INDEX_DS_KAGEN] = "";
+				}
+
 				if (!limitValeDsJyougen.equals("")){
 					rowcolumn[i][COLUMN_INDEX_DS_JYOUGEN] = JValidate.DecimalFormatValue(limitValeDsJyougen,LimitFormat);
 				}else{
 					rowcolumn[i][COLUMN_INDEX_DS_JYOUGEN] = "";
 				}
 
-				if (!limitValeDsKagen.equals("")){
-					rowcolumn[i][COLUMN_INDEX_DS_KAGEN] = JValidate.DecimalFormatValue(limitValeDsKagen,LimitFormat);
+				if (!limitValeJsKagen.equals("")){
+					rowcolumn[i][COLUMN_INDEX_JS_KAGEN] = JValidate.DecimalFormatValue(limitValeJsKagen,LimitFormat);
 				}else{
-					rowcolumn[i][COLUMN_INDEX_DS_KAGEN] = "";
+					rowcolumn[i][COLUMN_INDEX_JS_KAGEN] = "";
 				}
 
 				if (!limitValeJsJyougen.equals("")){
@@ -419,18 +427,13 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 					rowcolumn[i][COLUMN_INDEX_JS_JYOUGEN] = "";
 				}
 
-				if (!limitValeJsKagen.equals("")){
-					rowcolumn[i][COLUMN_INDEX_JS_KAGEN] = JValidate.DecimalFormatValue(limitValeJsKagen,LimitFormat);
-				}else{
-					rowcolumn[i][COLUMN_INDEX_JS_KAGEN] = "";
-				}
 			}else{
 				rowcolumn[i][COLUMN_INDEX_KAGEN] = "";
 				rowcolumn[i][COLUMN_INDEX_JYOUGEN] = "";
 				rowcolumn[i][COLUMN_INDEX_DS_KAGEN] = "";
 				rowcolumn[i][COLUMN_INDEX_DS_JYOUGEN] = "";
-				rowcolumn[i][COLUMN_INDEX_JS_JYOUGEN] = "";
 				rowcolumn[i][COLUMN_INDEX_JS_KAGEN] = "";
+				rowcolumn[i][COLUMN_INDEX_JS_JYOUGEN] = "";
 			}
 		}
 
@@ -469,7 +472,8 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 			filePathDialog.setDialogSelect(true);
 			filePathDialog.setVisible(true);
 
-			// edit s.inoue 2010/03/25
+			// eidt s.inoue 2012/07/06
+			if (filePathDialog.getStatus() == null)return;
 			if (filePathDialog.getStatus().equals(RETURN_VALUE.CANCEL))
 				return;
 
@@ -514,7 +518,9 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 			CSVItems = reader.readAllTable();
 
 			try {
-				JApplication.kikanDatabase.Transaction();
+				// eidt s.inoue 2011/06/07
+				// JApplication.kikanDatabase.Transaction();
+				JApplication.kikanDatabase.getMConnection().setAutoCommit(false);
 
 				int csvCount = CSVItems.size();
 
@@ -539,14 +545,17 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 					// 健診マスタ登録
 					kenshinMasterRegister(data);
 				}
-
-				JApplication.kikanDatabase.Commit();
+				// eidt s.inoue 2011/06/07
+				// JApplication.kikanDatabase.Commit();
+				JApplication.kikanDatabase.getMConnection().commit();
 
 				String[] messageParams = {String.valueOf(csvCount-1)};
 				JErrorMessage.show("M3828",this,messageParams);
 			} catch (SQLException e) {
 				try {
-					JApplication.kikanDatabase.rollback();
+					// eidt s.inoue 2011/06/07
+					// JApplication.kikanDatabase.rollback();
+					JApplication.kikanDatabase.getMConnection().rollback();
 				} catch (SQLException e1) {}
 				JErrorMessage.show("M3826",this);
 				logger.error(e.getMessage());
@@ -567,7 +576,9 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 			data.CSV_COLUMN_JS_KAGEN = (reader.rmQuart(insertRow.get(5)));
 			data.CSV_COLUMN_JS_JYOUGEN = (reader.rmQuart(insertRow.get(6)));
 			data.CSV_COLUMN_TANI = (reader.rmQuart(insertRow.get(7)));
-			data.CSV_COLUMN_BIKOU = (reader.rmQuart(insertRow.get(8)));
+			// edit s.inoue 2010/07/06
+			data.CSV_TANKA_KENSIN = (reader.rmQuart(insertRow.get(8)));
+			data.CSV_COLUMN_BIKOU = (reader.rmQuart(insertRow.get(9)));
 	}
 
 	// edit s.inoue 2010/03/04
@@ -583,7 +594,9 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 			&& validatedData.setJsJyougen(data.CSV_COLUMN_JS_JYOUGEN)
 			&& validatedData.setDsKagen(data.CSV_COLUMN_DS_KAGEN)
 			&& validatedData.setDsJyougen(data.CSV_COLUMN_DS_JYOUGEN)
+			// edit s.inoue 2010/07/06
 			&& validatedData.setTanni(data.CSV_COLUMN_TANI)
+			&& validatedData.setKensaTanka(data.CSV_TANKA_KENSIN)
 			&& validatedData.setNote(data.CSV_COLUMN_BIKOU);
 		return rettanka;
 	}
@@ -609,8 +622,11 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 				+ JQueryConvert.queryConvertAppendComma(validatedData.getJsKagen()));
 		buffer.append(" JS_JYOUGEN = "
 				+ JQueryConvert.queryConvertAppendComma(validatedData.getJsJyougen()));
+		// edit s.inoue 2010/07/06
 		buffer.append(" TANI = "
 				+ JQueryConvert.queryConvertAppendComma(validatedData.getTanni()));
+		buffer.append(" TANKA_KENSIN = "
+				+ JQueryConvert.queryConvertAppendComma(validatedData.getKensaTanka()));
 		buffer.append(" BIKOU = "
 				+ JQueryConvert.queryConvert(validatedData.getNote()));
 		buffer.append(" WHERE HKNJANUM ="
@@ -644,7 +660,8 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 			filePathDialog.setDialogTitle(savaDialogTitle);
 			filePathDialog.setVisible(true);
 
-			// edit s.inoue 2010/03/25
+			// eidt s.inoue 2012/07/06
+			if (filePathDialog.getStatus() == null)return;
 			if (filePathDialog.getStatus().equals(RETURN_VALUE.CANCEL))
 				return;
 
@@ -690,7 +707,8 @@ public class JKenshinMasterMaintenanceFrameCtrl extends
 					((String) jComboBox_HokenjyaNumber.getSelectedItem()).substring(0, 8));
 
 		StringBuilder sb = new StringBuilder();
-		sb.append(" SELECT HKNJANUM,KOUMOKU_CD,HISU_FLG,DS_JYOUGEN,DS_KAGEN,JS_JYOUGEN,JS_KAGEN,TANI,BIKOU");
+		// edit s.inoue 2010/07/07
+		sb.append(" SELECT HKNJANUM,KOUMOKU_CD,HISU_FLG,DS_KAGEN,DS_JYOUGEN,JS_KAGEN,JS_JYOUGEN,TANI,TANKA_KENSIN,BIKOU");
 		sb.append(" FROM T_KENSHINMASTER WHERE HKNJANUM = ");
 		sb.append(JQueryConvert.queryConvert(curHokenjyaNumber));
 		sb.append(" ORDER BY XMLITEM_SEQNO ");

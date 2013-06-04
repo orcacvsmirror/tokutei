@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 
@@ -86,7 +87,18 @@ public class JMenuFrameCtrl extends JMenuFrame
 	 */
 	public void pushedKanriButton( ActionEvent e )
 	{
-		JScene.CreateDialog(this, new JUserMaintenanceFrameCtrl());
+//		JScene.CreateDialog(this, new JUserMaintenanceListFrameCtrl());
+	    try {
+			JApplication.systemDatabase.getMConnection().setAutoCommit(false);
+		} catch (SQLException ex) {
+			logger.warn(ex.getMessage());
+		}
+		JUserMaintenanceListFrameCtrl ctl = new JUserMaintenanceListFrameCtrl(
+				JApplication.systemDatabase.getMConnection());
+		JScene.CreateDialog(
+				this,
+				ctl.getGridControl()
+				);
 	}
 
 	/**

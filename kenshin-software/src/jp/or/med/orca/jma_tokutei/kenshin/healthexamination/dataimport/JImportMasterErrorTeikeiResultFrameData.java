@@ -8,8 +8,9 @@ public class JImportMasterErrorTeikeiResultFrameData {
 	public Integer errCase;
 
 	public String CSV_COLUMN_SYOKEN_TYPE;
+	public String CSV_COLUMN_SYOKEN_TYPE_NAME;
 	public String CSV_COLUMN_SYOKEN_NO;
-	public String CSV_COLUMN_SYOKEN;
+	public String CSV_COLUMN_SYOKEN_NAME;
 
 	/**
 	 * データベース上のデータを保持。最終的に選択された受診者を判定する際に使用。

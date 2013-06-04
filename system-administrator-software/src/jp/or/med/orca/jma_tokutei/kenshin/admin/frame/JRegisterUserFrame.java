@@ -11,6 +11,7 @@ import java.awt.CardLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Font;
 import java.awt.Color;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.*;
 
@@ -19,6 +20,7 @@ import jp.or.med.orca.jma_tokutei.common.component.ExtendedComboBox;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedLabel;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedPasswordField;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedTextField;
+import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import javax.swing.BorderFactory;
 
@@ -80,8 +82,12 @@ public class JRegisterUserFrame extends JFrame implements ActionListener,KeyList
 			borderLayout.setVgap(2);
 			jPanel_Content = new JPanel();
 			jPanel_Content.setLayout(borderLayout);
+			// add s.inoue 2012/11/12
+			jLabel_Title = new TitleLabel("admin.user-mastermaintenance.frame.title","admin.user-mastermaintenance.frame.guidance");
+			jLabel_Title.setFont(new Font("ＭＳ ゴシック", Font.PLAIN, 14));
+
 			jPanel_Content.add(getJPanel_ButtonArea(), BorderLayout.SOUTH);
-			jPanel_Content.add(getJPanel_NaviArea(), BorderLayout.NORTH);
+//			jPanel_Content.add(getJPanel_NaviArea(), BorderLayout.NORTH);
 			jPanel_Content.add(getJPanel_MainArea(), BorderLayout.CENTER);
 		}
 		return jPanel_Content;
@@ -94,6 +100,14 @@ public class JRegisterUserFrame extends JFrame implements ActionListener,KeyList
 	 */
 	private JPanel getJPanel_ButtonArea() {
 		if (jPanel_ButtonArea == null) {
+			// add s.inoue 2012/11/13
+			GridBagConstraints gridBagConstraints53 = new GridBagConstraints();
+			gridBagConstraints53.gridy = 0;
+			gridBagConstraints53.gridx = 0;
+			gridBagConstraints53.insets = new Insets(0, 0, 5, 0);
+			gridBagConstraints53.anchor = GridBagConstraints.WEST;
+			gridBagConstraints53.gridwidth=5;
+
 			GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
 			gridBagConstraints6.gridy = 0;
 			gridBagConstraints6.gridx = 0;
@@ -107,8 +121,45 @@ public class JRegisterUserFrame extends JFrame implements ActionListener,KeyList
 			jPanel_ButtonArea.setLayout(new GridBagLayout());
 			jPanel_ButtonArea.add(getJButton_Register(), gridBagConstraints5);
 			jPanel_ButtonArea.add(getJButton_End(), gridBagConstraints6);
+
+			// add s.inoue 2012/11/13
+			jPanel_ButtonArea.add(getJPanel_TitleArea(), gridBagConstraints53);
 		}
 		return jPanel_ButtonArea;
+	}
+
+	/**
+	 * This method initializes jPanel_TitleArea
+	 *
+	 * @return javax.swing.JPanel
+	 */
+//	protected JPanel jPanel_TitleArea = null;
+//	protected ExtendedLabel jLabel_Title = null;
+
+	private JPanel getJPanel_TitleArea() {
+		if (jPanel_TitleArea == null) {
+			GridBagConstraints gridBagConstraints26 = new GridBagConstraints();
+			gridBagConstraints26.insets = new Insets(0, 0, 0, 0);
+			gridBagConstraints26.fill = GridBagConstraints.HORIZONTAL;
+			gridBagConstraints26.gridy = 1;
+			gridBagConstraints26.gridx = 0;
+
+			GridBagConstraints gridBagConstraints25 = new GridBagConstraints();
+			gridBagConstraints25.gridy = 0;
+//			gridBagConstraints25.ipady = 10;
+			gridBagConstraints25.anchor = GridBagConstraints.WEST;
+			// gridBagConstraints25.insets = new Insets(0, 0, 5, 0);
+			gridBagConstraints25.insets = new Insets(5, 5, 0, 0);
+			gridBagConstraints25.weightx = 1.0D;
+			gridBagConstraints25.gridx = 0;
+
+			jPanel_TitleArea = new JPanel();
+			jPanel_TitleArea.setLayout(new GridBagLayout());
+			jPanel_TitleArea.setName("jPanel2");
+			jPanel_TitleArea.add(jLabel_Title, gridBagConstraints25);
+//			 jPanel_TitleArea.add(buttonBox, gridBagConstraints26);
+		}
+		return jPanel_TitleArea;
 	}
 
 	/**
@@ -128,54 +179,54 @@ public class JRegisterUserFrame extends JFrame implements ActionListener,KeyList
 		return jButton_End;
 	}
 
-	/**
-	 * This method initializes jPanel_NaviArea
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanel_NaviArea() {
-		if (jPanel_NaviArea == null) {
-			CardLayout cardLayout2 = new CardLayout();
-			cardLayout2.setHgap(10);
-			cardLayout2.setVgap(10);
-			jLabel_MainExpl = new ExtendedLabel();
-			jLabel_MainExpl.setText("システム管理ユーザ情報を登録します。");
-			jLabel_MainExpl.setFont(new Font("Dialog", Font.PLAIN, 14));
-			jLabel_MainExpl.setName("jLabel1");
-			jLabel_Title = new ExtendedLabel();
-			jLabel_Title.setText("システム管理ユーザ登録");
-			jLabel_Title.setFont(new Font("Dialog", Font.PLAIN, 18));
-			jLabel_Title.setBackground(new Color(153, 204, 255));
-			jLabel_Title.setForeground(new Color(51, 51, 51));
-			jLabel_Title.setOpaque(true);
-			jLabel_Title.setName("jLabel");
-			jPanel_NaviArea = new JPanel();
-			jPanel_NaviArea.setLayout(cardLayout2);
-			jPanel_NaviArea.add(getJPanel_TitleArea(), getJPanel_TitleArea().getName());
-		}
-		return jPanel_NaviArea;
-	}
-
-	/**
-	 * This method initializes jPanel_TitleArea
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanel_TitleArea() {
-		if (jPanel_TitleArea == null) {
-			GridLayout gridLayout = new GridLayout();
-			gridLayout.setRows(2);
-			gridLayout.setHgap(0);
-			gridLayout.setColumns(0);
-			gridLayout.setVgap(10);
-			jPanel_TitleArea = new JPanel();
-			jPanel_TitleArea.setLayout(gridLayout);
-			jPanel_TitleArea.setName("jPanel2");
-			jPanel_TitleArea.add(jLabel_Title, null);
-			jPanel_TitleArea.add(getJPanel_ExplArea1(), null);
-		}
-		return jPanel_TitleArea;
-	}
+//	/**
+//	 * This method initializes jPanel_NaviArea
+//	 *
+//	 * @return javax.swing.JPanel
+//	 */
+//	private JPanel getJPanel_NaviArea() {
+//		if (jPanel_NaviArea == null) {
+//			CardLayout cardLayout2 = new CardLayout();
+//			cardLayout2.setHgap(10);
+//			cardLayout2.setVgap(10);
+//			jLabel_MainExpl = new ExtendedLabel();
+//			jLabel_MainExpl.setText("システム管理ユーザ情報を登録します。");
+//			jLabel_MainExpl.setFont(new Font("Dialog", Font.PLAIN, 14));
+//			jLabel_MainExpl.setName("jLabel1");
+//			jLabel_Title = new ExtendedLabel();
+//			jLabel_Title.setText("システム管理ユーザ登録");
+//			jLabel_Title.setFont(new Font("Dialog", Font.PLAIN, 18));
+//			jLabel_Title.setBackground(new Color(153, 204, 255));
+//			jLabel_Title.setForeground(new Color(51, 51, 51));
+//			jLabel_Title.setOpaque(true);
+//			jLabel_Title.setName("jLabel");
+//			jPanel_NaviArea = new JPanel();
+//			jPanel_NaviArea.setLayout(cardLayout2);
+//			jPanel_NaviArea.add(getJPanel_TitleArea(), getJPanel_TitleArea().getName());
+//		}
+//		return jPanel_NaviArea;
+//	}
+//
+//	/**
+//	 * This method initializes jPanel_TitleArea
+//	 *
+//	 * @return javax.swing.JPanel
+//	 */
+//	private JPanel getJPanel_TitleArea() {
+//		if (jPanel_TitleArea == null) {
+//			GridLayout gridLayout = new GridLayout();
+//			gridLayout.setRows(2);
+//			gridLayout.setHgap(0);
+//			gridLayout.setColumns(0);
+//			gridLayout.setVgap(10);
+//			jPanel_TitleArea = new JPanel();
+//			jPanel_TitleArea.setLayout(gridLayout);
+//			jPanel_TitleArea.setName("jPanel2");
+//			jPanel_TitleArea.add(jLabel_Title, null);
+//			jPanel_TitleArea.add(getJPanel_ExplArea1(), null);
+//		}
+//		return jPanel_TitleArea;
+//	}
 
 	/**
 	 * This method initializes jPanel_ExplArea2

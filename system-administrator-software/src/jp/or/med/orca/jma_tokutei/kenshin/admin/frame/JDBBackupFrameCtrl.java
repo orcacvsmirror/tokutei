@@ -1,37 +1,40 @@
 package jp.or.med.orca.jma_tokutei.kenshin.admin.frame;
 
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumnModel;
-import org.apache.log4j.Logger;
-
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Vector;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.io.File;
+
+import javax.swing.JFileChooser;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.app.JPath;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
-import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
-import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
-import jp.or.med.orca.jma_tokutei.dbfix.ShcDBAdjust;
 import jp.or.med.orca.jma_tokutei.common.filectrl.JFile;
 import jp.or.med.orca.jma_tokutei.common.filectrl.JFileCopy;
+import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
+import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.sql.JConnection;
 import jp.or.med.orca.jma_tokutei.common.table.JSimpleTable;
 import jp.or.med.orca.jma_tokutei.common.table.JSimpleTableCellPosition;
 import jp.or.med.orca.jma_tokutei.common.table.JSimpleTableCellRowRenderer;
 import jp.or.med.orca.jma_tokutei.common.table.JSimpleTableScrollPanel;
+import jp.or.med.orca.jma_tokutei.dbfix.ShcDBAdjust;
+
+import org.apache.log4j.Logger;
+
+// import com.l2fprod.common.swing.JDirectoryChooser;
 
 /**
  * データベースバックアップ
@@ -93,6 +96,7 @@ public class JDBBackupFrameCtrl extends JDBBackupFrame {
 		// add s.inoue 2009/12/03
 		for (int i = 0; i < focusTraversalPolicy.getComponentSize(); i++) {
 			Component comp = focusTraversalPolicy.getComponent(i);
+			if (comp != null)
 			comp.addKeyListener(this);
 		}
 
@@ -213,7 +217,9 @@ public class JDBBackupFrameCtrl extends JDBBackupFrame {
 		// ファイル列挙
 		// for( int i = fileList.length - 1; i >= 0; --i ){
 		for (int i = 0; i < m_fileList.size(); ++i) {
-
+			// add s.inoue 2012/01/13
+			if (m_fileList.get(String.valueOf(i))== null)
+				continue;
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 			long lSize = calcDirectorySize(m_fileList.get(String.valueOf(i))) / 1000;
@@ -235,7 +241,7 @@ public class JDBBackupFrameCtrl extends JDBBackupFrame {
 		if (m_model.getRowCount() > 0) {
 			m_model.setRowSelectionInterval(0, 0);
 		} else {
-			jButton_Reload.requestFocus();
+//			jButton_Reload.requestFocus();
 		}
 	}
 
@@ -246,7 +252,52 @@ public class JDBBackupFrameCtrl extends JDBBackupFrame {
 	 *
 	 *    @return none
 	 */
-	public void beginBackup() throws Exception {
+	public boolean beginBackup(){
+
+		boolean retflg = false;
+
+// del s.inoue 2012/07/06
+//		try {
+//			// ディレクトリを選択出来るようにする
+//			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+//
+//			String savePath = JPath.CURRENT_DIR_PATH + JApplication.FILE_SEPARATOR
+//								+ JPath.BackupSystemDatabaseFolder
+//								+ JApplication.versionNumber + "_"
+//								+ dateFormat.format(Calendar.getInstance().getTime());
+//
+//			File dirfile = new File(savePath);
+//			if (!dirfile.mkdirs()) {
+//				// throw new Exception();
+//				JErrorMessage.show("M4201", this);
+//				return retflg;
+//			}
+//
+//			JDirectoryChooser chooser = new JDirectoryChooser();
+//			chooser.setApproveButtonText("保存");
+//
+//			File cfile = new File(savePath);
+//			// eidt s.inoue 2012/01/13
+//			chooser.setCurrentDirectory(cfile);
+//			int choice = chooser.showOpenDialog(this);
+//
+//			if( choice == JFileChooser.APPROVE_OPTION ){
+//				// eidt s.inoue 2012/03/08
+//				if (JFileCopy.xcopyFile(JPath.DatabaseFolder, chooser.getSelectedFile().getAbsolutePath()) > 0) {
+//				// if (JFileCopy.xcopyFile(JPath.DatabaseFolder, dirfile.getAbsolutePath()) > 0) {
+//					// throw new Exception();
+//					JErrorMessage.show("M4201", this);
+//					return retflg;
+//				}
+//			}else{
+//				dirfile.delete();
+//				return retflg;
+//			}
+//
+//		} catch (Exception err) {
+//			logger.error("バックアップ処理及びロールバック処理のファイルコピー時、エラーとなりました。");
+//		}
+// del s.inoue 2012/01/12
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
@@ -260,15 +311,14 @@ public class JDBBackupFrameCtrl extends JDBBackupFrame {
 				throw new Exception();
 			}
 
-			if (JFileCopy.xcopyFile(JPath.DatabaseFolder, directory
-					.getAbsolutePath()) > 0) {
+			if (JFileCopy.xcopyFile(JPath.DatabaseFolder, directory.getAbsolutePath()) > 0) {
 				throw new Exception();
 			}
 		} catch (Exception err) {
 			err.printStackTrace();
 			logger.error("バックアップ処理及びロールバック処理のファイルコピー時、エラーとなりました。");
-			throw new Exception();
 		}
+		return true;
 	}
 
 	/**
@@ -306,22 +356,17 @@ public class JDBBackupFrameCtrl extends JDBBackupFrame {
 			shutdownDataBase();
 
 			// バックアップ確認
-			RETURN_VALUE iResult = JErrorMessage
-					.show("M7502", this);
+			RETURN_VALUE iResult = JErrorMessage.show("M7502", this);
 
 			if (iResult == RETURN_VALUE.YES) {
-				beginBackup();
-
-				reloadDBFileList();
-
-				JErrorMessage
-						.show("M7504", this);
+				// eidt s.inoue 2012/01/13
+				if (beginBackup()){
+					reloadDBFileList();
+					JErrorMessage.show("M7504", this);
+				}
 			}
 		} catch (Exception err) {
-			err.printStackTrace();
-
-			JErrorMessage.show(
-					"M7503", this);
+			JErrorMessage.show("M7503", this);
 		} finally {
 			try {
 				// データベース再接続
@@ -329,9 +374,7 @@ public class JDBBackupFrameCtrl extends JDBBackupFrame {
 			} catch (SQLException err) {
 				err.printStackTrace();
 
-				JErrorMessage
-						.show("M0000", this);
-
+				JErrorMessage.show("M0000", this);
 				System.exit(1);
 			}
 		}
@@ -353,30 +396,23 @@ public class JDBBackupFrameCtrl extends JDBBackupFrame {
 
 			if (iSelect != -1) {
 				// バックアップ確認
-				RETURN_VALUE iResult = JErrorMessage
-						.show("M7505", this);
+				RETURN_VALUE iResult = JErrorMessage.show("M7505", this);
 
 				if (iResult == RETURN_VALUE.YES) {
 					try {
-						beginBackup();
-
-						reloadDBFileList();
-
-						JErrorMessage
-								.show("M7504", this);
+						// eidt s.inoue 2012/01/13
+						if (beginBackup()){
+							reloadDBFileList();
+							JErrorMessage.show("M7504", this);
+						}
 					} catch (Exception err) {
-						err.printStackTrace();
-
-						JErrorMessage
-								.show("M7503", this);
-
+						JErrorMessage.show("M7503", this);
 						return;
 					}
 				}
 
 				// バックアップ復元確認
-				iResult = JErrorMessage
-						.show("M7506", this);
+				iResult = JErrorMessage.show("M7506", this);
 
 				if (iResult == RETURN_VALUE.YES) {
 					// 一時ファイル作成
@@ -388,26 +424,20 @@ public class JDBBackupFrameCtrl extends JDBBackupFrame {
 					}
 
 					// ファイル削除
-					if (!JFile.deleteDirectory(new File(JPath.DatabaseFolder),
-							false)) {
+					if (!JFile.deleteDirectory(new File(JPath.DatabaseFolder),false)) {
 						JErrorMessage.show("M7509", this);
-
 						return;
 					}
 
 					// ファイル復元
-					if (JFileCopy.xcopyFile(m_fileList.get(String.valueOf(iSelect))
-							.getAbsolutePath(), JPath.DatabaseFolder) > 0) {
+					if (JFileCopy.xcopyFile(m_fileList.get(String.valueOf(iSelect)).getAbsolutePath(), JPath.DatabaseFolder) > 0) {
 						JErrorMessage.show("M7509", this);
-
 						return;
 					}
 
 					// 復元処理終了
-					if (!JFile.deleteDirectory(new File(
-							JPath.TEMP_SYSTEM_DATABASEFILE_PATH), false)) {
+					if (!JFile.deleteDirectory(new File(JPath.TEMP_SYSTEM_DATABASEFILE_PATH), false)) {
 						JErrorMessage.show("M7509", this);
-
 						return;
 					}
 
@@ -422,8 +452,6 @@ public class JDBBackupFrameCtrl extends JDBBackupFrame {
 				}
 			}
 		} catch (Exception err1) {
-			err1.printStackTrace();
-
 			JErrorMessage.show("M7508", this);
 
 			try {

@@ -1,5 +1,7 @@
 package jp.or.med.orca.jma_tokutei.common.app;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,6 +20,8 @@ import jp.or.med.orca.jma_tokutei.common.sql.JConnection;
 import jp.or.med.orca.jma_tokutei.common.util.XMLDocumentUtil;
 import jp.or.med.orca.jma_tokutei.common.util.PropertyUtil;
 import org.apache.log4j.PropertyConfigurator;
+import org.openswing.swing.domains.java.Domain;
+import org.openswing.swing.util.client.ClientSettings;
 
 /**
  * グローバル情報の保持を行う
@@ -51,6 +55,7 @@ public class JApplication {
 	// データベース
 	public static JConnection systemDatabase = null;
 	public static JConnection kikanDatabase = null;
+	public static JConnection hokenjyaDatabase = null;
 
 	// データベース周りの設定
 	public static boolean useORCA = false;
@@ -133,8 +138,11 @@ public class JApplication {
 	public static final Integer CSV_KENSA_TANI = 19;
 	public static final Integer CSV_KENSA_KIJUN = 20;
 	// 検査項目情報:1～22,検査項目個数:8
-	public static final Integer CSV_KENSA_LOOP = 22;
+	// eidt s.inoue 2013/02/26
+	// public static final Integer CSV_KENSA_LOOP = 22;
+	public static final Integer CSV_KENSA_LOOP = 280;
 	public static final Integer CSV_KENSA_KOUMOKU_LOOP = 8;
+
 	public static final Integer CSV_ZOKUSEI_COUNT = 12;
 
 	// エラーfield
@@ -182,6 +190,7 @@ public class JApplication {
 	public static final String HISU_FLG_BASE = "1";
 	public static final String HISU_FLG_SYOSAI = "2";
 	public static final String HISU_FLG_TUIKA = "3";
+	public static final String HISU_FLG_MONSHIN = "4";
 	//	private static String VERSION_FILE = "MainVersion.properties";
 	private static final String DB_FILENAME_SYSTEM_FDB = "System.fdb";
 
@@ -212,6 +221,45 @@ public class JApplication {
 	public static final String SCREEN_MASTER_KEINEN_CODE = "108"; // 経年マスタメンテナンス
 	public static final String SCREEN_MASTER_USEBILITY_CODE = "109"; // ユーザビリティメンテナンス
 
+	// add s.inoue 2011/05/10
+	// 検索系一覧カウント
+	public static int gridViewSearchCount = 0;
+	public static int gridViewMasterCount = 0;
+
+    public static String func_keiyakuCode = "01";
+    public static String func_futanCode = "02";
+    public static String func_nyuryokuCode = "03";
+    public static String func_yearOldCode = "05";
+    public static String func_printCode = "06";
+    public static String func_orijinCode = "04";
+    public static Color backColor_Focus = new Color(195, 229, 254);
+    public static Color backColor_UnFocus = new Color(255, 255, 255);
+    // eidt s.inoue 2012/11/16
+    public static ClientSettings clientSettings = null;
+    public static Domain patternDomain = null;
+    public static Domain graphDomain = null;
+    // add s.inoue 2012/10/24
+    public static Domain hokenjaDomain = null;
+    public static Domain shiharaiDomain = null;
+
+    public static Hashtable domains = null;
+
+//     add s.inoue 2013/03/12
+//    public static boolean blnLookFeelMetal = false;
+
+    // add s.inoue 2013/03/12
+    public static Font FONT_COMMON_BUTTON = null;
+    public static Font FONT_COMMON_MENU_BUTTON = null;
+
+    // eidt s.inoue 2012/11/28
+//    public static ArrayList<Integer> selectedHistoryRows = null;
+    public static ArrayList<Integer> selectedHistoryRows = new ArrayList<Integer>();
+
+    // add s.inoue 2012/11/29
+    public static ArrayList<Integer> selectedPreservRows = new ArrayList<Integer>();
+
+    public static boolean callValidateCancelFlg = false;
+    public static boolean firstCheckedFlg =false;
 	/**
 	 * 設定ファイルなどを読み込むa。
 	 */
@@ -219,6 +267,11 @@ public class JApplication {
 
 		/* property.xml から DB 設定を取得する。 */
 		try {
+
+			// eidt s.inoue 2013/03/12
+//			FONT_COMMON_BUTTON = new Font("ＭＳ ゴシック", 0, blnLookFeelMetal?10:12);
+//			FONT_COMMON_MENU_BUTTON = new Font("ＭＳ ゴシック", 0, blnLookFeelMetal?11:13);
+
 			// add ver2 s.inoue 2009/05/19
 			PropertyConfigurator.configure("log4j.properties");
 

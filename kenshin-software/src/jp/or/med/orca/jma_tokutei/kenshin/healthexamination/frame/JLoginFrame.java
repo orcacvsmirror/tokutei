@@ -56,13 +56,17 @@ public class JLoginFrame extends JFrame implements ActionListener, KeyListener
 	protected ExtendedTextField jTextField_UserName = null;
 	// add s.inoue 2009/12/18
 	protected ExtendedButton jButton_Setting = null;
+	// add s.inoue 2010/08/02
+	protected ExtendedButton jButton_UpdateInfo = null;
+
 	protected ExtendedButton jButton_Login = null;
 	protected ExtendedPasswordField jPasswordField_Password = null;
 	protected ExtendedLabel jLabel = null;
 	protected ExtendedLabel jLabel1 = null;
 	protected ExtendedLabel jLabel2 = null;
 	protected ExtendedComboBox jComboBox_kikanNumber = null;
-	protected ExtendedToggleButton jButton_Version = null;
+	// del y.okano 2010/05/24
+	//protected ExtendedToggleButton jButton_Version = null;
 
 	/**
 	 * This is the default constructor
@@ -119,6 +123,13 @@ public class JLoginFrame extends JFrame implements ActionListener, KeyListener
 	 */
 	private JPanel getJPanel_ButtonArea() {
 		if (jPanel_ButtonArea == null) {
+			// add s.inoue 2010/08/02
+			GridBagConstraints gridBagConstraints9 = new GridBagConstraints();
+			gridBagConstraints9.anchor = GridBagConstraints.EAST;
+			gridBagConstraints9.gridy = 0;
+			gridBagConstraints9.gridx = 1;
+			gridBagConstraints9.weightx = 1.0D;
+
 			GridBagConstraints gridBagConstraints8 = new GridBagConstraints();
 			gridBagConstraints8.gridy = 0;
 			gridBagConstraints8.insets = new Insets(0, 5, 0, 0);
@@ -128,24 +139,32 @@ public class JLoginFrame extends JFrame implements ActionListener, KeyListener
 			gridBagConstraints7.gridx = 0;
 			GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
 			gridBagConstraints6.gridy = 0;
-			gridBagConstraints6.insets = new Insets(0, 5, 0, 0);
+			// edit y.okano 2010/05/24
+//			gridBagConstraints6.weightx = 1.0D;
+			gridBagConstraints6.anchor = GridBagConstraints.EAST;
 			gridBagConstraints6.gridx = 2;
+			gridBagConstraints6.insets = new Insets(0, 5, 0, 0);
 
 			// add s.inoue 2009/12/18
 			GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
 			gridBagConstraints5.gridy = 0;
-			gridBagConstraints5.weightx = 1.0D;
-			gridBagConstraints5.anchor = GridBagConstraints.EAST;
-			gridBagConstraints5.gridx = 1;
+			// edit y.okano 2010/05/24
+			gridBagConstraints5.gridx = 3;
+			gridBagConstraints5.insets = new Insets(0, 5, 0, 0);
 
 			jPanel_ButtonArea = new JPanel();
 			jPanel_ButtonArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 			jPanel_ButtonArea.setLayout(new GridBagLayout());
+
+			// add s.inoue 2010/08/02
+			jPanel_ButtonArea.add(getJButton_UpdateInfo(), gridBagConstraints9);
+
 			// add s.inoue 2009/12/18
 			jPanel_ButtonArea.add(getJButton_Setting(), gridBagConstraints6);
 			jPanel_ButtonArea.add(getJButton_Login(), gridBagConstraints5);
 			jPanel_ButtonArea.add(getJButton_End(), gridBagConstraints7);
-			jPanel_ButtonArea.add(getJButton_Version(), gridBagConstraints8);
+			// del y.okano 2010/05/24
+			//jPanel_ButtonArea.add(getJButton_Version(), gridBagConstraints8);
 		}
 		return jPanel_ButtonArea;
 	}
@@ -164,6 +183,8 @@ public class JLoginFrame extends JFrame implements ActionListener, KeyListener
 //			jButton_End.setPreferredSize(new Dimension(75, 25));
 			jButton_End.setText("終了(F1)");
 			jButton_End.addActionListener(this);
+			// edit s.inoue 2010/11/05
+			jButton_End.setMnemonic(KeyEvent.VK_F1);
 		}
 		return jButton_End;
 	}
@@ -400,6 +421,25 @@ public class JLoginFrame extends JFrame implements ActionListener, KeyListener
 		return jPasswordField_Password;
 	}
 
+	// add s.inoue 2010/08/02
+	/**
+	 * This method initializes jButton_Setting
+	 *
+	 * @return javax.swing.EventHandleButton
+	 */
+	private ExtendedButton getJButton_UpdateInfo() {
+		if (jButton_UpdateInfo == null) {
+			jButton_UpdateInfo = new ExtendedButton();
+			jButton_UpdateInfo.setText("更新情報(F7)");
+			jButton_UpdateInfo.setPreferredSize(new Dimension(120, 25));
+			jButton_UpdateInfo.setVisible(true);
+			jButton_UpdateInfo.addActionListener(this);
+			// edit s.inoue 2010/11/05
+			jButton_UpdateInfo.setMnemonic(KeyEvent.VK_F7);
+		}
+		return jButton_UpdateInfo;
+	}
+
 	/**
 	 * This method initializes jButton_Setting
 	 *
@@ -408,10 +448,12 @@ public class JLoginFrame extends JFrame implements ActionListener, KeyListener
 	private ExtendedButton getJButton_Setting() {
 		if (jButton_Setting == null) {
 			jButton_Setting = new ExtendedButton();
-			jButton_Setting.setText("環境設定(F7)");
+			jButton_Setting.setText("環境設定(F8)");
 			jButton_Setting.setPreferredSize(new Dimension(120, 25));
 			jButton_Setting.setVisible(true);
 			jButton_Setting.addActionListener(this);
+			// edit s.inoue 2010/11/05
+			jButton_Setting.setMnemonic(KeyEvent.VK_F8);
 		}
 		return jButton_Setting;
 	}
@@ -429,6 +471,8 @@ public class JLoginFrame extends JFrame implements ActionListener, KeyListener
 			jButton_Login.setPreferredSize(new Dimension(120, 25));
 			jButton_Login.setVisible(true);
 			jButton_Login.addActionListener(this);
+			// edit s.inoue 2010/11/05
+			jButton_Login.setMnemonic(KeyEvent.VK_F12);
 		}
 		return jButton_Login;
 	}
@@ -438,17 +482,18 @@ public class JLoginFrame extends JFrame implements ActionListener, KeyListener
 	 *
 	 * @return jp.or.med.orca.jma_tokutei.common.component.ExtendedButton
 	 */
-	private ExtendedToggleButton getJButton_Version() {
-		if (jButton_Version == null) {
-			jButton_Version = new ExtendedToggleButton();
+	// del y.okano 2010/05/24
+	//private ExtendedToggleButton getJButton_Version() {
+	//	if (jButton_Version == null) {
+	//		jButton_Version = new ExtendedToggleButton();
 //			jButton_Version.setFont(new Font("Dialog", Font.PLAIN, 12));
-			jButton_Version.setPreferredSize(new Dimension(120, 25));
-			jButton_Version.setText("バージョン(F9)");
-			jButton_Version.setVisible(true);
-			jButton_Version.addActionListener(this);
-		}
-		return jButton_Version;
-	}
+	//		jButton_Version.setPreferredSize(new Dimension(120, 25));
+	//		jButton_Version.setText("バージョン(F9)");
+	//		jButton_Version.setVisible(true);
+	//		jButton_Version.addActionListener(this);
+	//	}
+	//	return jButton_Version;
+	//}
 
 	public void actionPerformed(ActionEvent e)
 	{

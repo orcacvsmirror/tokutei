@@ -2,6 +2,8 @@ package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.kekkahantei;
 
 import java.util.ArrayList;
 
+import jp.or.med.orca.jma_tokutei.common.util.FiscalYearUtil;
+
 /**
  * ŠK‘w‰»”»’èˆ—
  */
@@ -11,7 +13,11 @@ public class JKaisoukaHantei {
 	private static final String CODE_CYUSEI_SHIBOU_1 = "3F015000002327101";
 	private static final String CODE_KAKUCHOKI_KETSUATSU_1 = "9A761000000000001";
 	private static final String CODE_SYUSYUKUKI_KETSUATSU_1 = "9A751000000000001";
-	private static final String CODE_HBA1C = "3D045000001906202";
+
+	// eidt s.inoue 2012/09/03
+	private static final String CODE_HBA1C_JDS = "3D045000001906202";
+	private static final String CODE_HBA1C_NGSP = "3D046000001906202";
+
 	private static final String CODE_KUHUKUZI_KETO_1 = "3D010000001926101";
 	private static final String CODE_BMI = "9N011000000000001";
 	private static final String CODE_HUKUI_ZISOKU = "9N016160100000001";
@@ -39,7 +45,14 @@ public class JKaisoukaHantei {
 
 		/* «•Ê */
 		String gender = data.getGender();
-
+		// eidt s.inoue 2011/04/14
+		if (gender != null ) {
+			if( gender.equals("’j") ){
+				gender = "1";
+			}else if( gender.equals("—")){
+				gender = "2";
+			}
+		}
 		double ketsuatsuHukuyaku = data.getKetsuatsuHukuyaku();
 		double kettoHukuyaku = data.getKettoHukuyaku();
 		double shishitsuHukuyaku = data.getShishitsuHukuyaku();
@@ -114,6 +127,16 @@ public class JKaisoukaHantei {
 		}else{
 			if(kuhukuziKeto1Check == JKaisoukaHanteiItemCheck.KESSON)
 			{
+				// add s.inoue 2012/09/04
+				int tDate = 20130401;
+				String sDate = data.getKensinJisiDate();
+
+				// Œ’fÀ{“ú‚ª'130401ˆÈ~‚Å‚ ‚ê‚ÎAH,L‚Ìê‡‚àPQ(Œ‹‰Ê’l)‚ğo—Í‚·‚é
+
+				String CODE_HBA1C=CODE_HBA1C_JDS;
+				if (tDate <= Integer.parseInt(sDate)){
+					CODE_HBA1C = CODE_HBA1C_NGSP;
+				}
 
 				/* ‹ó• ŒŒ“œ‚ª‘¶İ‚µ‚È‚¢ê‡‚Ì‚İAƒJƒeƒSƒŠ[‚P‚ğŒ‡‘¹‚Æ‚µ‚Ä‚¢‚½‚½‚ßAC³ */
 				// HbA1c

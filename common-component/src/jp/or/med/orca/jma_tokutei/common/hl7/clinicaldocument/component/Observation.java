@@ -279,6 +279,23 @@ public class Observation {
 					/* Added 2008/06/20 若月  */
 					/* --------------------------------------------------- */
 					else {
+						// String tDate = String.valueOf(FiscalYearUtil.getSystemDate(""));
+						int tDate = 20130401;
+						String kDate = getKensanengapi();
+
+						System.out.println("当日" + tDate + "健診日" + kDate);
+
+						// add s.inoue 2012/09/03
+						// 健診実施日が'130401以降であれば、H,Lの場合もPQ(結果値)を出力する
+						if (tDate <= Integer.parseInt(kDate)){
+							Element element_highlow_value = doc.createElement("value");
+							element_highlow_value.setAttribute("xsi:type", dataType);
+							this.outputValueAndUnit(element, element_highlow_value);
+							element.appendChild(element_highlow_value);
+						}
+
+						// eidt s.inoue 2012/09/03
+						// 取り込みを考慮して後出しに変更
 						/* value 要素 */
 						element.appendChild(element_value);
 					}
@@ -653,6 +670,18 @@ public class Observation {
 	}
 	private String codeSystem = null;
 
+	// add s.inoue 2012/09/04
+	/**
+	 * 検査項目コード表示名
+	 */
+	private String kensanengapi = null;
+	public String getKensanengapi() {
+		return kensanengapi;
+	}
+
+	public void setKensanengapi(String pkensanengapi) {
+		kensanengapi = pkensanengapi;
+	}
 
 	/* Added 2008/04/06 若月  */
 	/* --------------------------------------------------- */

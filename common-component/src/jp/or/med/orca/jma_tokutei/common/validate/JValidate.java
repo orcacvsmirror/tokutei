@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.convert.JCalendarConvert;
+import jp.or.med.orca.jma_tokutei.common.convert.JZenkakuKatakanaToHankakuKatakana;
 
 /**
  * 文字列検証、変換用クラス
@@ -661,6 +662,11 @@ public class JValidate {
 		// del s.inoue 2009/09/30
 		// str = JValidate.eliminateCharacter(str,target);
 
+		// add s.inoue 2010/10/29
+		// 文字送り全角チェック
+		if ( !JZenkakuKatakanaToHankakuKatakana.isWideChar(str))
+			return null;
+
 		if( !isAllZenkaku(str) )
 			return null;
 
@@ -759,6 +765,11 @@ public class JValidate {
 
 		//空値を許可する
 		if ( str.isEmpty() )
+			return str;
+
+		// add s.inoue 2012/11/26
+		//空値を許可する
+		if ( str.trim().isEmpty() )
 			return str;
 
 		//ハイフンを除去する
@@ -1004,6 +1015,25 @@ public class JValidate {
 			return null;
 		}
 
+		return str;
+	}
+
+	/*
+	 * 窓口負担金額(HL7用)
+	 */
+	public static String validateMadoguchi_HL7(String str)
+	{
+		//空値を許可する
+		if ( str.isEmpty() )
+			return null;
+
+		if( !isNumber(str) )
+			return null;
+
+		if( str.length() != 6 )
+		{
+			return null;
+		}
 		return str;
 	}
 
@@ -1344,7 +1374,8 @@ public class JValidate {
 		if ( str.isEmpty() )
 			return str;
 
-		if( str.length() > 3 )
+		// eidt s.inoue 2012/07/04
+		if( str.length() > 3  && !str.equals("9999"))
 			return null;
 
 		if( !isNumber(str) )
@@ -1373,6 +1404,10 @@ public class JValidate {
 	 */
 	public static String validateNote(String str)
 	{
+		// edit s.inoue 2011/03/10
+		if ( str==null )
+			return "";
+
 		//空値を許可する
 		if ( str.isEmpty() )
 			return str;
@@ -1881,6 +1916,38 @@ public class JValidate {
 		return ret;
 	}
 
+	// add s.inoue 2012/07/04
+    public static String validateMetaboHanteiKubunCode(String s)
+    {
+        String s1 = null;
+        if(s.isEmpty())
+            return s;
+        int i = Integer.parseInt(s);
+
+        // eidt s.inoue 2013/05/23
+        if(0 == i){
+        	s1 = "";
+        } else if(0 < i && i <= 4){
+        	s1 = String.valueOf(i);
+        }
+        return s1;
+    }
+    // add s.inoue 2012/07/04
+    public static String validateHokenSidouLevelCode(String s)
+    {
+        String s1 = null;
+        if(s.isEmpty())
+            return s;
+        int i = Integer.parseInt(s);
+        // eidt s.inoue 2013/05/23
+        if(0 == i){
+        	s1 = "";
+        } else if(0 < i && i <= 4){
+        	s1 = String.valueOf(i);
+        }
+        return s1;
+    }
+
 	/*
 	 * 保健指導レベルの検証
 	 * 未判定、積極的支援、動機づけ支援、なし、判定不能の４種類
@@ -1907,8 +1974,27 @@ public class JValidate {
 		return ret;
 	}
 
+	// add s.inoue 2010/10/25
 	/*
-	 * 請求区分の検証
+	 * 請求区分コードの検証
+	 * ０～５の数値のみ一桁
+	 */
+	public static String validateSeikyuKubunCode(String str)
+	{
+		String ret = null;
+
+		if( str.equals("1") ||
+				str.equals("2") ||
+					str.equals("3") ||
+						str.equals("4") ||
+							str.equals("5"))
+			ret = str;
+
+		return ret;
+	}
+
+	/*
+	 * 請求区分コードの検証
 	 * ０～５の数値のみ一桁
 	 */
 	public static String validateSeikyuKubun(String str)

@@ -12,10 +12,10 @@ import java.awt.event.*;
 
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedButton;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedLabel;
-import jp.or.med.orca.jma_tokutei.common.component.IDialog;
 import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettingsKey;
+import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
 
 import javax.swing.BorderFactory;
 import java.awt.GridBagLayout;

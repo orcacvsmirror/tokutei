@@ -84,37 +84,37 @@ public class JSystemMaintenanceFrameCtrl extends JSystemMaintenanceFrame {
 		}
 	}
 
-
-	@Override
-	public void keyPressed(KeyEvent keyEvent) {
-
-		int mod = keyEvent.getModifiersEx();
-		switch(keyEvent.getKeyCode()){
-		case KeyEvent.VK_F1:
-			if ((mod & InputEvent.ALT_DOWN_MASK) != 0){
-				logger.info(jButton_Usability.getText());
-				pushedUsabilityButton(null);break;
-			}
-			logger.info(jButton_End.getText());
-			pushedEndButton(null);
-			break;
-// del s.inoue 2010/04/19
-//		case KeyEvent.VK_F2:
-//			pushedUsabilityButton(null);break;
-//		case KeyEvent.VK_F2:
-//			if ((mod & InputEvent.ALT_DOWN_MASK) != 0){
-//				logger.info(jButton_Maintenance.getText());
-//				pushedMaintenanceButton(null);
-//			}
-//			break;
-//		case KeyEvent.VK_F3:
+// del s.inoue 2012/07/11
+//	@Override
+//	public void keyPressed(KeyEvent keyEvent) {
+//
+//		int mod = keyEvent.getModifiersEx();
+//		switch(keyEvent.getKeyCode()){
+//		case KeyEvent.VK_F1:
 //			if ((mod & InputEvent.ALT_DOWN_MASK) != 0){
 //				logger.info(jButton_Usability.getText());
-//				pushedBackupButton(null);
+//				pushedUsabilityButton(null);break;
 //			}
+//			logger.info(jButton_End.getText());
+//			pushedEndButton(null);
 //			break;
-		}
-	}
+//// del s.inoue 2010/04/19
+////		case KeyEvent.VK_F2:
+////			pushedUsabilityButton(null);break;
+////		case KeyEvent.VK_F2:
+////			if ((mod & InputEvent.ALT_DOWN_MASK) != 0){
+////				logger.info(jButton_Maintenance.getText());
+////				pushedMaintenanceButton(null);
+////			}
+////			break;
+////		case KeyEvent.VK_F3:
+////			if ((mod & InputEvent.ALT_DOWN_MASK) != 0){
+////				logger.info(jButton_Usability.getText());
+////				pushedBackupButton(null);
+////			}
+////			break;
+//		}
+//	}
 }
 
 //Source Code Version Tag System v1.00  -- Do not remove --

@@ -282,7 +282,7 @@ public class JKenshinPatternMaintenanceCopyFrameCtrl extends
 			logger.info(jButton_End.getText());
 			pushedEndButton(e);
 		} else if (e.getSource() == jButton_OK) {
-			logger.info(jButton_OK);
+			logger.info(jButton_OK.getText());
 			pushedOKButton(e);
 		}
 	}

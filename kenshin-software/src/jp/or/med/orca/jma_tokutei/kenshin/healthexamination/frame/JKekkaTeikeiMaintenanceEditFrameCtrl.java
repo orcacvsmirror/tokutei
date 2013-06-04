@@ -13,10 +13,13 @@ import org.apache.log4j.Logger;
 
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
+import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
 import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
+import jp.or.med.orca.jma_tokutei.common.scene.JScene;
 import jp.or.med.orca.jma_tokutei.common.validate.JValidate;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
+import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.JNayoseMaintenanceListFrameCtl.WindowRefreshEvent;
 
 /**
  * 定型文マスタの編集のコントロール
@@ -27,6 +30,8 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 	private static final int CHANGE_MODE = 2;
 
 	private String selectpreCombo ="";
+	// edit s.inoue 2010/05/19
+	private String preInputSyokenNo = "";
 
 	private JKekkaTeikeiMaintenanceEditFrameData validatedData = new JKekkaTeikeiMaintenanceEditFrameData();
 	private int mode;
@@ -42,12 +47,18 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 	/**
 	 * 保険者情報追加の場合のコンストラクタ（遷移元：マスタメンテナンス）
 	 */
-	public JKekkaTeikeiMaintenanceEditFrameCtrl() {
+	public JKekkaTeikeiMaintenanceEditFrameCtrl(String maxShubetuNo) {
 		super();
 		mode = ADD_MODE;
-		// del s.inoue 2009/12/14
-		// this.jTextField_TeikeibunNo.setText(String.valueOf(getNextNumber()));
-		init();
+		init(true);
+
+		// edit s.inoue 2010/05/18
+		jTextField_ShubetuNumber.setText(maxShubetuNo);
+		jTextField_TeikeibunNo.setText("01");
+//		jCombobox_TeikeibunType.setVisible(false);
+
+		// del s.inoue 2010/05/18
+		// initializeComboBox();
 	}
 
 	/**
@@ -56,73 +67,103 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 	public JKekkaTeikeiMaintenanceEditFrameCtrl(String shubetuNo,String syokenNo) {
 		super();
 		mode = CHANGE_MODE;
-		init();
+		init(false);
 
 		// 遷移元フレームから得た定型Noから既存のデータを取得
 		jTextArea_Teikeibun.setText(syokenNo);
+		// edit s.inoue 2010/05/19
+		preInputSyokenNo = syokenNo;
 
-		ArrayList<Hashtable<String, String>> Result = new ArrayList<Hashtable<String, String>>();
+		ArrayList<Hashtable<String, String>> result = new ArrayList<Hashtable<String, String>>();
 		Hashtable<String, String> resultItem = new Hashtable<String, String>();
 
 		StringBuilder buffer = new StringBuilder();
-		buffer.append("SELECT SYOKEN_TYPE,");
-// edit s.inoue 2010/04/26
-//		buffer.append(" case SYOKEN_TYPE ");
-//		buffer.append(" when 1 then 'その他の既往歴' ");
-//		buffer.append(" when 2 then '自覚症状所見' ");
-//		buffer.append(" when 3 then '他覚症状所見' ");
-//		buffer.append(" when 4 then '心電図所見' ");
-//		buffer.append(" end SYOKEN_TYPE_STR, ");
-		buffer.append(" SYOKEN_NO, SYOKEN, UPDATE_TIMESTAMP");
+		buffer.append("SELECT SYOKEN_TYPE,SYOKEN_TYPE_NAME,");
+		buffer.append(" SYOKEN_NO, SYOKEN_NAME, UPDATE_TIMESTAMP");
 		buffer.append(" FROM T_SYOKENMASTER WHERE SYOKEN_TYPE = ");
 		buffer.append(JQueryConvert.queryConvert(shubetuNo));
 		buffer.append(" AND SYOKEN_NO = ");
 		buffer.append(JQueryConvert.queryConvert(syokenNo));
 
 		try {
-			Result = JApplication.kikanDatabase.sendExecuteQuery(buffer.toString());
+			result = JApplication.kikanDatabase.sendExecuteQuery(buffer.toString());
 		} catch (SQLException e) {
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		resultItem = Result.get(0);
+		resultItem = result.get(0);
 
-		// edit s.inoue 2010/04/26
 		selectpreCombo = resultItem.get("SYOKEN_TYPE").toString();
-		setSyokenCombobox(resultItem.get("SYOKEN_TYPE").toString());
+// del s.inoue 2010/05/18
 //		setSyokenCombobox(resultItem.get("SYOKEN_TYPE_STR").toString());
-
+		jTextField_ShubetuNumber.setText(shubetuNo);
 		jTextField_TeikeibunNo.setText(resultItem.get("SYOKEN_NO").trim());
-		jTextArea_Teikeibun.setText(resultItem.get("SYOKEN"));
+		jTextArea_Teikeibun.setText(resultItem.get("SYOKEN_NAME"));
+		// edit s.inoue 2010/05/18
+		jTextField_TeikeibunType.setText(resultItem.get("SYOKEN_TYPE_NAME"));
+//		jCombobox_TeikeibunType.setVisible(false);
+
+		// move s.inoue 2010/05/18
+//		initializeComboBox();
 
 		// del s.inoue 2009/12/15
 		// jTextField_TeikeibunNo.setEditable(false);
 		// jCombobox_TeikeibunType.setEnabled(false);
 	}
 
-	private void setSyokenCombobox(String syokencmb){
-		switch (Integer.valueOf(syokencmb)) {
-		case 1:
-			jCombobox_TeikeibunType.setSelectedIndex(0);
-			break;
-		case 2:
-			jCombobox_TeikeibunType.setSelectedIndex(1);
-			break;
-		case 3:
-			jCombobox_TeikeibunType.setSelectedIndex(2);
-			break;
-		case 4:
-			jCombobox_TeikeibunType.setSelectedIndex(3);
-			break;
-		}
-	}
+//	private void setSyokenCombobox(String syokencmb){
+//		switch (Integer.valueOf(syokencmb)) {
+//		case 1:
+//			jCombobox_TeikeibunType.setSelectedIndex(0);
+//			break;
+//		case 2:
+//			jCombobox_TeikeibunType.setSelectedIndex(1);
+//			break;
+//		case 3:
+//			jCombobox_TeikeibunType.setSelectedIndex(2);
+//			break;
+//		case 4:
+//			jCombobox_TeikeibunType.setSelectedIndex(3);
+//			break;
+//		}
+//	}
 
-	private void initializeComboBox() {
-		// 所見種別設定
-		jCombobox_TeikeibunType.addItem("その他の既往歴");
-		jCombobox_TeikeibunType.addItem("自覚症状所見");
-		jCombobox_TeikeibunType.addItem("他覚症状所見");
-		jCombobox_TeikeibunType.addItem("心電図所見");
-	}
+// edit s.inoue 2010/05/18
+//	private void initializeComboBox() {
+//		// 所見種別設定
+//		jCombobox_TeikeibunType.addItem("その他の既往歴");
+//		jCombobox_TeikeibunType.addItem("自覚症状所見");
+//		jCombobox_TeikeibunType.addItem("他覚症状所見");
+//		jCombobox_TeikeibunType.addItem("心電図所見");
+//	}
+
+//	private void initializeComboBox() {
+//
+//		ArrayList<Hashtable<String, String>> result
+//			= new ArrayList<Hashtable<String, String>>();
+//		Hashtable<String, String> resultItem = new Hashtable<String, String>();
+//
+//		StringBuilder buffer = new StringBuilder();
+//
+//		buffer.append(" SELECT distinct SYOKEN_TYPE, SYOKEN_TYPE_NAME");
+//		buffer.append(" FROM T_SYOKENMASTER");
+//
+//		try {
+//			result = JApplication.kikanDatabase.sendExecuteQuery(buffer.toString());
+//		} catch (SQLException e) {
+//			logger.error(e.getMessage());
+//			e.printStackTrace();
+//		}
+//
+//		for (int i = 0; i < result.size(); i++) {
+//			resultItem = result.get(i);
+//			String selectType = resultItem.get("SYOKEN_TYPE").toString() +
+//			":" + resultItem.get("SYOKEN_TYPE_NAME").toString();
+//
+//			this.jCombobox_TeikeibunType.addItem(selectType);
+//		}
+//
+//	}
 
 	/**
 	 * 印刷時の必須項目をチェックする
@@ -158,16 +199,28 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 	/**
 	 * 初期化
 	 */
-	private void init() {
-		// edit s.inoue 2009/12/14
-		initializeComboBox();
+	private void init(boolean initFlg) {
 
 		this.focusTraversalPolicy = new JFocusTraversalPolicy();
 		this.setFocusTraversalPolicy(this.focusTraversalPolicy);
 
-		this.focusTraversalPolicy.setDefaultComponent(jCombobox_TeikeibunType);
-		this.focusTraversalPolicy.addComponent(jCombobox_TeikeibunType);
-		this.focusTraversalPolicy.addComponent(jTextField_TeikeibunNo);
+		// edit s.inoue 2010/05/18
+		if (initFlg){
+			this.focusTraversalPolicy.setDefaultComponent(jTextField_TeikeibunType);
+			this.focusTraversalPolicy.addComponent(jTextField_TeikeibunType);
+			jTextField_TeikeibunType.setBackground(ViewSettings.getRequiedItemBgColor());
+//			jTextField_ShubetuNumber.setBackground(ViewSettings.getRequiedItemBgColor());
+			jButton_Add.setVisible(false);
+			jTextField_TeikeibunNo.setEditable(false);
+			jTextField_ShubetuNumber.setEditable(false);
+		}else{
+			this.focusTraversalPolicy.setDefaultComponent(jTextField_TeikeibunNo);
+			this.focusTraversalPolicy.addComponent(jTextField_TeikeibunNo);
+			jTextField_ShubetuNumber.setEditable(false);
+			jTextField_TeikeibunType.setEditable(false);
+			jTextField_TeikeibunNo.setBackground(ViewSettings.getRequiedItemBgColor());
+		}
+
 		this.focusTraversalPolicy.addComponent(jTextArea_Teikeibun);
 		this.focusTraversalPolicy.addComponent(jButton_Register);
 		this.focusTraversalPolicy.addComponent(jButton_End);
@@ -178,8 +231,9 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 			comp.addKeyListener(this);
 		}
 
-		jTextArea_Teikeibun.setBackground(ViewSettings.getRequiedItemBgColor());
-
+		// del s.inoue 2010/05/19
+//		jCombobox_TeikeibunType.setBackground(ViewSettings.getRequiedItemBgColor());
+//		jTextField_TeikeibunNo.setBackground(ViewSettings.getRequiedItemBgColor());
 	}
 
 // edit s.inoue 2009/12/14
@@ -229,9 +283,10 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 
 	/* 入力値検証 */
 	private boolean validateData() {
-		String syokenIdx = String.valueOf(jCombobox_TeikeibunType.getSelectedIndex() + 1);
-
-		return validatedData.setTeikeiType(syokenIdx)
+		// edit s.inoue 2010/05/19
+//		String syokenIdx = String.valueOf(jCombobox_TeikeibunType.getSelectedIndex() + 1);
+		return validatedData.setTeikeiType(jTextField_ShubetuNumber.getText())
+				&& validatedData.setTeikeiTypeName(jTextField_TeikeibunType.getText())
 				&& validatedData.setTeikeiNumber(jTextField_TeikeibunNo.getText())
 				&& validatedData.setTeikeibun(jTextArea_Teikeibun.getText());
 	}
@@ -278,9 +333,18 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 				e.printStackTrace();
 				logger.error(e.getMessage());
 			}
-
-			if (count > 0) {
-				existsNumber = true;
+			// edit s.inoue 2010/05/19
+			if (count == 0){
+				mode = ADD_MODE;
+			}else if (count > 0) {
+				// edit s.inoue 2010/05/19
+				if (!preInputSyokenNo.equals(jTextField_TeikeibunNo.getText())){
+					RETURN_VALUE retValue = JErrorMessage.show("M9922", this);
+					if (retValue != RETURN_VALUE.YES) {
+						return;
+					}
+				}
+					existsNumber = true;
 			}
 		}
 
@@ -295,10 +359,11 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 		String curtimeStamp = dateFormat.format(Calendar.getInstance().getTime());
 
 		if (mode == ADD_MODE) {
-			buffer.append("INSERT INTO T_SYOKENMASTER (SYOKEN_TYPE, SYOKEN_NO, SYOKEN, UPDATE_TIMESTAMP) ");
+			buffer.append("INSERT INTO T_SYOKENMASTER (SYOKEN_TYPE, SYOKEN_TYPE_NAME, SYOKEN_NO, SYOKEN_NAME, UPDATE_TIMESTAMP) ");
 
 			buffer.append("VALUES ( "
 							+ JQueryConvert.queryConvertAppendComma(inputTeikeiShubetu)
+							+ JQueryConvert.queryConvertAppendComma(validatedData.getTeikeiTypeName())
 							+ JQueryConvert.queryConvertAppendComma(inputTeikeiNumber)
 							+ JQueryConvert.queryConvertAppendComma(validatedData.getTeikeibun())
 							+ JQueryConvert.queryConvert(curtimeStamp)
@@ -306,15 +371,14 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 		}
 
 		if (mode == CHANGE_MODE) {
-			buffer.append("UPDATE T_SYOKENMASTER SET "
-					+ " SYOKEN_TYPE = "+ JQueryConvert.queryConvertAppendComma(validatedData.getTeikeiType())
-					+ " SYOKEN_NO = "+ JQueryConvert.queryConvertAppendComma(validatedData.getTeikeiNumber())
-					+ " SYOKEN = "+ JQueryConvert.queryConvertAppendComma(validatedData.getTeikeibun())
-					+ " UPDATE_TIMESTAMP = " + JQueryConvert.queryConvert(curtimeStamp)
-					// edit s.inoue 2010/04/26
-					// validatedData.getTeikeiType()
-					+ " WHERE SYOKEN_TYPE = "+ JQueryConvert.queryConvert(selectpreCombo)
-					+ " AND SYOKEN_NO = "+ JQueryConvert.queryConvert(validatedData.getTeikeiNumber()));
+			buffer.append("UPDATE T_SYOKENMASTER SET ");
+			// del s.inoue 2010/05/19
+			// buffer.append(" SYOKEN_TYPE = "+ JQueryConvert.queryConvertAppendComma(validatedData.getTeikeiType()));
+			buffer.append(" SYOKEN_NO = "+ JQueryConvert.queryConvertAppendComma(validatedData.getTeikeiNumber()));
+			buffer.append(" SYOKEN_NAME = "+ JQueryConvert.queryConvertAppendComma(validatedData.getTeikeibun()));
+			buffer.append(" UPDATE_TIMESTAMP = " + JQueryConvert.queryConvert(curtimeStamp));
+			buffer.append(" WHERE SYOKEN_TYPE = "+ JQueryConvert.queryConvert(selectpreCombo));
+			buffer.append(" AND SYOKEN_NO = "+ JQueryConvert.queryConvert(validatedData.getTeikeiNumber()));
 		}
 
 		try {
@@ -340,6 +404,46 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 	}
 
 	/**
+	 * 所見Noの空き番号の取得
+	 */
+	private String getNextSyokenNumber(String shubetuNo) {
+		ArrayList<Hashtable<String, String>> Items;
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("SELECT SYOKEN_NO FROM T_SYOKENMASTER ");
+			sb.append("WHERE SYOKEN_TYPE = ");
+			sb.append(JQueryConvert.queryConvert(shubetuNo));
+			Items = JApplication.kikanDatabase.sendExecuteQuery(sb.toString());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JErrorMessage.show("M9919", this);
+			return null;
+		}
+
+		for (int i = 1; i < Integer.MAX_VALUE; i++) {
+			boolean FindFlag = false;
+
+			for (int j = 0; j < Items.size(); j++) {
+				String strVal = String.valueOf(i);
+				strVal = (strVal.length() == 1)? "0" + strVal: strVal;
+				if (Items.get(j).get("SYOKEN_NO").equals(strVal)) {
+					FindFlag = true;
+				}
+			}
+
+			// trueでなければ空きがあるとする。
+			if (FindFlag == false) {
+				// edit s.inoue 2010/05/19
+				String ret = String.valueOf(i);
+				ret = (ret.length() == 1)?"0" + ret:ret;
+				return ret;
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * 登録ボタンを押した際の必須項目の検証
 	 */
 	protected boolean validateAsRegisterPushed(
@@ -361,10 +465,31 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 	}
 
 	/**
+	 * 追加ボタン
+	 */
+	public void pushedAddButton(ActionEvent e) {
+		jTextField_TeikeibunNo.setText(getNextSyokenNumber(this.jTextField_ShubetuNumber.getText()));
+		jTextArea_Teikeibun.setText("");
+		jTextArea_Teikeibun.grabFocus();
+	}
+
+	/**
 	 * 終了ボタン
 	 */
 	public void pushedEndButton(ActionEvent e) {
 		dispose();
+	}
+
+	/**
+	 * 遷移先の画面から戻ってきた場合
+	 */
+	public class WindowRefreshEvent extends WindowAdapter
+	{
+		public void windowClosed(WindowEvent e)
+		{
+			//テーブルの再読み込みを行う
+			init(false);
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -373,6 +498,11 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 		if (source == jButton_End) {
 			logger.info(jButton_End.getText());
 			pushedEndButton(e);
+		}
+		// edit s.inoue 2010/05/18
+		else if (source == jButton_Add) {
+			logger.info(jButton_Add.getText());
+			pushedAddButton(e);
 		}
 		else if (source == jButton_Register) {
 			logger.info(jButton_Register.getText());
@@ -386,13 +516,14 @@ public class JKekkaTeikeiMaintenanceEditFrameCtrl extends
 		case KeyEvent.VK_F1:
 			logger.info(jButton_End.getText());
 			pushedEndButton(null);break;
+		case KeyEvent.VK_F9:
+			logger.info(jButton_Add.getText());
+			pushedAddButton(null);break;
 		case KeyEvent.VK_F12:
 			logger.info(jButton_Register.getText());
 			pushedRegisterButton(null);break;
 		}
 	}
-
-
 }
 
 // Source Code Version Tag System v1.00 -- Do not remove --

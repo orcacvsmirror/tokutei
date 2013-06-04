@@ -37,8 +37,8 @@ import jp.or.med.orca.jma_tokutei.common.hl7.summary.Summary;
 import jp.or.med.orca.jma_tokutei.common.validate.JValidate;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.convert.JZenkakuKatakanaToHankakuKatakana;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.JOutputGetujiFrameCtrl;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.JOutputGetujiFrameData;
+import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.getuji.JOutputGetujiSearchListFrameData;
 
 public class JOutputHL7 {
 
@@ -111,6 +111,8 @@ public class JOutputHL7 {
 			buffer.append("     SELECT PT2.KOUMOKU_CD ");
 			buffer.append("     FROM T_KENSHIN_P_S AS PT2 ");
 			buffer.append("     WHERE PT2.K_P_NO = '-1' ");
+			// edit s.inoue 2010/09/08
+			buffer.append("		AND KOUMOKU_CD NOT IN('3D010129901926101','3D010129902227101','3D010129901927201','3D010129901999901')");
 			buffer.append(" ) ");
 		}
 
@@ -148,7 +150,9 @@ public class JOutputHL7 {
 	// edit s.inoue 2009/09/18
 	public static boolean RunProcess(
 			Vector<JKessaiProcessData> data,
-			JOutputGetujiFrameData jOutData) {
+			// eidt s.inoue 2011/04/04
+			// JOutputGetujiFrameData jOutData) {
+			JOutputGetujiSearchListFrameData jOutData){
 
 		// 提出先機関ごとのリストを集計情報から作成
 		ArrayList<Hashtable<String, String>> SouhusakiList = null;
@@ -211,7 +215,6 @@ public class JOutputHL7 {
 			JKessaiProcessData processData = null;
 			for (Iterator iter = data.iterator(); iter.hasNext();) {
 				processData = (JKessaiProcessData) iter.next();
-
 				// edit s.inoue 2009/10/20
 				// 優先順位 代行機関があれば種別コード → 1、保険者ならば種別コード → 6
 				// 代行機関が入っている場合は、保険者に設定する事
@@ -368,6 +371,11 @@ public class JOutputHL7 {
 							"HENKAN_NITIJI = " + JQueryConvert.queryConvert(createDate) +
 							" WHERE UKETUKE_ID = " + JQueryConvert.queryConvert(kessaiData.uketukeId) +
 							" AND KENSA_NENGAPI = " + JQueryConvert.queryConvert(kessaiData.KensaDate));
+
+//					// move s.inoue 2012/11/20
+//					// _WKテーブルの削除
+//					deleteWork(kessaiData.uketukeId);
+
 					// edit s.inoue 2009/09/16
 					JApplication.kikanDatabase.Commit();
 				} catch (SQLException e) {
@@ -411,6 +419,43 @@ public class JOutputHL7 {
 		}
 
 		return true;
+	}
+
+	// add s.inoue 2012/11/02
+	/**
+	 * 削除処理を行う
+	 */
+	public static void deleteWork(String uketukeId)
+	{
+		// T_KESAIデータ削除
+		StringBuilder workKesaiQuery = new StringBuilder();
+		try{
+
+			workKesaiQuery.append("DELETE FROM T_KESAI_WK");
+			workKesaiQuery.append(" WHERE UKETUKE_ID = ");
+			workKesaiQuery.append(JQueryConvert.queryConvert(uketukeId));
+
+			JApplication.kikanDatabase.sendNoResultQuery(workKesaiQuery.toString());
+
+		}catch(SQLException err)
+		{
+			logger.error(err.getMessage());
+		}
+
+		// T_KESAI_SYOUSAIデータ削除
+		StringBuilder workSyousaiQuery = new StringBuilder();
+		try{
+
+			workSyousaiQuery.append("DELETE FROM T_KESAI_SYOUSAI_WK");
+			workSyousaiQuery.append(" WHERE UKETUKE_ID = ");
+			workSyousaiQuery.append(JQueryConvert.queryConvert(uketukeId));
+
+			JApplication.kikanDatabase.sendNoResultQuery(workSyousaiQuery.toString());
+
+		}catch(SQLException err)
+		{
+			logger.error(err.getMessage());
+		}
 	}
 
 	/**
@@ -1268,6 +1313,9 @@ public class JOutputHL7 {
 			observation.setInputRangeLowValue(lowValue);
 
 			observation.setCodeDisplayName(item.get("KOUMOKU_NAME"));
+
+			// add s.inoue 2012/09/04
+			observation.setKensanengapi(item.get("KENSA_NENGAPI"));
 
 			int xmlItemSeqNo = -1;
 			try {

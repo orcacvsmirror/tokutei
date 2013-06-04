@@ -1,12 +1,12 @@
 package jp.or.med.orca.jma_tokutei.common.hl7.clinicaldocument;
 
-import jp.or.med.orca.jma_tokutei.common.hl7.ClinicalDocumentWriter;
+//import jp.or.med.orca.jma_tokutei.common.hl7.ClinicalDocumentWriter;
 import jp.or.med.orca.jma_tokutei.common.hl7.common.Utility;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.lowagie.text.ElementTags;
+//import com.lowagie.text.ElementTags;
 
 
 public class ClinicalDocument {

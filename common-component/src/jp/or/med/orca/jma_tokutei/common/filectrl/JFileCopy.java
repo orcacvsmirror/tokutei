@@ -4,6 +4,8 @@ import java.io  .*;
 import java.util.*;
 import java.nio .channels.*;
 
+import jp.or.med.orca.jma_tokutei.common.app.JApplication;
+
 import org.apache.log4j.Logger;
 
 // ----------------------------------------------------------------------------
@@ -32,17 +34,8 @@ public abstract class JFileCopy
 
         FileChannel in  = null;
         FileChannel out = null;
-
-        /* Added 2008/06/13 若月  */
-		/* --------------------------------------------------- */
-		/* コピー先のフォルダを作成する。 */
-        /* edit 2008/08/08 s.inoue フォルダでない場合回避*/
         if (strOut.indexOf("\\") > 0){
-        	/* Modified 2008/09/11 薮  */
-        	/* --------------------------------------------------- */
-//	        String outDirPath = strOut.substring(0, strOut.lastIndexOf("\\"));
 	        String outDirPath = strOut.substring(0, strOut.lastIndexOf(File.separator));
-        	/* --------------------------------------------------- */
 	        File outDir = new File(outDirPath);
 	        if (! outDir.exists()) {
 	        	if (outDir.mkdirs()) {
@@ -50,7 +43,6 @@ public abstract class JFileCopy
 				}
 			}
         }
-        /* --------------------------------------------------- */
 
 		try
 		{

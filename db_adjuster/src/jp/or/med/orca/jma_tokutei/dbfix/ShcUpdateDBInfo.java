@@ -29,7 +29,7 @@ public class ShcUpdateDBInfo {
     Vector<String> dataKikanVersion = new Vector<String>();
     Vector<String> dataZipVersion = new Vector<String>();
 
-    DngAppProperty Props;
+    DngAppProperty Props,ZProps;
 
     public ShcUpdateDBInfo() {
       init();
@@ -126,6 +126,16 @@ public class ShcUpdateDBInfo {
           sqls[i][2] = hash.get("param_query").toString();
           sqls[i][3] = hash.get("data_url").toString();
         }
+        if (hash.containsKey("zip_del_url")) {
+          sqls[i][0] = "zip_delete";
+          sqls[i][2] = "DELETE FROM T_POST WHERE POST_CD = ? AND ADDRESS = ? AND LAST_TIME < ? "; 
+          sqls[i][3] = hash.get("zip_del_url").toString();
+        }
+        if (hash.containsKey("zip_add_url")) {
+          sqls[i][0] = "zip_append";
+          sqls[i][2] = "INSERT INTO T_POST (POST_CD, ADDRESS, LAST_TIME) VALUES (?,?,?)"; 
+          sqls[i][3] = hash.get("zip_add_url").toString();
+        }
       }
       return sqls;
     }
@@ -207,7 +217,7 @@ public class ShcUpdateDBInfo {
       Vector<Hashtable> task = new Vector<Hashtable>();
       for (int i=init; i<dataZipVersion.size(); i++) {
         String ver = dataZipVersion.get(i);
-        Hashtable hash = Props.getHash("root/data/data_zipcode_version_"+ver);
+        Hashtable hash = ZProps.getHash("root/data/data_zipcode_version_"+ver);
         total += hash.size();
         Hashtable<String,String> hash1 = new Hashtable<String,String>();
         hash1.put("VER","zipcode_"+ver);
@@ -235,14 +245,27 @@ public class ShcUpdateDBInfo {
         Matcher m2 = Pattern.compile("^(data_system_version)_(.+)$").matcher(ver[j]);
         Matcher m3 = Pattern.compile("^(schema_kikan_version)_(.+)$").matcher(ver[j]);
         Matcher m4 = Pattern.compile("^(data_kikan_version)_(.+)$").matcher(ver[j]);
-        Matcher m5 = Pattern.compile("^(data_zipcode_version)_(.+)$").matcher(ver[j]);
         String val = null;
         if (m1.find()) schemaSystemVersion.add(m1.group(2));
         else if (m2.find()) dataSystemVersion.add(m2.group(2));
         else if (m3.find()) schemaKikanVersion.add(m3.group(2));
         else if (m4.find()) dataKikanVersion.add(m4.group(2));
-        else if (m5.find()) dataZipVersion.add(m5.group(2));
       }
+      ZProps = new DngAppProperty("work/version/zipcode.xml");
+      hash = ZProps.getHash("root/data");
+      e = hash.keys();
+      ver = new String[hash.size()];
+      i=0;
+      while (e.hasMoreElements()){
+        ver[i++] = e.nextElement().toString();
+      }
+      Arrays.sort(ver);
+      for (int j=0;j<hash.size();j++) {
+        Matcher m5 = Pattern.compile("^(data_zipcode_version)_(.+)$").matcher(ver[j]);
+        String val = null;
+        if (m5.find()) dataZipVersion.add(m5.group(2));
+      }
+
       maxSchemaSystemVersionID =  schemaSystemVersion.size()-1;
       maxDataSystemVersionID =  dataSystemVersion.size()-1;
       maxSchemaKikanVersionID =  schemaKikanVersion.size()-1;

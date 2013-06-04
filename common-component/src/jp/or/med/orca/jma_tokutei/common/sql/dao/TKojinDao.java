@@ -68,5 +68,12 @@ public interface TKojinDao extends Dao {
 	 * @return ó•tID
 	 * @throws SQLException
 	 */
+	long selectNewUketukeId(int diff) throws SQLException;
+
+	/**
+	 * ó•tIDÌ”Ô
+	 * @return ó•tID
+	 * @throws SQLException
+	 */
 	long selectNewUketukeId() throws SQLException;
 }

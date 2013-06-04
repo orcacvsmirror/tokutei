@@ -92,6 +92,25 @@ public class JErrorMessage {
 		return validated;
 	}
 
+	// add s.inoue 2010/10/27
+	public static String getMessageValue(String ID){
+		String retErrMessage = "";
+		try{
+			String right = (String) mProperties.get(ID);
+			if (right == null) {
+				throw new RuntimeException();
+			}
+			String[] values = right.split(",");
+			retErrMessage = values[1];
+		}catch(Exception ex){
+			new JErrorMessageDialogFrameCtrl(null, "エラー",
+					"メッセージの解析に失敗しました。" + "エラーが発生した箇所のメッセージIDは「" + ID
+							+ "」です。", 0, 0, "M0101");
+
+			ex.printStackTrace();
+		}
+		return retErrMessage;
+	}
 	/**
 	 * ダイアログの表示
 	 *

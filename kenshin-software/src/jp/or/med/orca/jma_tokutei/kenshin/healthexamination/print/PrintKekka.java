@@ -30,16 +30,16 @@ import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.app.JPath;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.frame.ProgressWindow;
+import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
+import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
 import jp.or.med.orca.jma_tokutei.common.hl7.common.Utility;
 import jp.or.med.orca.jma_tokutei.common.printer.JTKenshinPrint;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.JSearchResultListFrameCtrl;
+import jp.or.med.orca.jma_tokutei.common.util.FiscalYearUtil;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.AddMedical;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.KenshinKekka;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.KihonKensaKoumoku;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Kikan;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Kojin;
-import jp.or.med.orca.jma_tokutei.common.component.DialogFactory;
-import jp.or.med.orca.jma_tokutei.common.component.IDialog;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.convert.JZenkakuKatakanaToHankakuKatakana;
 
@@ -109,9 +109,10 @@ public class PrintKekka extends JTKenshinPrint {
 	PrinterJob job = PrinterJob.getPrinterJob();
 
 	public File printKekka() {
-		PropertyUtil util = new PropertyUtil(JPath.PATH_FILE_PROPERTIES);
-
-		templatePath = util.getProperty("filePath");
+		// eidt s.inoue 2011/04/12
+		// PropertyUtil util = new PropertyUtil(JPath.PATH_FILE_PROPERTIES);
+		// templatePath = util.getProperty("filePath");
+		templatePath = "./work/PDF/";
 
 		// edit s.inoue 2009/12/25
 		if (this.printSelect == 2){
@@ -156,7 +157,32 @@ public class PrintKekka extends JTKenshinPrint {
 		 * 1page目の特定健康診査受診結果を印刷
 		 * 医師の氏名を取得するため暫定的に起動する。
 		 */
-		create1Page( stamp, KikanData, kojinData, uketukeId, kensaNengapi,0);
+		// move s.inoue 2010/05/11
+		List ketuatuHL_List = new ArrayList();
+		List KetyuHL_List = new ArrayList();
+		List kankinouHL_List = new ArrayList();
+		List KetouHL_List = new ArrayList();
+		List NyoHL_List = new ArrayList();
+		ketuatuHL_List.clear();
+		KetyuHL_List.clear();
+		kankinouHL_List.clear();
+		KetouHL_List.clear();
+		NyoHL_List.clear();
+
+		List ketuatuVal_List = new ArrayList();
+		List KetyuVal_List = new ArrayList();
+		List kankinouVal_List = new ArrayList();
+		List KetouVal_List = new ArrayList();
+		List NyoVal_List = new ArrayList();
+		ketuatuVal_List.clear();
+		KetyuVal_List.clear();
+		kankinouVal_List.clear();
+		KetouVal_List.clear();
+		NyoVal_List.clear();
+
+		create1Page( stamp, KikanData, kojinData, uketukeId, kensaNengapi,0,
+				ketuatuHL_List,KetyuHL_List,kankinouHL_List,KetouHL_List,NyoHL_List,
+				ketuatuVal_List,KetyuVal_List,kankinouVal_List,KetouVal_List,NyoVal_List);
 
 		int jugePdfUnit = 0;//PDFを結合するか判定
 
@@ -181,7 +207,10 @@ public class PrintKekka extends JTKenshinPrint {
 		pdfPathHitokuteiList = printHitokutei.startAddMedical(kensaNenList,kojinData,KikanData,ishiName,printSelect);
 
 		if (printSelect == 2){
-			filePathList.add(create2Page(stamp, KikanData, kojinData, uketukeId, kensaNengapi,pdfPathHitokuteiList.size()+printSelect).get(0));
+			filePathList.add(
+					create2Page(stamp, KikanData, kojinData, uketukeId, kensaNengapi,pdfPathHitokuteiList.size()+printSelect,
+							ketuatuHL_List,KetyuHL_List,kankinouHL_List,KetouHL_List,NyoHL_List,
+							ketuatuVal_List,KetyuVal_List,kankinouVal_List,KetouVal_List,NyoVal_List).get(0));
 		}
 		for (int i = 0; i < pdfPathHitokuteiList.size(); i++) {
 			filePathList.add(pdfPathHitokuteiList.get(i));
@@ -190,7 +219,9 @@ public class PrintKekka extends JTKenshinPrint {
 		/*
 		 * 1page目の特定健康診査受診結果を印刷
 		 */
-		create1Page( stamp, KikanData, kojinData, uketukeId, kensaNengapi,filePathList.size());
+		create1Page( stamp, KikanData, kojinData, uketukeId, kensaNengapi,filePathList.size(),
+				ketuatuHL_List,KetyuHL_List,kankinouHL_List,KetouHL_List,NyoHL_List,
+				ketuatuVal_List,KetyuVal_List,kankinouVal_List,KetouVal_List,NyoVal_List);
 		// ファイル結合
 		unitPdf(jugePdfUnit,filePathList);
 
@@ -292,33 +323,34 @@ public class PrintKekka extends JTKenshinPrint {
 	 * @return
 	 */
 	private List create2Page(PdfStamper stamp, Hashtable<String, String> KikanData,
-			Hashtable<String, String> kojinData,
-			String uketukeId, String kensaNengapi,
-			int maxPage) {
+			Hashtable<String, String> kojinData,String uketukeId, String kensaNengapi,int maxPage,
+			List ketuatuHL_List,List KetyuHL_List,List kankinouHL_List,List KetouHL_List,List NyoHL_List,
+			List ketuatuVal_List,List KetyuVal_List,List kankinouVal_List,List KetouVal_List,List NyoVal_List
+			) {
 
 		Map<String,ArrayList<String>>ResultMap  = new HashMap<String,ArrayList<String>>();
-
-		List ketuatuHL_List = new ArrayList();
-		List KetyuHL_List = new ArrayList();
-		List kankinouHL_List = new ArrayList();
-		List KetouHL_List = new ArrayList();
-		List NyoHL_List = new ArrayList();
-		ketuatuHL_List.clear();
-		KetyuHL_List.clear();
-		kankinouHL_List.clear();
-		KetouHL_List.clear();
-		NyoHL_List.clear();
-
-		List ketuatuVal_List = new ArrayList();
-		List KetyuVal_List = new ArrayList();
-		List kankinouVal_List = new ArrayList();
-		List KetouVal_List = new ArrayList();
-		List NyoVal_List = new ArrayList();
-		ketuatuVal_List.clear();
-		KetyuVal_List.clear();
-		kankinouVal_List.clear();
-		KetouVal_List.clear();
-		NyoVal_List.clear();
+// del s.inoue 2010/05/11
+//		List ketuatuHL_List = new ArrayList();
+//		List KetyuHL_List = new ArrayList();
+//		List kankinouHL_List = new ArrayList();
+//		List KetouHL_List = new ArrayList();
+//		List NyoHL_List = new ArrayList();
+//		ketuatuHL_List.clear();
+//		KetyuHL_List.clear();
+//		kankinouHL_List.clear();
+//		KetouHL_List.clear();
+//		NyoHL_List.clear();
+//
+//		List ketuatuVal_List = new ArrayList();
+//		List KetyuVal_List = new ArrayList();
+//		List kankinouVal_List = new ArrayList();
+//		List KetouVal_List = new ArrayList();
+//		List NyoVal_List = new ArrayList();
+//		ketuatuVal_List.clear();
+//		KetyuVal_List.clear();
+//		kankinouVal_List.clear();
+//		KetouVal_List.clear();
+//		NyoVal_List.clear();
 
 		List pdfPathList = new ArrayList();
 
@@ -427,7 +459,7 @@ public class PrintKekka extends JTKenshinPrint {
 			try {
 				create2PageSetting(form, tmpKenshinKekka,kenshinKekkaData,kensaNengapiAll,dataItemMap,
 						ketuatuHL_List,KetyuHL_List,kankinouHL_List,KetouHL_List,NyoHL_List,
-						ketuatuVal_List,KetyuVal_List,kankinouVal_List,KetouVal_List,NyoVal_List);
+						ketuatuVal_List,KetyuVal_List,kankinouVal_List,KetouVal_List,NyoVal_List,itemCodes);
 			}catch(Exception ex){
 				logger.error(ex.getMessage());
 			}
@@ -804,11 +836,13 @@ public class PrintKekka extends JTKenshinPrint {
 		 * HPLC(不安定分画除去HPLC法） 3D045000001920402 ﾍﾓｸﾞﾛﾋﾞﾝA1c 酵素法
 		 * 3D045000001927102 ﾍﾓｸﾞﾛﾋﾞﾝA1c その他 3D045000001999902
 		 */
+
 		itemCodes.clear();
-		itemCodes.add(PrintDefine.CODE_HBA1C_RATEX);
-		itemCodes.add(PrintDefine.CODE_HBA1C_HPLC);
-		itemCodes.add(PrintDefine.CODE_HBA1C_COUSOHO);
-		itemCodes.add(PrintDefine.CODE_HBA1C_SONOTA);
+		// eidt s.inoue 2013/01/29
+		itemCodes.add(PrintDefine.CODE_HBA1C_RATEX_JDS);
+		itemCodes.add(PrintDefine.CODE_HBA1C_HPLC_JDS);
+		itemCodes.add(PrintDefine.CODE_HBA1C_COUSOHO_JDS);
+		itemCodes.add(PrintDefine.CODE_HBA1C_SONOTA_JDS);
 		forms = new String[][]{
 				/* 基準値 */
 				{ "T263" },
@@ -822,6 +856,27 @@ public class PrintKekka extends JTKenshinPrint {
 		ResultMap=this.setAllToForm(form, itemCodes, tmpKenshinKekka, isMail, forms);
 		KetouHL_List.add(ResultMap.get("HL").get(0));
 		KetouVal_List.add(ResultMap.get("Value").get(0));
+
+		// add s.inoue 2013/01/29
+		itemCodes.clear();
+		itemCodes.add(PrintDefine.CODE_HBA1C_RATEX_NGSP);
+		itemCodes.add(PrintDefine.CODE_HBA1C_HPLC_NGSP);
+		itemCodes.add(PrintDefine.CODE_HBA1C_COUSOHO_NGSP);
+		itemCodes.add(PrintDefine.CODE_HBA1C_SONOTA_NGSP);
+		forms = new String[][]{
+				/* 基準値 */
+				{ "T263" },
+				/* H/L 判定 */
+				{ "T210", "T314", "T354",  },
+				/* 結果値 */
+				// edit ver2 s.inoue 2009/06/22
+				{ "T211", "T333", "T374",  },
+		};
+//		this.setAllToForm(form, itemCodes, tmpKenshinKekka, isMail, forms);
+		ResultMap=this.setAllToForm(form, itemCodes, tmpKenshinKekka, isMail, forms);
+		KetouHL_List.add(ResultMap.get("HL").get(0));
+		KetouVal_List.add(ResultMap.get("Value").get(0));
+
 
 		// 赤血球数
 		itemCodes.clear();
@@ -1101,7 +1156,8 @@ public class PrintKekka extends JTKenshinPrint {
 			List KetyuVal_List,
 			List kankinouVal_List,
 			List KetouVal_List,
-			List NyoVal_List
+			List NyoVal_List,
+			ArrayList<String> itemCodes
 	) throws Exception{
 		//今回、前回、前々回　日付印字
 		try {
@@ -1262,6 +1318,16 @@ public class PrintKekka extends JTKenshinPrint {
 //					form.setField("T252", item.get(PrintDefine.COLUMN_NAME_KEKA_TI));
 				}
 			}
+
+			// add s.inoue 2010/05/11
+			/*
+			 * 既往歴、既往症、自覚症状、他覚症状、喫煙歴
+			 */
+			// 既往歴
+			if (kenshinKekkaData.size() != 0) {
+
+				this.printKiourekiGroup(form, itemCodes, tmpKenshinKekka, dataItemMap);
+			}
 		}
 	}
 
@@ -1278,33 +1344,33 @@ public class PrintKekka extends JTKenshinPrint {
 	 * @return
 	 */
 	private File create1Page(PdfStamper stamp, Hashtable<String, String> KikanData,
-			Hashtable<String, String> kojinData,
-			String uketukeId, String kensaNengapi,
-			int maxPage) {
+			Hashtable<String, String> kojinData,String uketukeId, String kensaNengapi,int maxPage,
+			List ketuatuHL_List,List KetyuHL_List,List kankinouHL_List,List KetouHL_List,List NyoHL_List,
+			List ketuatuVal_List,List KetyuVal_List,List kankinouVal_List,List KetouVal_List,List NyoVal_List) {
 
 		Map<String,ArrayList<String>>ResultMap  = new HashMap<String,ArrayList<String>>();
-
-		List ketuatuHL_List = new ArrayList();
-		List KetyuHL_List = new ArrayList();
-		List kankinouHL_List = new ArrayList();
-		List KetouHL_List = new ArrayList();
-		List NyoHL_List = new ArrayList();
-		ketuatuHL_List.clear();
-		KetyuHL_List.clear();
-		kankinouHL_List.clear();
-		KetouHL_List.clear();
-		NyoHL_List.clear();
-
-		List ketuatuVal_List = new ArrayList();
-		List KetyuVal_List = new ArrayList();
-		List kankinouVal_List = new ArrayList();
-		List KetouVal_List = new ArrayList();
-		List NyoVal_List = new ArrayList();
-		ketuatuVal_List.clear();
-		KetyuVal_List.clear();
-		kankinouVal_List.clear();
-		KetouVal_List.clear();
-		NyoVal_List.clear();
+// move s.inoue 2010/05/11
+//		List ketuatuHL_List = new ArrayList();
+//		List KetyuHL_List = new ArrayList();
+//		List kankinouHL_List = new ArrayList();
+//		List KetouHL_List = new ArrayList();
+//		List NyoHL_List = new ArrayList();
+//		ketuatuHL_List.clear();
+//		KetyuHL_List.clear();
+//		kankinouHL_List.clear();
+//		KetouHL_List.clear();
+//		NyoHL_List.clear();
+//
+//		List ketuatuVal_List = new ArrayList();
+//		List KetyuVal_List = new ArrayList();
+//		List kankinouVal_List = new ArrayList();
+//		List KetouVal_List = new ArrayList();
+//		List NyoVal_List = new ArrayList();
+//		ketuatuVal_List.clear();
+//		KetyuVal_List.clear();
+//		kankinouVal_List.clear();
+//		KetouVal_List.clear();
+//		NyoVal_List.clear();
 
 		try {
 			if (KikanData == null) {
@@ -1376,6 +1442,14 @@ public class PrintKekka extends JTKenshinPrint {
 			String maxSt = Integer.toString(maxP+1);
 			form.setField("PAGE_NUM", "（1／"+maxSt+"）");
 
+			// add s.inoue 2012/09/10
+			// String comment = "※ヘモグロビンA1c検査の結果値はNGSP法による検査結果値が記載されていますが、☆が併記されているものは、JDS法による検査結果値のため基準値が異なります．（JDS法基準値3.9～5.2）";
+			String comment = "※ヘモグロビンA1c検査の結果値はNGSP値による検査結果値が記載されていますが、☆が併記されているものは、JDS値による検査結果値のため基準値が異なります．";
+			form.setField("txt_HbA1c_Comment", comment);
+
+			// add s.inoue 2013/03/18
+			form.setField("txt_HbA1c_Comment_2", "6.0");
+
 			/* 機関情報を出力する。 */
 			this.printKikanData(KikanData, form);
 
@@ -1416,7 +1490,7 @@ public class PrintKekka extends JTKenshinPrint {
 			try {
 				create2PageSetting(form, tmpKenshinKekka,kenshinKekkaData,kensaNengapiAll,dataItemMap,
 						ketuatuHL_List,KetyuHL_List,kankinouHL_List,KetouHL_List,NyoHL_List,
-						ketuatuVal_List,KetyuVal_List,kankinouVal_List,KetouVal_List,NyoVal_List);
+						ketuatuVal_List,KetyuVal_List,kankinouVal_List,KetouVal_List,NyoVal_List,itemCodes);
 			}catch(Exception ex){
 				logger.error(ex.getMessage());
 			}
@@ -1460,7 +1534,6 @@ public class PrintKekka extends JTKenshinPrint {
 			strValues = strValues + ijyo+JApplication.LINE_SEPARATOR;
 
 		//異常なし
-//		}else if(!val_List.containsAll(valContein)){
 		}else if(!isValue(val_List)){
 			strValues = strValues + seijo+JApplication.LINE_SEPARATOR;
 		}else{
@@ -2486,10 +2559,11 @@ public class PrintKekka extends JTKenshinPrint {
 
 		/* Modified 2008/06/16 若月 画面端に印字しないようにするため、
 		 * 1 個のフォームに住所、地番方書を出力する。 */
-		String jusyoAll = KikanData.get("ADR") + KikanData.get("TIBAN");
-
+		// String jusyoAll = KikanData.get("ADR") + KikanData.get("TIBAN");
 		/* 住所 + 地番方書 */
-		form.setField("T225", jusyoAll);
+		// form.setField("T225", jusyoAll);
+		form.setField("T225", KikanData.get("ADR"));
+		form.setField("T228", KikanData.get("TIBAN"));
 		/* --------------------------------------------------- */
 
 		// 電話番号
@@ -2584,10 +2658,16 @@ public class PrintKekka extends JTKenshinPrint {
 		String kagen = "";
 		String jyogen = "";
 
+		// eidt s.inoue 2011/09/13
+		// 0→3を3→0へ修正
 		for (int i = 0; i < 3; i++) {
+		// for (int i = 2; i >= 0; i--) {
+
 			/*
 			 * 結果値
 			 */
+			String strOld = "";
+
 			Hashtable<String,String> kekkaData= null;
 
 			kekkaData = tmpKenshinKekka.getKekkData(codes, i, isMale);
@@ -2603,7 +2683,33 @@ public class PrintKekka extends JTKenshinPrint {
 			jyogen = kekkaData.get("JYOGEN");
 
 			if (!kekati.equals("")){
-				form.setField(forms[2][i], kekati.replaceFirst("\\d+:", ""));
+				// edit s.inoue 2013/01/28
+				int tDate = 20130401;
+				String sDate = tmpKenshinKekka.getKensaNengapi()[i];
+
+				// 健診実施日が'130401以降
+				if (sDate != null){
+					sDate = sDate.replace("年", "").replace("月", "").replace("日", "");
+//					if (tDate <= Integer.parseInt(sDate)){
+//						PrintDefine.CODE_HBA1C_SONOTA = PrintDefine.CODE_HBA1C_SONOTA_NGSP;
+//						PrintDefine.CODE_HBA1C_COUSOHO = PrintDefine.CODE_HBA1C_COUSOHO_NGSP;
+//						PrintDefine.CODE_HBA1C_HPLC = PrintDefine.CODE_HBA1C_HPLC_NGSP;
+//						PrintDefine.CODE_HBA1C_RATEX = PrintDefine.CODE_HBA1C_RATEX_NGSP;
+//					}
+
+					if ((codes.contains(PrintDefine.CODE_HBA1C_RATEX_JDS)
+						||codes.contains(PrintDefine.CODE_HBA1C_HPLC_JDS)
+						||codes.contains(PrintDefine.CODE_HBA1C_COUSOHO_JDS)
+						||codes.contains(PrintDefine.CODE_HBA1C_SONOTA_JDS))&&
+					(PrintDefine.CODE_HBA1C_RATEX.equals(PrintDefine.CODE_HBA1C_RATEX_JDS)
+					|| PrintDefine.CODE_HBA1C_HPLC.equals(PrintDefine.CODE_HBA1C_HPLC_JDS)
+					|| PrintDefine.CODE_HBA1C_COUSOHO.equals(PrintDefine.CODE_HBA1C_COUSOHO_JDS)
+					|| PrintDefine.CODE_HBA1C_SONOTA.equals(PrintDefine.CODE_HBA1C_SONOTA_JDS)))
+						strOld = " ☆";
+				}
+
+				// eidt s.inoue 2012/09/10
+				form.setField(forms[2][i], kekati.replaceFirst("\\d+:", "")+ strOld);
 			}
 
 			boolean existJougen = false;
@@ -2685,8 +2791,13 @@ public class PrintKekka extends JTKenshinPrint {
 			// edit s.inoue 20080904
 			//戻り値の二つ目にH/L追加
 			rtnResultH_L.add(hl);
+
+			// eidt s.inoue 2011/09/13 0番目(今回)のみへ変更
+			if ( i == 0)
+			rtnResultKekkaTi.add(kekati);
 		}
-		rtnResultKekkaTi.add(kekati);
+		// move s.inoue 2011/09/13
+//		rtnResultKekkaTi.add(kekati);
 
 		rtnResultMap.put("HL", rtnResultH_L);
 		rtnResultMap.put("Value", rtnResultKekkaTi);

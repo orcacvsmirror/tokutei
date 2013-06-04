@@ -45,7 +45,7 @@ public class JZenkakuKatakanaToHankakuKatakana
 		"¯"," "
 	};
 	// add start 20080903 s.inoue
-	//	 ”¼Šp©¨‘SŠp•ÏŠ·ƒe[ƒuƒ‹ 
+	//	 ”¼Šp©¨‘SŠp•ÏŠ·ƒe[ƒuƒ‹
 	private static String eisukigoHanZenTbl[][] =         {
 	 {"!","I"},{"\"","h"},{"#","”"},{"$",""},{"%","“"},
 	{"&","•"},{"'","f"},{"(","i"},{")","j"},{"*","–"} ,
@@ -53,7 +53,7 @@ public class JZenkakuKatakanaToHankakuKatakana
 	{":","F"},{";","G"},{">","„"},{"=",""},{"<","ƒ"},
 	{"?","H"},{"@","—"},{"[","m"},{"\\",""},{"]","n"},
 	{"^","O"},{"_","Q"},{"`","e"},{"{","o"},{"|","b"},
-	{"}","p"},{"~","`"}            ,{"1","‚P"},{"2","‚Q"},{"3","‚R"},{"4","‚S"},{"5","‚T"},
+	{"}","p"},{"~","`"},{",","A"},{"1","‚P"},{"2","‚Q"},{"3","‚R"},{"4","‚S"},{"5","‚T"},
 	{"6","‚U"},{"7","‚V"},{"8","‚W"},{"9","‚X"},{"0","‚O"},{"A","‚`"},{"B","‚a"},{"C","‚b"},{"D","‚c"},{"E","‚d"},
 	{"F","‚e"},{"G","‚f"},{"H","‚g"},{"I","‚h"},{"J","‚i"},{"K","‚j"},{"L","‚k"},{"M","‚l"},{"N","‚m"},{"O","‚n"},
 	{"P","‚o"},{"Q","‚p"},{"R","‚q"},{"S","‚r"},{"T","‚s"},{"U","‚t"},{"V","‚u"},{"W","‚v"},{"X","‚w"},{"Y","‚x"},
@@ -63,19 +63,57 @@ public class JZenkakuKatakanaToHankakuKatakana
 	{"p","‚"},{"q","‚‘"},{"r","‚’"},{"s","‚“"},{"t","‚”"},
 	{"u","‚•"},{"v","‚–"},{"w","‚—"},{"x","‚˜"},{"y","‚™"},{"z","‚š"},{"I","‡T"}
 	};
-	
+
+//	// ‘SŠp‚©‚Ç‚¤‚©
+//	public static String isZenkakuKatakana(String zenkaku){
+//		String retstr = "";
+//		for (int i = 0; i < Zenkaku.length; i++) {
+//			if (zenkaku.equals(Zenkaku[i]))
+//				retstr = String.valueOf(Zenkaku[i]);
+//		}
+//		return retstr;
+//	}
+//	// ”¼Šp‚©‚Ç‚¤‚©
+//	public static String isHankakuKatakana(String hankaku){
+//		String retstr = "";
+//		for (int i = 0; i < Hankaku.length; i++) {
+//			if (hankaku.equals(Hankaku[i]))
+//				retstr = String.valueOf(Hankaku[i]);
+//		}
+//		return retstr;
+//	}
+
+	/**
+	* ‘SŠp•¶Žšƒ`ƒFƒbƒN
+	* @param sBuf
+	* @return boolean
+	*/
+	public static boolean isWideChar(String sBuf){
+
+		int iLen;
+		byte[] byteLen;
+		iLen = sBuf.length(); //•¶Žš’·Žæ“¾
+		byteLen = sBuf.getBytes(); //ƒoƒCƒg”Žæ“¾
+
+		//•¶Žš”‚Ì‚Q”{ƒoƒCƒg”@‚Ü‚½‚Í@‹ó•¶Žš
+		if ((iLen * 2) != byteLen.length || sBuf.length() == 0){
+			return false;
+		}
+		return true;
+	}
+
 	public static String Convert(String str)
 	{
 		String OutputString = "";
-		
+
 		for(int i = 0 ; i < str.length() ; i++)
 		{
 			OutputString += GetHankakuKatakana(str.charAt(i));
 		}
-		
+
 		return OutputString;
 	}
-	
+
 	private static String GetHankakuKatakana(char c)
 	{
 		for(int j = 0 ; j < Zenkaku.length ; j++)
@@ -85,19 +123,19 @@ public class JZenkakuKatakanaToHankakuKatakana
 				return Hankaku[j];
 			}
 		}
-		
+
 		return String.valueOf(c);
 	}
-	
+
 
 	/*** ”¼Šp‰p”‹L†‚ð‘SŠp‰p”‹L†‚É•ÏŠ·‚·‚é
 	* @param   String str  •¶Žš—ñ
 	* @return  String •ÏŠ·Œã‚Ì•¶Žš—ñ
-	*/ 
+	*/
 	public static String eisukigoHanToZen(String str) {
 		String zenstr = "";
 		String chkstr = "";
-		
+
 		// str‚ð1•¶Žš‚Ã‚Â eisukigouHanZenTbl‚ÆÆ‚ç‚µ‡‚í‚¹‚Ä•ÏŠ·‚·‚é
 		for (int i = 0; i < str.length(); i++) {
 		   chkstr = str.substring(i, i+1);
@@ -111,13 +149,13 @@ public class JZenkakuKatakanaToHankakuKatakana
 		}
 		return zenstr;
 	}
-	
+
 	/*** ‘SŠp‰p”‹L†‚ð”¼Šp‰p”‹L†‚É•ÏŠ·‚·‚é
 	* @param   String str  •¶Žš—ñ
 	* @return  String •ÏŠ·Œã‚Ì•¶Žš—ñ
 	*/
 	public static String eisukigoZenToHan(String str) {
-		String hanstr = "";        
+		String hanstr = "";
 		String chkstr = "";
 		// str‚ð1•¶Žš‚Ã‚Â eisukigouHanZenTbl‚ÆÆ‚ç‚µ‡‚í‚¹‚Ä•ÏŠ·‚·‚é
 		for (int i = 0; i < str.length(); i++) {

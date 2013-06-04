@@ -17,12 +17,14 @@ import java.util.Iterator;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.app.JPath;
+import jp.or.med.orca.jma_tokutei.common.component.ExtendedLabel;
 import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.filectrl.JFile;
 import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
 import jp.or.med.orca.jma_tokutei.common.orca.JORCASetting;
+import jp.or.med.orca.jma_tokutei.common.orca.JOrcaInfoSearchCtl;
 import jp.or.med.orca.jma_tokutei.common.sql.*;
 import jp.or.med.orca.jma_tokutei.common.validate.JValidate;
 
@@ -34,59 +36,69 @@ public class JAddKikanInformationFrameCtrl extends JAddKikanInformationFrame {
 	/* フォーカス移動制御 */
 	private JFocusTraversalPolicy focusTraversalPolicy = null;
 	private static Logger logger = Logger.getLogger(JAddKikanInformationFrameCtrl.class);
+	protected JAddKikanInformationFrameData validatedData = new JAddKikanInformationFrameData();
+	private ArrayList<JTextField> inputFields = null;
 
-	/* 必須項目のコンポーネント */
-	private JComponent[] requiredComponents = new JComponent[]{
-			jTextField_kikanNumber,
-			jTextField_kikanName,
-			jTextField_souhumotoNumber,
-			jTextField_zip,
-			jTextField_address,
-//			jTextField_address2,
-			jTextField_tel,
-
+// eidt s.inoue 2012/07/05
+//	/* 必須項目のコンポーネント */
+//	private JComponent[] requiredComponents = new JComponent[]{
+//			jTextField_kikanNumber,
+//			jTextField_kikanName,
+//			jTextField_souhumotoNumber,
+//			jTextField_zip,
+//			jTextField_address,
+////			jTextField_address2,
+//			jTextField_tel,
+//
+////			jTextField_ip,
+////			jTextField_portNumber,
+////			jTextField_databaseName,
+////			jTextField_protocol,
+////			jTextField_dbUserId,
+////			jTextField_dbPassword,
+////			jTextField_nichireseUserId,
+////			jTextField_nichiresePassword,
+////			jTextField_encoding,
+//	};
+//
+//	/* 日レセのコンポーネント */
+//	private JComponent[] nichireseComponents = new JComponent[]{
+//            jTextField_ip, jTextField_portNumber, jTextField_nichireseUserId,
+//            jTextField_nichiresePassword, jRadioButton_Yes1, jRadioButton_No1,
+//            jTextField_orcaIdDigit
+//    };
+//
+//	/* 日レセのコンポーネントで必須のもの */
+//	private JComponent[] nichireseRequiredComponents = new JComponent[]{
 //			jTextField_ip,
 //			jTextField_portNumber,
 //			jTextField_databaseName,
 //			jTextField_protocol,
 //			jTextField_dbUserId,
-//			jTextField_dbPassword,
+////			jTextField_dbPassword,
 //			jTextField_nichireseUserId,
-//			jTextField_nichiresePassword,
+////			jTextField_nichiresePassword,
 //			jTextField_encoding,
-	};
+//	};
 
-	/* 日レセのコンポーネント */
-	private JComponent[] nichireseComponents = new JComponent[]{
-			jTextField_ip,
-			jTextField_portNumber,
-			jTextField_databaseName,
-			jTextField_protocol,
-			jTextField_dbUserId,
-			jTextField_dbPassword,
-			jTextField_nichireseUserId,
-			jTextField_nichiresePassword,
-			jTextField_encoding,
-			this.jRadioButton_Yes1,
-			this.jRadioButton_No1,
-			this.jTextField_orcaIdDigit,
-	};
+	/* 必須項目のコンポーネント */
+	private JComponent[] requiredComponents = new JComponent[] {
+            jTextField_kikanNumber, jTextField_kikanName,
+            jTextField_souhumotoNumber, jTextField_zip,
+            jTextField_address, jTextField_tel
+    };
+    /* 日レセのコンポーネント */
+    private JComponent[] nichireseComponents = new JComponent[] {
+            jTextField_ip, jTextField_portNumber,
+            jTextField_nichireseUserId, jTextField_nichiresePassword,
+            jRadioButton_Yes1, jRadioButton_No1, jTextField_orcaIdDigit
+    };
+    /* 日レセのコンポーネントで必須のもの */
+    private JComponent[] nichireseRequiredComponents = new JComponent[] {
+            jTextField_ip, jTextField_portNumber,
+            jTextField_nichireseUserId, jTextField_nichiresePassword
+    };
 
-	/* 日レセのコンポーネントで必須のもの */
-	private JComponent[] nichireseRequiredComponents = new JComponent[]{
-			jTextField_ip,
-			jTextField_portNumber,
-			jTextField_databaseName,
-			jTextField_protocol,
-			jTextField_dbUserId,
-//			jTextField_dbPassword,
-			jTextField_nichireseUserId,
-//			jTextField_nichiresePassword,
-			jTextField_encoding,
-	};
-
-	protected JAddKikanInformationFrameData validatedData = new JAddKikanInformationFrameData();
-	private ArrayList<JTextField> inputFields = null;
 
 	/**
 	 * @param SystemDatabase
@@ -96,24 +108,24 @@ public class JAddKikanInformationFrameCtrl extends JAddKikanInformationFrame {
 	public JAddKikanInformationFrameCtrl(JConnection SystemDatabase,boolean addFlg) {
 		super();
 		this.systemDatabase = SystemDatabase;
-
-		this.inputFields = new ArrayList<JTextField>();
-		inputFields.add(this.jTextField_kikanNumber);
-		inputFields.add(this.jTextField_souhumotoNumber);
-		inputFields.add(this.jTextField_kikanName);
-		inputFields.add(this.jTextField_zip);
-		inputFields.add(this.jTextField_address);
-		inputFields.add(this.jTextField_address2);
-		inputFields.add(this.jTextField_tel);
-		inputFields.add(this.jTextField_ip);
-		inputFields.add(this.jTextField_portNumber);
-		inputFields.add(this.jTextField_databaseName);
-		inputFields.add(this.jTextField_protocol);
-		inputFields.add(this.jTextField_dbUserId);
-		inputFields.add(this.jTextField_dbPassword);
-		inputFields.add(this.jTextField_nichireseUserId);
-		inputFields.add(this.jTextField_nichiresePassword);
-		inputFields.add(this.jTextField_encoding);
+// del s.inoue 2012/07/05
+//		this.inputFields = new ArrayList<JTextField>();
+//		inputFields.add(this.jTextField_kikanNumber);
+//		inputFields.add(this.jTextField_souhumotoNumber);
+//		inputFields.add(this.jTextField_kikanName);
+//		inputFields.add(this.jTextField_zip);
+//		inputFields.add(this.jTextField_address);
+//		inputFields.add(this.jTextField_address2);
+//		inputFields.add(this.jTextField_tel);
+//		inputFields.add(this.jTextField_ip);
+//		inputFields.add(this.jTextField_portNumber);
+//		inputFields.add(this.jTextField_databaseName);
+//		inputFields.add(this.jTextField_protocol);
+//		inputFields.add(this.jTextField_dbUserId);
+//		inputFields.add(this.jTextField_dbPassword);
+//		inputFields.add(this.jTextField_nichireseUserId);
+//		inputFields.add(this.jTextField_nichiresePassword);
+//		inputFields.add(this.jTextField_encoding);
 
 		jRadioButton_No.setSelected(true);
 		jRadioButton_No1.setSelected(true);
@@ -132,97 +144,169 @@ public class JAddKikanInformationFrameCtrl extends JAddKikanInformationFrame {
 			}
 		});
 
-		// edit s.inoue 2009/09/30
-		// フォーカス制御
-		this.focusTraversalPolicy = new JFocusTraversalPolicy();
-		this.setFocusTraversalPolicy(this.focusTraversalPolicy);
-		// add or edit
-		if (addFlg) {
-			this.focusTraversalPolicy.setDefaultComponent(jTextField_kikanNumber);
-		}else{
-			this.focusTraversalPolicy.setDefaultComponent(jTextField_souhumotoNumber);
-		}
+		// eidt s.inoue 2012/07/05
+        if(addFlg)
+        {
+            jTextField_kikanNumber.grabFocus();
+            jLabel_kikanNumber.setForeground(ViewSettings.getRequiedItemFrColor());
+        } else
+        {
+            jTextField_souhumotoNumber.grabFocus();
+        }
+        // eidt s.inoue 2012/11/19
+        jLabel_souhumotoNumber.setForeground(ViewSettings.getRequiedItemFrColor());
+    	jLabel_name.setForeground(ViewSettings.getRequiedItemFrColor());
+    	jLabel_address.setForeground(ViewSettings.getRequiedItemFrColor());
+    	jLabel_zip.setForeground(ViewSettings.getRequiedItemFrColor());
+//    	jLabel_address2.setForeground(ViewSettings.getRequiedItemFrColor());
+    	jLabel_tel.setForeground(ViewSettings.getRequiedItemFrColor());
 
-		this.focusTraversalPolicy.addComponent(jTextField_kikanNumber);
-		this.focusTraversalPolicy.addComponent(jTextField_souhumotoNumber);
-		this.focusTraversalPolicy.addComponent(jTextField_kikanName);
-		this.focusTraversalPolicy.addComponent(jTextField_zip);
-		this.focusTraversalPolicy.addComponent(jTextField_address);
-		this.focusTraversalPolicy.addComponent(jTextField_address2);
-		this.focusTraversalPolicy.addComponent(jTextField_tel);
-		this.focusTraversalPolicy.addComponent(jRadioButton_Yes);
-		this.focusTraversalPolicy.addComponent(jRadioButton_No);
-		this.focusTraversalPolicy.addComponent(jTextField_ip);
-		this.focusTraversalPolicy.addComponent(jTextField_portNumber);
-		this.focusTraversalPolicy.addComponent(jTextField_databaseName);
-		this.focusTraversalPolicy.addComponent(jTextField_protocol);
-		this.focusTraversalPolicy.addComponent(jTextField_dbUserId);
-		this.focusTraversalPolicy.addComponent(jTextField_dbPassword);
-		this.focusTraversalPolicy.addComponent(jTextField_nichireseUserId);
-		this.focusTraversalPolicy.addComponent(jTextField_nichiresePassword );
-		this.focusTraversalPolicy.addComponent(jTextField_encoding);
-		this.focusTraversalPolicy.addComponent(jRadioButton_Yes1);
-		this.focusTraversalPolicy.addComponent(jRadioButton_No1);
-		this.focusTraversalPolicy.addComponent(jTextField_orcaIdDigit);
-		this.focusTraversalPolicy.addComponent(jButton_ConnectionTest);
-		this.focusTraversalPolicy.addComponent(jButton_Register);
-		this.focusTraversalPolicy.addComponent(jButton_End);
+// del s.inoue 2012/07/10
+//		// add s.inoue 2012/07/09
+//		jButton_ConnectionTest.addKeyListener(new KeyListener() {
+//			@Override
+//			public void keyTyped(KeyEvent e) {}
+//			@Override
+//			public void keyReleased(KeyEvent e) {}
+//			@Override
+//			public void keyPressed(KeyEvent e) {
+//				logger.info(jButton_ConnectionTest.getText());
+//
+//					// eidt s.inoue 2012/07/09
+//				if (KeyEvent.VK_ENTER != e.getKeyCode()) return;
+//					int mod = e.getModifiersEx();
+//					  if ((mod & InputEvent.SHIFT_DOWN_MASK) != 0){
+//					    jTextField_orcaIdDigit.grabFocus();
+//					  }else{
+//							pushedConnectionTestButton();
+//					  }
+//				}
+//		});
 
-		// add s.inoue 2009/12/03
-		for (int i = 0; i < focusTraversalPolicy.getComponentSize(); i++) {
-			Component comp = focusTraversalPolicy.getComponent(i);
-			comp.addKeyListener(this);
-		}
+//		// edit s.inoue 2009/09/30
+//		// フォーカス制御
+//		this.focusTraversalPolicy = new JFocusTraversalPolicy();
+//		this.setFocusTraversalPolicy(this.focusTraversalPolicy);
+//		// add or edit
+//		if (addFlg) {
+//			this.focusTraversalPolicy.setDefaultComponent(jTextField_kikanNumber);
+//		}else{
+//			this.focusTraversalPolicy.setDefaultComponent(jTextField_souhumotoNumber);
+//		}
 
-		Color requiedItemColor = ViewSettings.getRequiedItemBgColor();
-		jLabel_requiredExample.setBackground(requiedItemColor);
+//		this.focusTraversalPolicy.addComponent(jTextField_kikanNumber);
+//		this.focusTraversalPolicy.addComponent(jTextField_souhumotoNumber);
+//		this.focusTraversalPolicy.addComponent(jTextField_kikanName);
+//		this.focusTraversalPolicy.addComponent(jTextField_zip);
+//		this.focusTraversalPolicy.addComponent(jTextField_address);
+//		this.focusTraversalPolicy.addComponent(jTextField_address2);
+//		this.focusTraversalPolicy.addComponent(jTextField_tel);
+//		this.focusTraversalPolicy.addComponent(jRadioButton_Yes);
+//		this.focusTraversalPolicy.addComponent(jRadioButton_No);
+//		this.focusTraversalPolicy.addComponent(jTextField_ip);
+//		this.focusTraversalPolicy.addComponent(jTextField_portNumber);
+////		this.focusTraversalPolicy.addComponent(jTextField_databaseName);
+////		this.focusTraversalPolicy.addComponent(jTextField_protocol);
+////		this.focusTraversalPolicy.addComponent(jTextField_dbUserId);
+////		this.focusTraversalPolicy.addComponent(jTextField_dbPassword);
+//		this.focusTraversalPolicy.addComponent(jTextField_nichireseUserId);
+//		this.focusTraversalPolicy.addComponent(jTextField_nichiresePassword );
+//		this.focusTraversalPolicy.addComponent(jTextField_encoding);
+//		this.focusTraversalPolicy.addComponent(jRadioButton_Yes1);
+//		this.focusTraversalPolicy.addComponent(jRadioButton_No1);
+//		this.focusTraversalPolicy.addComponent(jTextField_orcaIdDigit);
+//		this.focusTraversalPolicy.addComponent(jButton_ConnectionTest);
+//		this.focusTraversalPolicy.addComponent(jButton_Register);
+//		this.focusTraversalPolicy.addComponent(jButton_End);
 
-		for (int i = 0; i < requiredComponents.length; i++) {
-			requiredComponents[i].setBackground(requiedItemColor);
-		}
+//		// add s.inoue 2009/12/03
+//		for (int i = 0; i < focusTraversalPolicy.getComponentSize(); i++) {
+//			Component comp = focusTraversalPolicy.getComponent(i);
+//			comp.addKeyListener(this);
+//		}
+
+//		Color requiedItemColor = ViewSettings.getRequiedItemBgColor();
+//		jLabel_requiredExample.setBackground(requiedItemColor);
+//
+//		for (int i = 0; i < requiredComponents.length; i++) {
+//			requiredComponents[i].setBackground(requiedItemColor);
+//		}
 	}
 
+// eidt s.inoue 2012/07/05
+//	protected boolean validateAsRegisterPushed(
+//			JAddKikanInformationFrameData data) {
+//		boolean useORCA = false;
+//		if (jRadioButton_Yes.isSelected() == true) {
+//			useORCA = true;
+//		}
+//
+//		if (data.getKikanNumber().isEmpty() || data.getKikanName().isEmpty()
+//				|| data.getZipcode().isEmpty() || data.getAddress().isEmpty()
+//				|| data.getTel().isEmpty() || data.getORCA().isEmpty()) {
+//			JErrorMessage.show(
+//					"M9603", this);
+//			return false;
+//		}
+//
+//		// ORCAを使用するときの項目チェック
+//		if (useORCA == true) {
+//					// eidt s.inoue 2012/07/05
+//			if (	// data.getORCADatabase().isEmpty()
+//					// || data.getORCAEncode().isEmpty()
+//					data.getORCAIpAddress().isEmpty()
+//					||
+//
+//					data.getORCAPort().isEmpty()
+//					// eidt s.inoue 2012/07/05
+//					// || data.getORCAProtocol().isEmpty()
+//					|| data.getORCAUser().isEmpty()
+//
+//					|| ( data.isUseOrcaIdDigit() && (
+//							data.getOrcaIdDigit() == null || data.getOrcaIdDigit().isEmpty()) )
+//
+//			) {
+//				JErrorMessage
+//						.show("M9604", this);
+//				return false;
+//			}
+//		}
+//
+//		data.setValidateAsDataSet();
+//		return true;
+//	}
 	/**
 	 * 登録ボタンを押した際の必須項目の検証
 	 */
-	protected boolean validateAsRegisterPushed(
-			JAddKikanInformationFrameData data) {
-		boolean useORCA = false;
-		if (jRadioButton_Yes.isSelected() == true) {
-			useORCA = true;
-		}
-
-		if (data.getKikanNumber().isEmpty() || data.getKikanName().isEmpty()
-				|| data.getZipcode().isEmpty() || data.getAddress().isEmpty()
-				|| data.getTel().isEmpty() || data.getORCA().isEmpty()) {
-			JErrorMessage.show(
-					"M9603", this);
-			return false;
-		}
-
-		// ORCAを使用するときの項目チェック
-		if (useORCA == true) {
-			if (data.getORCADatabase().isEmpty()
-					|| data.getORCAEncode().isEmpty()
-					|| data.getORCAIpAddress().isEmpty()
-					||
-
-					data.getORCAPort().isEmpty()
-					|| data.getORCAProtocol().isEmpty()
-					|| data.getORCAUser().isEmpty()
-
-					|| ( data.isUseOrcaIdDigit() && (
-							data.getOrcaIdDigit() == null || data.getOrcaIdDigit().isEmpty()) )
-
-			) {
-				JErrorMessage
-						.show("M9604", this);
-				return false;
-			}
-		}
-
-		data.setValidateAsDataSet();
-		return true;
+	protected boolean validateAsRegisterPushed(JAddKikanInformationFrameData jaddkikaninformationframedata)
+	{
+        boolean flag = false;
+        if(jRadioButton_Yes.isSelected())
+            flag = true;
+        if(jaddkikaninformationframedata.getKikanNumber().isEmpty()
+        		|| jaddkikaninformationframedata.getKikanName().isEmpty()
+        		|| jaddkikaninformationframedata.getZipcode().isEmpty()
+        		|| jaddkikaninformationframedata.getAddress().isEmpty()
+        		|| jaddkikaninformationframedata.getTel().isEmpty()
+        		|| jaddkikaninformationframedata.getORCA().isEmpty())
+        {
+            JErrorMessage.show("M9603", this);
+            return false;
+        }
+        if(flag && (jaddkikaninformationframedata.getORCAIpAddress().isEmpty()
+        		|| jaddkikaninformationframedata.getORCAPort().isEmpty()
+        		|| jaddkikaninformationframedata.getORCANichireseUser().isEmpty()
+        		|| jaddkikaninformationframedata.isUseOrcaIdDigit()
+        		&& (jaddkikaninformationframedata.getOrcaIdDigit() == null
+        				|| jaddkikaninformationframedata.getOrcaIdDigit().isEmpty())))
+        {
+            JErrorMessage.show("M9604", this);
+            return false;
+        } else
+        {
+            jaddkikaninformationframedata.setValidateAsDataSet();
+            return true;
+        }
 	}
 
 	/**
@@ -469,15 +553,15 @@ public class JAddKikanInformationFrameCtrl extends JAddKikanInformationFrame {
 		return
 				validatedData.setORCAIpAddress(this.jTextField_ip.getText())
 				&& validatedData.setORCAPort(this.jTextField_portNumber.getText())
-				&& validatedData.setORCADatabase(this.jTextField_databaseName.getText())
-				&& validatedData.setORCAProtocol(this.jTextField_protocol.getText())
-
-				&& validatedData.setORCAUser(this.jTextField_dbUserId.getText())
-				&& validatedData.setORCAPassword(this.jTextField_dbPassword.getText())
+//				&& validatedData.setORCADatabase(this.jTextField_databaseName.getText())
+//				&& validatedData.setORCAProtocol(this.jTextField_protocol.getText())
+//
+//				&& validatedData.setORCAUser(this.jTextField_dbUserId.getText())
+//				&& validatedData.setORCAPassword(this.jTextField_dbPassword.getText())
 
 				&& validatedData.setORCANichireseUser(this.jTextField_nichireseUserId.getText())
-				&& validatedData.setORCANichiresePassword(this.jTextField_nichiresePassword.getText())
-				&& validatedData.setORCAEncode(this.jTextField_encoding.getText());
+				&& validatedData.setORCANichiresePassword(this.jTextField_nichiresePassword.getText());
+//				&& validatedData.setORCAEncode(this.jTextField_encoding.getText());
 	}
 
 	/**
@@ -554,47 +638,48 @@ public class JAddKikanInformationFrameCtrl extends JAddKikanInformationFrame {
 
 	@Override
 	public void focusLost(FocusEvent event) {
-		Object source = event.getSource();
-
-		// add s.inoue 2010/03/29
-		if(source.equals(this.jTextField_zip)){
-			if (jTextField_zip.getText().equals(""))
-				return;
-
-			String zipText = setZipCodeAddress(this.jTextField_zip.getText());
-			if (zipText.equals(""))
-				return;
-
-			jTextField_address.setText(zipText);
-		}
+       Object obj = event.getSource();
+        if(obj instanceof JTextField)
+        {
+            JTextField jtextfield = (JTextField)obj;
+            if(jtextfield.getParent().equals(jTextField_zip))
+            {
+                if(jTextField_zip.getTextTrim().equals(""))
+                    return;
+                String s = setZipCodeAddress(jTextField_zip.getText());
+                if(s.equals(""))
+                    return;
+                jTextField_address.setText(s);
+            }
+        }
 	}
 
 	// add s.inoue 2010/04/02
 	private String setZipCodeAddress(String zipCode){
 
-		ArrayList<Hashtable<String, String>> result = new ArrayList<Hashtable<String, String>>();
-		Hashtable<String, String> resultItem = new Hashtable<String, String>();
-
-		StringBuilder sb = new StringBuilder();
-		sb.append(" SELECT SUB_POST.POSTCD,ADDRESS FROM T_POST,");
-		sb.append(" (SELECT SUBSTRING(POST_CD FROM 1 FOR 3) || SUBSTRING(POST_CD FROM 5 FOR 4) POSTCD,");
-		sb.append(" POST_CD SP_POSTCD FROM T_POST) SUB_POST");
-		sb.append(" where SUB_POST.POSTCD = ");
-		sb.append(JQueryConvert.queryConvert(zipCode));
-		sb.append(" and SUB_POST.SP_POSTCD = T_POST.POST_CD ");
-
-		try {
-			result = JApplication.systemDatabase.sendExecuteQuery(sb.toString());
-		} catch (SQLException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
-
-		if (result.size() <= 0)
-			return "";
-
-		resultItem = result.get(0);
-		return resultItem.get("ADDRESS");
+        ArrayList arraylist = new ArrayList();
+        Hashtable hashtable = new Hashtable();
+        StringBuilder stringbuilder = new StringBuilder();
+        stringbuilder.append("SELECT ADDRESS,POST_CD FROM T_POST ");
+        stringbuilder.append(" where POST_CD = ");
+        stringbuilder.append(JQueryConvert.queryConvert(zipCode));
+        try
+        {
+            arraylist = JApplication.systemDatabase.sendExecuteQuery(stringbuilder.toString());
+        }
+        catch(SQLException sqlexception)
+        {
+            logger.error(sqlexception.getMessage());
+            sqlexception.printStackTrace();
+        }
+        if(arraylist.size() <= 0)
+        {
+            return "";
+        } else
+        {
+            Hashtable hashtable1 = (Hashtable)arraylist.get(0);
+            return (String)hashtable1.get("ADDRESS");
+        }
 
 	}
 	@Override
@@ -609,56 +694,32 @@ public class JAddKikanInformationFrameCtrl extends JAddKikanInformationFrame {
 		}
 	}
 
-	private void pushedConnectionTestButton() {
-
-		validatedData.initialize();
-		if (! validateInputOrcaData()) {
-			return;
-		}
-
-		/* ORCA DB用コネクションを作成する。 */
-		OrcaConnection orcaCon = new OrcaConnection();
-
-		JConnection con = orcaCon.getOrcaDbTestConnection(
-				validatedData.getORCAIpAddress(),
-				validatedData.getORCAPort(),
-				validatedData.getORCADatabase(),
-				validatedData.getORCAUser(),
-				validatedData.getORCAPassword()
-				);
-
-		if (con == null) {
-			JErrorMessage.show("M4394", this);
-		} else {
-			JErrorMessage.show("M9631", this);
-
-			try {
-				/* バージョンを検証する。 */
-				String version = orcaCon.getOrcaVersion(con);
-				boolean validVersion = orcaCon.validateOrcaVersion(version);
-				if (! validVersion) {
-					JErrorMessage.show("M9632", this);
-					return;
-				}
-
-				String userId = validatedData.getORCANichireseUser();
-				boolean existsUserId = orcaCon.existsUserId(con, userId);
-				if (! existsUserId) {
-					JErrorMessage.show("M9633", this);
-					return;
-				}
-
-			} finally {
-				try {
-					con.Shutdown();
-
-				} catch (SQLException ex) {
-					ex.printStackTrace();
-//					JErrorMessage.show("M4392", this);
-				}
-			}
-		}
-	}
+	private void pushedConnectionTestButton()
+    {
+        String s = jTextField_ip.getText();
+        String s1 = jTextField_portNumber.getText();
+        String s2 = jTextField_nichireseUserId.getText();
+        String s3 = jTextField_nichiresePassword.getText();
+        JOrcaInfoSearchCtl jorcainfosearchctl = new JOrcaInfoSearchCtl();
+        try
+        {
+        	// eidt s.inoue 2013/03/19
+        	jorcainfosearchctl.setPatientId("");
+            // jorcainfosearchctl.setPatientId("");
+            jorcainfosearchctl.setPort(s1);
+            jorcainfosearchctl.setHost(s);
+            jorcainfosearchctl.setUser(s2);
+            jorcainfosearchctl.setPass(s3);
+            jorcainfosearchctl.setURL();
+        }
+        catch(Exception exception)
+        {
+            logger.error(exception.getMessage());
+            JErrorMessage.show("M4392", this);
+            return;
+        }
+        JErrorMessage.show("M9631", this);
+    }
 
 	/**
 	 * ORCA連携の有無を指定して、コンポーネントの有効、無効を切り替える。
@@ -675,6 +736,13 @@ public class JAddKikanInformationFrameCtrl extends JAddKikanInformationFrame {
 		}
 
 		if (useOrca) {
+
+			// add s.inoue 2012/11/19
+			jLabel_ip.setForeground(ViewSettings.getRequiedItemFrColor());
+			jLabel_port.setForeground(ViewSettings.getRequiedItemFrColor());
+			jLabel_nichiReseUserId.setForeground(ViewSettings.getRequiedItemFrColor());
+			jLabel_nichiResePassword.setForeground(ViewSettings.getRequiedItemFrColor());
+
 			for (int i = 0; i < nichireseRequiredComponents.length; i++) {
 				nichireseRequiredComponents[i].setBackground(
 						ViewSettings.getRequiedItemBgColor());
@@ -693,6 +761,12 @@ public class JAddKikanInformationFrameCtrl extends JAddKikanInformationFrame {
 				this.jTextField_orcaIdDigit.setEnabled(false);
 				this.jTextField_orcaIdDigit.setBackground(Color.WHITE);
 			}
+		}else{
+			// add s.inoue 2012/11/19
+			jLabel_ip.setForeground(Color.BLACK);
+			jLabel_port.setForeground(Color.BLACK);
+			jLabel_nichiReseUserId.setForeground(Color.BLACK);
+			jLabel_nichiResePassword.setForeground(Color.BLACK);
 		}
 
 		this.jButton_ConnectionTest.setEnabled(useOrca);
@@ -709,11 +783,15 @@ public class JAddKikanInformationFrameCtrl extends JAddKikanInformationFrame {
 		}
 		else if(source == jRadioButton_Yes1) {
 			if (this.jRadioButton_Yes.isSelected()) {
+				// add s.inoue 2012/11/19
+				jLabel_orcaIdDegit.setForeground(ViewSettings.getRequiedItemFrColor());
 				this.jTextField_orcaIdDigit.setEnabled(true);
 				this.jTextField_orcaIdDigit.setBackground(ViewSettings.getRequiedItemBgColor());
 			}
 		}
 		else if(source == jRadioButton_No1) {
+			// add s.inoue 2012/11/19
+			jLabel_orcaIdDegit.setForeground(Color.BLACK);
 			this.jTextField_orcaIdDigit.setEnabled(false);
 			this.jTextField_orcaIdDigit.setBackground(Color.WHITE);
 		}

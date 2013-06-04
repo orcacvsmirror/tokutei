@@ -67,6 +67,7 @@ public interface ViewSettingsKey {
 	String KEY_TOKUTEI_FRAME_TITLE_TEXT = "tokutei.frame.title.text";
 	String KEY_TOKUTEI_APPLICATION_NAME = "tokutei.application.name";
 	String KEY_TOKUTEI_APPLICATION_ENVIRO_TITLE = "tokutei.frame.enviroment.title";
+	String KEY_TOKUTEI_APPLICATION_INFOMATION_TITLE = "tokutei.frame.infomation.title";
 
 	/* ä«óùÉ\ÉtÉg */
 	String KEY_ADMIN_LOGIN_FRAME_HEIGHT = "admin.login.frame.height";

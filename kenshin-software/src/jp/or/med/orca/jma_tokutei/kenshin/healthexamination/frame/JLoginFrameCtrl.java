@@ -7,6 +7,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -19,6 +20,7 @@ import javax.swing.event.DocumentListener;
 import org.apache.log4j.Logger;
 
 import jp.or.med.orca.jma_tokutei.common.component.DialogFactory;
+import jp.or.med.orca.jma_tokutei.common.component.DngPreviewHtml;
 import jp.or.med.orca.jma_tokutei.common.component.IDialog;
 import jp.or.med.orca.jma_tokutei.common.convert.JInteger;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
@@ -31,6 +33,7 @@ import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.scene.JScene;
 import jp.or.med.orca.jma_tokutei.common.sql.JConnection;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.JSoftware;
+import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.menu.JMenuFrameCtrl;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.db.DBYearAdjuster;
 import jp.or.med.orca.jma_tokutei.dbfix.ShcDBAdjust;
@@ -93,12 +96,13 @@ public class JLoginFrameCtrl extends JLoginFrame {
 		this.initializeFrameTitle();
 
 		/* スプラッシュ画面が非表示になった場合、バージョンボタンを有効にする。 */
-		JSoftware.getSplashFrame().addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentHidden(ComponentEvent arg0) {
-				JLoginFrameCtrl.this.jButton_Version.setSelected(false);
-			}
-		});
+		// del y.okano 2010/05/24
+		//JSoftware.getSplashFrame().addComponentListener(new ComponentAdapter() {
+		//	@Override
+		//	public void componentHidden(ComponentEvent arg0) {
+		//		JLoginFrameCtrl.this.jButton_Version.setSelected(false);
+		//	}
+		//});
 
 		/* ログイン画面がアクティブで無くなったとき、スプラッシュ画面を非表示にする。 */
 		this.addWindowListener(new WindowAdapter() {
@@ -118,7 +122,8 @@ public class JLoginFrameCtrl extends JLoginFrame {
 		this.focusTraversalPolicy.addComponent(this.jTextField_UserName);
 		this.focusTraversalPolicy.addComponent(this.jPasswordField_Password);
 		this.focusTraversalPolicy.addComponent(this.jButton_Login);
-		this.focusTraversalPolicy.addComponent(this.jButton_Version);
+		// del y.okano 2010/05/24
+		//this.focusTraversalPolicy.addComponent(this.jButton_Version);
 		this.focusTraversalPolicy.addComponent(jButton_End);
 		jTextField_UserName.requestFocus();
 		this.jComboBox_kikanNumber.transferFocus();
@@ -194,13 +199,14 @@ public class JLoginFrameCtrl extends JLoginFrame {
 	/**
 	 * バージョンボタン
 	 */
-	public void pushedVersionButton(ActionEvent e) {
-		if (jButton_Version.isSelected()) {
-			JSoftware.getSplashFrame().showSplashWindow();
-		} else {
-			JSoftware.getSplashFrame().hideSplashWindow();
-		}
-	}
+	// del y.okano 2010/05/24
+	//public void pushedVersionButton(ActionEvent e) {
+	//	if (jButton_Version.isSelected()) {
+	//		JSoftware.getSplashFrame().showSplashWindow();
+	//	} else {
+	//		JSoftware.getSplashFrame().hideSplashWindow();
+	//	}
+	//}
 
 	// add s.inoue 2009/12/18
 	/**
@@ -209,7 +215,7 @@ public class JLoginFrameCtrl extends JLoginFrame {
 	public void pushedSettingButton(ActionEvent e) {
 		try {
 			settingDialog
-				= DialogFactory.getInstance().createDialog(this, null, null);
+				= DialogFactory.getInstance().createDialog(this, e, null);
 
 			settingDialog.setMessageTitle("環境設定画面");
 
@@ -390,9 +396,24 @@ public class JLoginFrameCtrl extends JLoginFrame {
 			logger.info(jButton_End.getText());
 			pushedEndButton(e);
 		}
-		else if (source == jButton_Version) {
-			logger.info(jButton_Version.getText());
-			pushedVersionButton(e);
+		// del y.okano 2010/05/24
+		//else if (source == jButton_Version) {
+		//	logger.info(jButton_Version.getText());
+		//	pushedVersionButton(e);
+		//}
+
+		// add s.inoue 2010/08/02
+		else if (source == jButton_UpdateInfo){
+			logger.info(jButton_UpdateInfo.getText());
+    		// edit s.inoue 2010/08/02
+//			DngPreviewHtml dng = new DngPreviewHtml();
+//    		dng.setLayout("http://www.orca.med.or.jp/ikensyo/info/");
+			try {
+				settingDialog
+					= DialogFactory.getInstance().createDialog(this, e, null);
+			} catch (Exception ex) {
+				logger.error(ex.getMessage());
+			}
 		}
 		// add s.inoue 2009/12/18
 		else if (source == jButton_Setting) {
@@ -431,7 +452,14 @@ public class JLoginFrameCtrl extends JLoginFrame {
 		case KeyEvent.VK_F1:
 			logger.info(jButton_End.getText());
 			pushedEndButton(null);break;
+
+		// edit s.inoue 2010/08/02
 		case KeyEvent.VK_F7:
+			logger.info(jButton_UpdateInfo.getText());
+    		DngPreviewHtml dng = new DngPreviewHtml(this);
+    		// dng.setLayout("http://www.orca.med.or.jp/ikensyo/info/");
+
+		case KeyEvent.VK_F8:
 			logger.info(jButton_Setting.getText());
 			pushedSettingButton(null);break;
 		case KeyEvent.VK_F12:
@@ -440,14 +468,15 @@ public class JLoginFrameCtrl extends JLoginFrame {
 				pushedLoginButton();
 			}
 			break;
-		case KeyEvent.VK_F9:
-			logger.info(jButton_Version.getText());
-			if(jButton_Version.isSelected()){
-				jButton_Version.setSelected(false);
-			}else{
-				jButton_Version.setSelected(true);
-			}
-			pushedVersionButton(null);break;
+		// del y.okano 2010/05/24
+		//case KeyEvent.VK_F9:
+		//	logger.info(jButton_Version.getText());
+		//	if(jButton_Version.isSelected()){
+		//		jButton_Version.setSelected(false);
+		//	}else{
+		//		jButton_Version.setSelected(true);
+		//	}
+		//	pushedVersionButton(null);break;
 		case KeyEvent.VK_ENTER:
 			if (keyEvent.getComponent()== jPasswordField_Password){
 				logger.info(jButton_Login.getText());

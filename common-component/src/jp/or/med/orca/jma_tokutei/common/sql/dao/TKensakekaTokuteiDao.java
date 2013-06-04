@@ -64,6 +64,9 @@ public interface TKensakekaTokuteiDao extends Dao {
 			Integer kensaNengapi)
 		throws SQLException, NoSuchMethodException,
 				IllegalAccessException, InvocationTargetException;
+	 // add s.inoue 2012/07/04
+	 public abstract TKensakekaTokutei selectKekkaTokuteiByPrimaryKey(Long long1, Integer integer)
+	 throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException;
 
 	 // edit ver2 s.inoue 2009/08/26
 	 /**

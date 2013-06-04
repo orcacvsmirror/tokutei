@@ -15,14 +15,14 @@ public class JSingleDoubleClickEvent extends MouseAdapter {
 	private JSimpleTable fixedtable;
 
 	// edit s.inoue 2009/12/12
-	public JSingleDoubleClickEvent(ActionListener ActionFrame, JComponent TargetComponent,JSimpleTable fixedtb)
+	public JSingleDoubleClickEvent(ActionListener ActionFrame, JComponent TargetComponent,JSimpleTable fixedtable)
 	{
 		if (ActionFrame != null)
 			this.ActionFrame = ActionFrame;
 		if (TargetComponent != null)
 			this.TargetComponent = TargetComponent;
 
-		this.fixedtable = fixedtb;
+		this.fixedtable = fixedtable;
 	}
 	// edit s.inoue 2009/12/12
 	public JSingleDoubleClickEvent(ActionListener ActionFrame, JComponent TargetComponent)
@@ -38,6 +38,10 @@ public class JSingleDoubleClickEvent extends MouseAdapter {
 			if (fixedtable == null)
 				return;
 			int i = fixedtable.getSelectedRow();
+
+			// edit s.inoue 2010/07/09
+			if (i == 0)
+			fixedtable.setRowSelectionInterval(i,i);
 
 			// add s.inoue 2010/02/19
 			int j = fixedtable.getSelectedColumn();

@@ -518,6 +518,30 @@ public class JConnection {
 	}
 	/* --------------------------------------------------- */
 
+	// add s.inoue 2012/07/04
+	public static JConnection ConnectHokenjyaDatabase() throws SQLException {
+
+		String driver = JDBC_DRIVER_NAME_FIREBIRD;
+
+		String url =
+			"jdbc:firebirdsql:" +
+			JApplication.systemDBServer +
+			"/" +
+			JApplication.systemDBPort +
+			":"
+			+ JPath.GetHokenjyaDatabaseFilePathToInitJSql();
+
+		String user = JApplication.systemDBUserName;
+		String password = JApplication.systemDBPassword;
+
+		JConnection connection = new JConnection(
+						driver,
+						url,
+						user,
+						password);
+
+		return connection;
+	}
 	/**
 	 * 接続することができる機関データベースが存在するか確認する。
 	 */

@@ -1,86 +1,35 @@
+// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) ansi 
+
 package jp.or.med.orca.jma_tokutei.common.component;
 
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
 
-/**
- * メッセージダイアログのインタフェース
- *
- * 2008/3/22
- * @author nishiyama
- *
- */
-public interface IDialog {
+public interface IDialog
+{
 
-	/**
-	 * ダイアログ表示/非表示
-	 * @param isVisible 表示/非表示フラグ
-	 */
-	void setVisible(boolean isVisible);
+    public abstract void setVisible(boolean flag);
 
-	/**
-	 * ボタン押下状態取得
-	 * @return ボタン押下状態
-	 */
-	RETURN_VALUE getStatus();
+    public abstract RETURN_VALUE getStatus();
 
-	/**
-	 * ファイルパス取得
-	 * @return ファイルパス
-	 */
-	String getFilePath();
+    public abstract String getTextValue();
 
-	/**
-	 * 指定健診日取得
-	 * @return 健診日
-	 */
-	String getKenshinDate();
+    public abstract String getKenshinDate();
 
-	/**
-	 * 印刷方法取得 枚数(1 or 2)
-	 * @return 印刷方法
-	 */
-	Integer getPrintSelect();
+    public abstract Integer getPrintSelect();
 
-	/**
-	 * ダイアログのテキストエリア/リストボックスに
-	 * 選択中セルのテキストを設定する
-	 * @param text 選択中セルテキスト
-	 */
-	void setText(String text);
+    public abstract void setText(String s);
 
-	/**
-	 * タイトル部分に表示する文字列を設定
-	 * @param title タイトル文字列
-	 */
-	void setMessageTitle(String title);
+    public abstract void setMessageTitle(String s);
 
-	/**
-	 * 文字列を非活性設定
-	 * @param title タイトル文字列
-	 */
-	void setEnabled(boolean enabled);
+    public abstract void setEnabled(boolean flag);
 
-	/**
-	 * 文字列を非活性設定
-	 * @param title タイトル文字列
-	 */
-	void setDialogSelect(boolean enabled);
+    public abstract void setDialogSelect(boolean flag);
 
-	/**
-	 * タイトル部分に表示する文字列を設定
-	 * @param title タイトル文字列
-	 */
-	void setDialogTitle(String title);
+    public abstract void setDialogTitle(String s);
 
-	/**
-	 * タイトル部分に表示する文字列を設定
-	 * @param title タイトル文字列
-	 */
-	void setSaveFileName(String title);
+    public abstract void setSaveFileName(String s);
 
-	/**
-	 * キャンセルボタン表示/非表示設定
-	 * @param isShowCancel
-	 */
-	void setShowCancelButton(boolean isShowCancel);
+    public abstract void setShowCancelButton(boolean flag);
 }

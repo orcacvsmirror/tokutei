@@ -1,6 +1,8 @@
 package jp.or.med.orca.jma_tokutei.kenshin.admin.frame;
 
 import java.awt.BorderLayout;
+
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import java.awt.Dimension;
@@ -17,7 +19,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import jp.or.med.orca.jma_tokutei.common.app.JApplication;
+import jp.or.med.orca.jma_tokutei.common.app.JPath;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedButton;
+import jp.or.med.orca.jma_tokutei.common.component.ExtendedImageIcon;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedToggleButton;
 import java.awt.GridBagConstraints;
@@ -80,8 +85,8 @@ public class JMenuFrame extends JFrame implements ActionListener,KeyListener{
 			borderLayout.setVgap(2);
 			jPanel_Content = new JPanel();
 			jPanel_Content.setLayout(borderLayout);
-			jPanel_Content.add(getJPanel_ButtonArea(), BorderLayout.SOUTH);
-			jPanel_Content.add(getJPanel_NaviArea(), BorderLayout.NORTH);
+			jPanel_Content.add(getJPanel_ButtonArea(), BorderLayout.NORTH);
+//			jPanel_Content.add(getJPanel_NaviArea(), BorderLayout.NORTH);
 			jPanel_Content.add(getJPanel_MainArea(), BorderLayout.CENTER);
 		}
 		return jPanel_Content;
@@ -101,8 +106,9 @@ public class JMenuFrame extends JFrame implements ActionListener,KeyListener{
 			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
 			gridBagConstraints1.gridy = 0;
 			gridBagConstraints1.weightx = 1.0D;
-			gridBagConstraints1.anchor = GridBagConstraints.EAST;
+			gridBagConstraints1.anchor = GridBagConstraints.WEST;
 			gridBagConstraints1.gridx = 2;
+			gridBagConstraints1.insets = new Insets(0, 5, 0, 0);
 			GridBagConstraints gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridy = 0;
 			gridBagConstraints.gridx = 0;
@@ -123,13 +129,19 @@ public class JMenuFrame extends JFrame implements ActionListener,KeyListener{
 	 */
 	private ExtendedButton getJButton_End() {
 		if (jButton_End == null) {
-			jButton_End = new ExtendedButton();
-			jButton_End.setHorizontalAlignment(SwingConstants.CENTER);
-			jButton_End.setActionCommand("終了");
-			jButton_End.setFont(new Font("Dialog", Font.PLAIN, 12));
-			jButton_End.setText("終了(F1)");
+			// eidt s.inoue 2011/04/08
+//			jButton_End = new ExtendedButton();
+//			jButton_End.setHorizontalAlignment(SwingConstants.CENTER);
+//			jButton_End.setActionCommand("終了");
+//			jButton_End.setFont(new Font("Dialog", Font.PLAIN, 12));
+//			jButton_End.setText("終了(F1)");
+//			jButton_End.addActionListener(this);
+//			jButton_End.addKeyListener(this);
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Common_Exit);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
+			jButton_End= new ExtendedButton(
+					"End","終了(E)","終了(ALT+E)",KeyEvent.VK_E,icon);
 			jButton_End.addActionListener(this);
-			jButton_End.addKeyListener(this);
 		}
 		return jButton_End;
 	}
@@ -247,13 +259,22 @@ public class JMenuFrame extends JFrame implements ActionListener,KeyListener{
 			gridBagConstraints4.anchor = GridBagConstraints.NORTH;
 			gridBagConstraints4.insets = new Insets(20, 0, 0, 0);
 			gridBagConstraints4.gridx = 0;
+			// eidt s.inoue 2012/07/06
+//			gridBagConstraints4.weightx = 1.0D;
+
 			GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
 			gridBagConstraints3.gridy = 1;
 			gridBagConstraints3.insets = new Insets(20, 0, 0, 0);
 			gridBagConstraints3.gridx = 0;
+			// eidt s.inoue 2012/07/06
+//			gridBagConstraints3.weightx = 1.0D;
+
 			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
 			gridBagConstraints2.gridy = 0;
 			gridBagConstraints2.gridx = 0;
+			// eidt s.inoue 2012/07/06
+//			gridBagConstraints2.weightx = 1.0D;
+
 			jPanel_Center = new JPanel();
 			jPanel_Center.setName("jPanel_Center");
 			jPanel_Center.setLayout(new GridBagLayout());
@@ -271,12 +292,21 @@ public class JMenuFrame extends JFrame implements ActionListener,KeyListener{
 	 */
 	private ExtendedButton getJButton_KikanMaintenance() {
 		if (jButton_KikanMaintenance == null) {
-			jButton_KikanMaintenance = new ExtendedButton();
-			jButton_KikanMaintenance.setText("１．健診機関情報メンテナンス(1)");
-			jButton_KikanMaintenance.setPreferredSize(new Dimension(500, 50));
-			jButton_KikanMaintenance.setFont(new Font("Dialog", Font.PLAIN, 12));
+			// eidt s.inoue 2011/04/08
+//			jButton_KikanMaintenance = new ExtendedButton();
+//			jButton_KikanMaintenance.setText("１．健診機関情報メンテナンス(1)");
+//			jButton_KikanMaintenance.setPreferredSize(new Dimension(500, 50));
+//			jButton_KikanMaintenance.setFont(new Font("Dialog", Font.PLAIN, 12));
+//			jButton_KikanMaintenance.addActionListener(this);
+//			jButton_KikanMaintenance.addKeyListener(this);
+//			jButton_KikanMaintenance.setMnemonic(KeyEvent.VK_1);
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_System_Kikan);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_SYSTEM_FIX_ICON);
+			jButton_KikanMaintenance = new ExtendedButton("１．健診機関情報メンテナンス(1)",icon);
+			// jButton_KikanMaintenance.setFont(new Font("UserMaintenance", Font.PLAIN, 12));
+			jButton_KikanMaintenance.setFont(JApplication.FONT_COMMON_MENU_BUTTON);
+			// jButton_KikanMaintenance.setPreferredSize(new Dimension(330, 70));
 			jButton_KikanMaintenance.addActionListener(this);
-			jButton_KikanMaintenance.addKeyListener(this);
 			jButton_KikanMaintenance.setMnemonic(KeyEvent.VK_1);
 		}
 		return jButton_KikanMaintenance;
@@ -289,12 +319,21 @@ public class JMenuFrame extends JFrame implements ActionListener,KeyListener{
 	 */
 	private ExtendedButton getJButton_KanriUserMaintenance() {
 		if (jButton_KanriUserMaintenance == null) {
-			jButton_KanriUserMaintenance = new ExtendedButton();
-			jButton_KanriUserMaintenance.setText("２．システム管理ユーザー情報メンテナンス(2)");
-			jButton_KanriUserMaintenance.setPreferredSize(new Dimension(500, 50));
-			jButton_KanriUserMaintenance.setFont(new Font("Dialog", Font.PLAIN, 12));
+			// eidt s.inoue 2011/04/08
+//			jButton_KanriUserMaintenance = new ExtendedButton();
+//			jButton_KanriUserMaintenance.setText("２．システム管理ユーザー情報メンテナンス(2)");
+//			jButton_KanriUserMaintenance.setPreferredSize(new Dimension(500, 50));
+//			jButton_KanriUserMaintenance.setFont(new Font("Dialog", Font.PLAIN, 12));
+//			jButton_KanriUserMaintenance.addActionListener(this);
+//			jButton_KanriUserMaintenance.addKeyListener(this);
+//			jButton_KanriUserMaintenance.setMnemonic(KeyEvent.VK_2);
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_System_User);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_SYSTEM_FIX_ICON);
+			jButton_KanriUserMaintenance = new ExtendedButton("２．システム管理ユーザー情報メンテナンス(2)",icon);
+			// jButton_KanriUserMaintenance.setFont(new Font("UserMaintenance", Font.PLAIN, 12));
+			jButton_KanriUserMaintenance.setFont(JApplication.FONT_COMMON_MENU_BUTTON);
+			// jButton_KanriUserMaintenance.setPreferredSize(new Dimension(330, 70));
 			jButton_KanriUserMaintenance.addActionListener(this);
-			jButton_KanriUserMaintenance.addKeyListener(this);
 			jButton_KanriUserMaintenance.setMnemonic(KeyEvent.VK_2);
 		}
 		return jButton_KanriUserMaintenance;
@@ -307,12 +346,22 @@ public class JMenuFrame extends JFrame implements ActionListener,KeyListener{
 	 */
 	private ExtendedButton getJButton_DBBackup() {
 		if (jButton_DBBackup == null) {
-			jButton_DBBackup = new ExtendedButton();
-			jButton_DBBackup.setText("３．システムDBバックアップ(3)");
-			jButton_DBBackup.setPreferredSize(new Dimension(500, 50));
-			jButton_DBBackup.setFont(new Font("Dialog", Font.PLAIN, 12));
+			// eidt s.inoue 2011/04/08
+//			jButton_DBBackup = new ExtendedButton();
+//			jButton_DBBackup.setText("３．システムDBバックアップ(3)");
+//			jButton_DBBackup.setPreferredSize(new Dimension(500, 50));
+//			jButton_DBBackup.setFont(new Font("Dialog", Font.PLAIN, 12));
+//			jButton_DBBackup.addActionListener(this);
+//			jButton_DBBackup.addKeyListener(this);
+//			jButton_DBBackup.setMnemonic(KeyEvent.VK_3);
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_System_Backup);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_SYSTEM_FIX_ICON);
+			jButton_DBBackup = new ExtendedButton("３．バックアップ＆復元(3)",icon);
+			// jButton_DBBackup.setFont(new Font("Backup", Font.PLAIN, 12));
+			// jButton_DBBackup.setFont(JApplication.FONT_COMMON_MENU_BUTTON);
+			jButton_DBBackup.setFont(JApplication.FONT_COMMON_MENU_BUTTON);
+			// jButton_DBBackup.setPreferredSize(new Dimension(330, 70));
 			jButton_DBBackup.addActionListener(this);
-			jButton_DBBackup.addKeyListener(this);
 			jButton_DBBackup.setMnemonic(KeyEvent.VK_3);
 		}
 		return jButton_DBBackup;
@@ -348,12 +397,19 @@ public class JMenuFrame extends JFrame implements ActionListener,KeyListener{
 	 */
 	private ExtendedToggleButton getJButton_Version() {
 		if (jButton_Version == null) {
-			jButton_Version = new ExtendedToggleButton();
-			jButton_Version.setText("バージョン(F9)");
-			jButton_Version.setVisible(true);
-			jButton_Version.setPreferredSize(new Dimension(120, 25));
+			// eidt s.inoue 2011/04/08
+//			jButton_Version = new ExtendedToggleButton();
+//			jButton_Version.setText("バージョン(F9)");
+//			jButton_Version.setVisible(true);
+//			jButton_Version.setPreferredSize(new Dimension(120, 25));
+//			jButton_Version.addActionListener(this);
+//			jButton_Version.addKeyListener(this);
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Common_Version);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
+			jButton_Version= new ExtendedToggleButton(
+					"Version","バージョン(V)","バージョン(ALT+V)",KeyEvent.VK_V,icon);
 			jButton_Version.addActionListener(this);
-			jButton_Version.addKeyListener(this);
+			jButton_Version.setFont(new Font("ＭＳ ゴシック", Font.PLAIN, 10));
 		}
 		return jButton_Version;
 	}
@@ -365,14 +421,21 @@ public class JMenuFrame extends JFrame implements ActionListener,KeyListener{
 	 */
 	private ExtendedButton getJButton_BackLogin() {
 		if (jButton_BackLogin == null) {
-			jButton_BackLogin = new ExtendedButton();
-			jButton_BackLogin.setFont(new Font("Dialog", Font.PLAIN, 12));
-			jButton_BackLogin.setHorizontalAlignment(SwingConstants.CENTER);
-			jButton_BackLogin.setText("ログイン画面に戻る(F2)");
-			jButton_BackLogin.setPreferredSize(new Dimension(160, 25));
-			jButton_BackLogin.setActionCommand("\u7d42\u4e86");
+			// eidt s.inoue 2011/04/08
+//			jButton_BackLogin = new ExtendedButton();
+//			jButton_BackLogin.setFont(new Font("Dialog", Font.PLAIN, 12));
+//			jButton_BackLogin.setHorizontalAlignment(SwingConstants.CENTER);
+//			jButton_BackLogin.setText("ログイン画面に戻る(F2)");
+//			jButton_BackLogin.setPreferredSize(new Dimension(160, 25));
+//			jButton_BackLogin.setActionCommand("\u7d42\u4e86");
+//			jButton_BackLogin.addActionListener(this);
+//			jButton_BackLogin.addKeyListener(this);
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Common_Back);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
+			jButton_BackLogin= new ExtendedButton(
+					"Return","ログインへ(R)","ログインへ(ALT+R)",KeyEvent.VK_R,icon);
 			jButton_BackLogin.addActionListener(this);
-			jButton_BackLogin.addKeyListener(this);
+			jButton_BackLogin.setFont(new Font("ＭＳ ゴシック", Font.PLAIN, 10));
 		}
 		return jButton_BackLogin;
 	}

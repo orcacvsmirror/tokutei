@@ -43,22 +43,49 @@ public class JSimpleTableCellRowRenderer implements TableCellRenderer {
         this.delegate = delegate;
     }
 
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+    public Component getTableCellRendererComponent(JTable jtable, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
     	// edit s.inoue 2009/11/18 フィールド値が無い場合にも空値に置き換える
     	if (value == null)
     		value ="";
 
-        Component c = delegate.getTableCellRendererComponent(table,value,isSelected,hasFocus,row,column);
-        if(c instanceof JComponent) {
-            int lsi = table.getSelectionModel().getLeadSelectionIndex();
-            ((JComponent)c).setBorder(row==lsi?dotBorder:emptyBorder);
-            dotBorder.setLastCellFlag(row==lsi&&column==table.getColumnCount()-1);
+        Component component = delegate.getTableCellRendererComponent(jtable,value,isSelected,hasFocus,row,column);
+        if(component instanceof JComponent) {
+            int lsi = jtable.getSelectionModel().getLeadSelectionIndex();
 
-            String headString = (String)table.getColumnModel().getColumn(column).getHeaderValue();
+            // edit s.inoue 2010/07/12
+	        ((JComponent)component).setBorder(row==lsi?dotBorder:emptyBorder);
+	        dotBorder.setLastCellFlag(row==lsi&&column==jtable.getColumnCount()-1);
+
+            String headString = (String)jtable.getColumnModel().getColumn(column).getHeaderValue();
+
             // edit s.inoue 2009/11/16
-            setJSimpleTableCellSettings(c,headString,isSelected);
+            setJSimpleTableCellSettings(component,headString,isSelected);
+
+            if(!isSelected)
+            {
+                if(jtable.getColumnCount() < 4)
+                    return component;
+                String s1 = (String)jtable.getValueAt(row, 3);
+                if(s1 != null)
+                {
+                    ((JComponent)component).setBackground(isSelected ? new Color(153, 204, 255) : jtable.getBackground());
+                    if(s1.equals("基本"))
+                    	component.setBackground(ViewSettings.getKihonItemBgColor());
+                    else
+                    if(s1.equals("詳細"))
+                        component.setBackground(ViewSettings.getSyosaiItemBgColor());
+                    else
+                    if(s1.equals("追加"))
+                        component.setBackground(ViewSettings.getTuikaItemBgColor());
+                }
+                for(int l = 0; l < jtable.getSelectedRowCount(); l++)
+                    if(row == l)
+                        jtable.setSelectionForeground(Color.GREEN);
+
+            }
+
         }
-        return c;
+        return component;
     }
 
     // フィールド左右寄せ設定
@@ -124,42 +151,42 @@ public class JSimpleTableCellRowRenderer implements TableCellRenderer {
     }
 }
 
-class DotBorder extends EmptyBorder {
-    private static final BasicStroke dashed = new BasicStroke(
-        1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
-        10.0f, (new float[] {1.0f}), 0.0f);
-    private static final Color dotColor = new Color(200,150,150);
-    public DotBorder(int top, int left, int bottom, int right) {
-        super(top, left, bottom, right);
-    }
-    private boolean isLastCell = false;
-    public void setLastCellFlag(boolean flag) {
-        isLastCell = flag;
-    }
-    @Override
-    public boolean isBorderOpaque() {
-        return true;
-    }
-    @Override
-    public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
-        Graphics2D g2 = (Graphics2D)g;
-        g2.translate(x,y);
-        g2.setPaint(dotColor);
-        g2.setStroke(dashed);
-        int cbx = c.getBounds().x;
-        if(cbx==0) {
-            g2.drawLine(0,0,0,h);
-        }
-        if(isLastCell) {
-            g2.drawLine(w-1,0,w-1,h);
-        }
-        if(cbx%2==0) {
-            g2.drawLine(0,0,w,0);
-            g2.drawLine(0,h-1,w,h-1);
-        }else{
-            g2.drawLine(1,0,w,0);
-            g2.drawLine(1,h-1,w,h-1);
-        }
-        g2.translate(-x,-y);
-    }
-}
+//class DotBorder extends EmptyBorder {
+//    private static final BasicStroke dashed = new BasicStroke(
+//        1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
+//        10.0f, (new float[] {1.0f}), 0.0f);
+//    private static final Color dotColor = new Color(200,150,150);
+//    public DotBorder(int top, int left, int bottom, int right) {
+//        super(top, left, bottom, right);
+//    }
+//    private boolean isLastCell = false;
+//    public void setLastCellFlag(boolean flag) {
+//        isLastCell = flag;
+//    }
+//    @Override
+//    public boolean isBorderOpaque() {
+//        return true;
+//    }
+//    @Override
+//    public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
+//        Graphics2D g2 = (Graphics2D)g;
+//        g2.translate(x,y);
+//        g2.setPaint(dotColor);
+//        g2.setStroke(dashed);
+//        int cbx = c.getBounds().x;
+//        if(cbx==0) {
+//            g2.drawLine(0,0,0,h);
+//        }
+//        if(isLastCell) {
+//            g2.drawLine(w-1,0,w-1,h);
+//        }
+//        if(cbx%2==0) {
+//            g2.drawLine(0,0,w,0);
+//            g2.drawLine(0,h-1,w,h-1);
+//        }else{
+//            g2.drawLine(1,0,w,0);
+//            g2.drawLine(1,h-1,w,h-1);
+//        }
+//        g2.translate(-x,-y);
+//    }
+//}

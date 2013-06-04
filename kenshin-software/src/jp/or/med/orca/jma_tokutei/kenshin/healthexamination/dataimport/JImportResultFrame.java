@@ -230,10 +230,7 @@ public class JImportResultFrame extends JFrame implements ActionListener
 		return jPanel_DrawArea;
 	}
 
-	public void actionPerformed( ActionEvent e )
-	{
-
-	}
+	public void actionPerformed( ActionEvent e ){}
 
 	/**
 	 * This method initializes jTextArea_Message

@@ -291,11 +291,11 @@ public class MessageDialog extends JDialog
 		return null;
 	}
 
-	@Override
-	public String getFilePath() {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
-	}
+//	@Override
+//	public String getFilePath() {
+//		// TODO 自動生成されたメソッド・スタブ
+//		return null;
+//	}
 
 	@Override
 	public void setDialogTitle(String title) {
@@ -313,6 +313,12 @@ public class MessageDialog extends JDialog
 	public void setSaveFileName(String title) {
 		// TODO 自動生成されたメソッド・スタブ
 
+	}
+
+	@Override
+	public String getTextValue() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

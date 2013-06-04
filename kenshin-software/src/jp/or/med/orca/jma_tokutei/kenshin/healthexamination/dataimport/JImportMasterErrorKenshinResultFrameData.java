@@ -17,6 +17,7 @@ public class JImportMasterErrorKenshinResultFrameData {
 	public String CSV_COLUMN_JS_JYOUGEN;
 	public String CSV_COLUMN_JS_KAGEN;
 	public String CSV_COLUMN_TANI;
+	public String CSV_TANKA_KENSIN;
 	public String CSV_COLUMN_BIKOU;
 
 	/**

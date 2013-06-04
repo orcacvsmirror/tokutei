@@ -316,7 +316,7 @@ public class JKekkaTeikeiMaintenanceListFrame extends JFrame implements ActionLi
 	private ExtendedButton getJButton_Add() {
 		if (jButton_Add == null) {
 			jButton_Add = new ExtendedButton();
-			jButton_Add.setText("êVãKí«â¡(F9)");
+			jButton_Add.setText("í«â¡(F9)");
 			jButton_Add.setFont(new Font("Dialog", Font.PLAIN, 12));
 			jButton_Add.addActionListener(this);
 		}

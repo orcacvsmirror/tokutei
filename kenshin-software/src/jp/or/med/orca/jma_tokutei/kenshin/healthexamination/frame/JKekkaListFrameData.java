@@ -12,6 +12,7 @@ public class JKekkaListFrameData {
 	// 性別名(男,女)と性別コードを定義したマップ
 	// コードマスタができるまで暫定的に定義
 	private static Map<String, String> sexNameMap = new HashMap<String, String>();
+
 	static {
 		sexNameMap.put("1", "男性");
 		sexNameMap.put("2", "女性");

@@ -2,21 +2,21 @@
 <doc>
 	<!-- ModuleVersion -->
 	<properties id="ModuleVersion">
-		<property id="no">1.2.8</property>
+		<property id="no">2.0.1</property>
 	</properties>
 	<!-- SchemaVersion -->
 	<properties id="SchemaVersion">
-		<property id="no">1.2.8</property>
+		<property id="no">2.0.1</property>
 	</properties>
 	<properties id="KikanSchemaVersion">
-		<property id="no">1.2.8</property>
+		<property id="no">2.0.1</property>
 	</properties>
 	<!-- DBDataVersion -->
 	<properties id="DBDataVersion">
-		<property id="no">1.2.8</property>
+		<property id="no">2.0.1</property>
 	</properties>
 	<properties id="DBDataKikanVersion">
-		<property id="no">1.2.8</property>
+		<property id="no">2.0.1</property>
 	</properties>
 	<!-- FireBird DBConnect Config -->
 	<properties id="DBConfig">
@@ -24,7 +24,7 @@
 		<property id="Password">masterkey</property>
 		<property id="CharSet">SJIS_0208</property>
 		<property id="Path">DB/</property>
-		<property id="AbsolutePath"></property>
+		<property id="AbsolutePath"/>
 		<property id="LoginTimeOut">1</property>
 		<property id="Server">localhost</property>
 		<property id="MaxPoolSize">500</property>

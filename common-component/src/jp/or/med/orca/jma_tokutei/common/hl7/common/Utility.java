@@ -20,7 +20,7 @@ public class Utility {
 	public static String ConvertPostalCode(String Value)
 	{
 		String Ret = "";
-		
+
 		// 4文字目にハイフンが入っているかで処理を振り分け
 		if(Value.charAt(3) == '-')
 		{
@@ -28,13 +28,13 @@ public class Utility {
 		}else{
 			String Left = Value.substring(0, 3);
 			String Right = Value.substring(3, 7);
-			
+
 			Ret = Left + "-" + Right;
 		}
-		
+
 		return Ret;
 	}
-	
+
 	/**
 	 * カレンダークラスから、「yyyyMMdd」形式の日付を出力する
 	 * @param Value カレンダークラス
@@ -46,10 +46,10 @@ public class Utility {
 		Value.set(Calendar.MONTH, Value.get(Calendar.MONTH) - 1);
 		DateFormat format = new SimpleDateFormat("yyyyMMdd");
 		String Temp = format.format(Value.getTime());
-		
+
 		return Temp;
 	}
-	
+
 	/**
 	 * 入力した値に対して、必要桁数分左から0で埋める
 	 * @param Value 値
@@ -60,27 +60,27 @@ public class Utility {
 	{
 		DecimalFormat df = new DecimalFormat();
 		String FigurePattern = "";
-		
+
 		// 必要桁分のパターンを生成
 		for(int i = 0 ; i < Figure ; i++)
 		{
 			FigurePattern += "0";
 		}
-		
+
 		df.applyLocalizedPattern(FigurePattern);
 		return df.format(Value);
 	}
-	
+
 	/* Added 2008/04/04 若月  */
 	/* --------------------------------------------------- */
 	public static String FillZero(String Value, int digit) {
-		
+
 		String valueString = "";
 		String formattedValue = null;
-		
+
 		if (Value != null && ! Value.isEmpty()) {
 			valueString = Value.trim();
-			
+
 			long valueLong = 0;
 			if (Value != null && ! Value.isEmpty()) {
 				valueLong = Long.parseLong(valueString);
@@ -93,11 +93,11 @@ public class Utility {
 				formattedValue += "0";
 			}
 		}
-		
+
 		return formattedValue;
 	}
 	/* --------------------------------------------------- */
-	
+
 	/**
 	 * @return 現在の時間をHL7で使用するフォーマットで取得する
 	 */
@@ -107,7 +107,7 @@ public class Utility {
         DateFormat format = new SimpleDateFormat("yyyyMMdd");
         return format.format(new Date());
 	}
-	
+
 	/**
 	 * 数字を全角に変換する
 	 * @param str 数字を含んだ文字列
@@ -127,7 +127,7 @@ public class Utility {
 		}
 		return Ret.toString();
 	}
-	
+
 	/**
 	 * 数字を半角に変換する
 	 * @param str 数字を含んだ文字列
@@ -147,7 +147,7 @@ public class Utility {
 		}
 		return Ret.toString();
 	}
-	
+
 	/**
 	 * @param Value ###.### 形式の数字
 	 * @return ###### 形式の数字
@@ -158,7 +158,7 @@ public class Utility {
 		Value = Value * 1000;
 		return Utility.FillZero((long)Value, 6);
 	}
-	
+
 	/**
 	 * スキーマを元にXMLファイルを検証する
 	 * @param XmlFileName XMLファイル
@@ -170,59 +170,25 @@ public class Utility {
 		try
 		{
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            
+
 	        factory.setValidating(true);
 	        factory.setNamespaceAware(true);
-	        factory.setAttribute( 
-	        		"http://java.sun.com/xml/jaxp/properties/schemaLanguage", 
-	        		"http://www.w3.org/2001/XMLSchema"); 
+	        factory.setAttribute(
+	        		"http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+	        		"http://www.w3.org/2001/XMLSchema");
 	        factory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaSource",
-	        		SchemaFileName); 
+	        		SchemaFileName);
 	        factory.setAttribute("http://apache.org/xml/features/validation/schema",true);
-	        
+
             DocumentBuilder builder = factory.newDocumentBuilder();
 	        builder.setErrorHandler(new MyHandler(XmlFileName));
-	        
+
 	        builder.parse(XmlFileName);
 		}catch(Exception e){
 			throw new RuntimeException();
 		}
 	}
 }
-
-/**
- * スキーマ検証時のエラーハンドラ
- */
-class MyHandler implements ErrorHandler
-{
-	public MyHandler(String FileName)
-	{
-		this.FileName = FileName;
-	}
-	
-	private String FileName = null;
-	
-    public void warning(SAXParseException e)
-    {
-        System.out.println("警告 : " + FileName + " " + e.getLineNumber() +"行目 " + e.getColumnNumber());
-        System.out.println(e.getLocalizedMessage());
-       // e.printStackTrace();
-    }
-    public void error(SAXParseException e)
-    {
-        System.out.println("エラー : " + FileName + " " + e.getLineNumber() +"行目 " + e.getColumnNumber());
-        System.out.println(e.getLocalizedMessage());
-       // e.printStackTrace();
-    }
-    public void fatalError(SAXParseException e)
-    {
-        System.out.println("深刻なエラー : " + FileName + " " + e.getLineNumber() +"行目 " + e.getColumnNumber());
-        System.out.println(e.getLocalizedMessage());
-       // e.printStackTrace();
-    }
-}
-
-
 
 //Source Code Version Tag System v1.00  -- Do not remove --
 //Product-Tag: {4F85C2F4EE-5847B3BB7A9-ADC5AC59E3-EF66F79A1}

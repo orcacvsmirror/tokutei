@@ -14,13 +14,13 @@ public class JModalDialogWindowAdapter extends WindowAdapter
 	{
 		mParentFrame = ParentDialog;
 	}
-	
+
 	private JFrame mParentFrame;
-	
+
 	public void windowClosed(WindowEvent evt)
 	{
 		mParentFrame.setEnabled(true);
-		
+
 		// 前面に表示するために、一度常時前面に出す状態にする。
 		mParentFrame.setAlwaysOnTop(true);
 		mParentFrame.setAlwaysOnTop(false);

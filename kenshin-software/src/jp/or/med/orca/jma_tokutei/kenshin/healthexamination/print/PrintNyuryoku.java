@@ -2,7 +2,9 @@ package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print;
 
 import java.awt.print.PrinterJob;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,7 +19,9 @@ import jp.or.med.orca.jma_tokutei.common.util.FiscalYearUtil;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.KihonKensaKoumoku;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Kojin;
 
+import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.AcroFields;
+import com.lowagie.text.pdf.PdfCopyFields;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 
@@ -26,21 +30,18 @@ import com.lowagie.text.pdf.PdfStamper;
  */
 public class PrintNyuryoku extends JTKenshinPrint {
 
-	private String templatePath = ""; // ディレクトリパス
+//	private String outputPath_s = ""; // ディレクトリパス
+//	private static final String OUT_NYURYOKUHYO_PDF = "."+File.separator+"Data"+File.separator+"PDF"+File.separator+"out_nyuryokuhyo.pdf";
 
-	private String outputPath = ""; // ディレクトリパス
+	private String outputPath = ""; 							// ディレクトリパス
+	private String templatePath = ""; 						// ディレクトリパス
+	private String infilename = "inNyuryokuTemplate.pdf";	// 入力テンプレートファイル
+	private String outfilename = "outNyuryokuTemplate.pdf";	// 出力ファイル
 
-	private String infilename = "inNyuryokuTemplate.pdf";// 入力テンプレートファイル
-
-	private String outfilename = "outNyuryokuTemplate.pdf";// 出力ファイル
-
-	// 健診年月日
-	private int KensaNengapiNum = 0;
-
-	private String[] KensaNengapi = new String[3];
-
-	// 印刷済み検査項目コード一覧
-	// private ArrayList<String>PrintedCD = new ArrayList<String>();
+	private String outputPath_QA = ""; 							// ディレクトリパス
+	private String templatePath_QA = ""; 						// ディレクトリパス
+	private String infilename_QA = "inNyuryokuTemplate_QA.pdf";	// 入力テンプレートファイル
+	private String outfilename_QA = "outNyuryokuTemplate_QA.pdf";	// 出力ファイル
 
 	public static void main(String[] argv) {
 		new PrintNyuryoku();
@@ -50,159 +51,257 @@ public class PrintNyuryoku extends JTKenshinPrint {
 	}
 
 	PrinterJob job = PrinterJob.getPrinterJob();
+	// edit s.inoue 2011/07/04
+	File nyutuokuFile = null;
+	File lastFile = null;
 
 	/**
 	 * 入力票の項目を作成する
 	 */
 	public File printKekka() {
-		/* Modified 2008/07/25 若月  */
-		/* --------------------------------------------------- */
-//		templatePath = PropertyUtil.getProperty("filePath");
-//		outputPath = PropertyUtil.getProperty("filePath");
-//		templatePath = templatePath + infilename;
-//		outputPath = ".\\Data\\PDF\\" + outfilename;
-		/* --------------------------------------------------- */
-		PropertyUtil util = new PropertyUtil(JPath.PATH_FILE_PROPERTIES);
-
-		templatePath = util.getProperty("filePath");
+		// eidt s.inoue 2011/04/12
+		// PropertyUtil util = new PropertyUtil(JPath.PATH_FILE_PROPERTIES);
+		// templatePath = util.getProperty("filePath");
+		templatePath = "./work/PDF/";
 		outputPath = templatePath;
 		templatePath = templatePath + infilename;
-		/* --------------------------------------------------- */
-		/* Modified 2008/09/11 薮  */
-		/* --------------------------------------------------- */
-//		outputPath = ".\\Data\\PDF\\" + outfilename;
 		outputPath = "."+File.separator+"Data"+File.separator+"PDF"+File.separator+"" + outfilename;
-		/* --------------------------------------------------- */
 
-		/* --------------------------------------------------- */
-		/* Modified 2008/09/11 薮  */
-		/* --------------------------------------------------- */
-//		File outfile = new File(".\\Data\\PDF");
+		// edit s.inoue 2011/07/08
+		templatePath_QA = "./work/PDF/";
+		outputPath_QA = templatePath_QA;
+		templatePath_QA = templatePath_QA + infilename_QA;
+		outputPath_QA = "."+File.separator+"Data"+File.separator+"PDF"+File.separator+"" + outfilename_QA;
+
 		File outfile = new File("."+File.separator+"Data"+File.separator+"PDF");
-		/* --------------------------------------------------- */
+
 		outfile.mkdirs();
 
-		// File n = new File(".\\Data\\PDF\\outNyuryokuTemplate.pdf");
-		File file = null;
+		// add s.inoue 2011/08/19
+		Hashtable<String, String> kojinData = null;
+		// move s.inoue 2011/08/19
+		String strKensaYmd = "";
+		// move s.inoue 2011/08/22
+		List pdfPathHitokuteiList = new ArrayList();
+		List filePathList = new ArrayList();
 		try {
 			/*
 			 * 個人情報 PrintDataから個人情報を抽出
 			 */
 			Kojin tmpKojin = (Kojin) printData.get("Kojin");
-			Hashtable<String, String> kojinData = tmpKojin.getPrintKojinData();
+			kojinData = tmpKojin.getPrintKojinData();
 
-			/* --------------------------------------------------- */
-			/* Added 2008/09/11 薮  */
-			/* --------------------------------------------------- */
-			String strKensaYmd = "";
 			if(kojinData.get("KENSA_NENGAPI")==null){
-				// edit stop s.inoue 2009/10/15
-				// strKensaYmd = String.valueOf(FiscalYearUtil.getSystemDate());
-				// edit s.inoue 2009/10/16
-				// strKensaYmd = null;
 				strKensaYmd = getKenshinDate();
 			}else{
 				strKensaYmd = replaseNenGaPii(kojinData.get("KENSA_NENGAPI"));
-//				strKensaYmd = kojinData.get("KENSA_NENGAPI").replaceAll("[^0-9]+","");
 			}
 
 			// ファイル作成
 			PdfReader reader = new PdfReader(templatePath);
-			PdfStamper stamp = new PdfStamper(reader, new FileOutputStream(
-					outputPath + kojinData.get("UKETUKE_ID")
-			/* --------------------------------------------------- */
-			/* Modified 2008/09/11 薮  */
-			/* --------------------------------------------------- */
-//							+ kojinData.get("KENSA_NENGAPI")));
-							+ strKensaYmd));
-			/* --------------------------------------------------- */
+			PdfStamper stamp = new PdfStamper(reader, new FileOutputStream(outputPath + kojinData.get("UKETUKE_ID")	+ strKensaYmd));
 			AcroFields form = stamp.getAcroFields();
 
-			/* --------------------------------------------------- */
-			/* Modified 2008/09/11 薮  */
-			/* --------------------------------------------------- */
-//			file = new File(".\\Data\\PDF\\" + outfilename
+			templatePath = "."+File.separator+"Data"+File.separator+"PDF"+File.separator+"" + outfilename + kojinData.get("UKETUKE_ID") + strKensaYmd;
+			nyutuokuFile = new File("."+File.separator+"Data"+File.separator+"PDF"+File.separator+"" + outfilename);
 
-			file = new File("."+File.separator+"Data"+File.separator+"PDF"+File.separator+"" + outfilename
-					+ kojinData.get("UKETUKE_ID")
-//					+ kojinData.get("KENSA_NENGAPI"));
-					+ strKensaYmd);
-			/* --------------------------------------------------- */
+			// edit s.inoue 2011/07/08
+			PdfReader reader_QA = new PdfReader(templatePath_QA);
+			PdfStamper stamp_QA = new PdfStamper(reader_QA, new FileOutputStream(outputPath_QA + kojinData.get("UKETUKE_ID")	+ strKensaYmd));
+			AcroFields form_QA = stamp_QA.getAcroFields();
+
+			templatePath_QA = "."+File.separator+"Data"+File.separator+"PDF"+File.separator+"" + outfilename_QA + kojinData.get("UKETUKE_ID") + strKensaYmd;
+			lastFile = new File("."+File.separator+"Data"+File.separator+"PDF"+File.separator+"" + outfilename_QA);
 
 			// 健診年月日
 			form.setField("T1", kojinData.get("KENSA_NENGAPI"));
-			form.setField("T19", kojinData.get("KENSA_NENGAPI"));
+			form_QA.setField("T19", kojinData.get("KENSA_NENGAPI"));
 			// 受診券番号
 			form.setField("T2", kojinData.get("JYUSHIN_SEIRI_NO"));
-			form.setField("T20", kojinData.get("JYUSHIN_SEIRI_NO"));
+			form_QA.setField("T20", kojinData.get("JYUSHIN_SEIRI_NO"));
 			// 保険者番号
 			form.setField("T3", kojinData.get("HKNJANUM"));
-			form.setField("T21", kojinData.get("HKNJANUM"));
+			form_QA.setField("T21", kojinData.get("HKNJANUM"));
 			// 被保険者証等記号
 			form.setField("T4", kojinData.get("HIHOKENJYASYO_KIGOU"));
-			form.setField("T22", kojinData.get("HIHOKENJYASYO_KIGOU"));
+			form_QA.setField("T22", kojinData.get("HIHOKENJYASYO_KIGOU"));
 			// 被保険者証等番号
 			form.setField("T5", kojinData.get("HIHOKENJYASYO_NO"));
-			form.setField("T23", kojinData.get("HIHOKENJYASYO_NO"));
+			form_QA.setField("T23", kojinData.get("HIHOKENJYASYO_NO"));
 			// フリガナ
 			form.setField("T6", kojinData.get("KANANAME"));
-			form.setField("T24", kojinData.get("KANANAME"));
+			form_QA.setField("T24", kojinData.get("KANANAME"));
 			// 氏名
 			form.setField("T7", kojinData.get("NAME"));
-			form.setField("T26", kojinData.get("NAME"));
+			form_QA.setField("T26", kojinData.get("NAME"));
 
 			// 生年月日
 			form.setField("T8", kojinData.get("BIRTHDAY"));
-			form.setField("T25", kojinData.get("BIRTHDAY"));
+			form_QA.setField("T25", kojinData.get("BIRTHDAY"));
 
 			// 性別
 			form.setField("T9", kojinData.get("SEX"));
-			form.setField("T27", kojinData.get("SEX"));
+			form_QA.setField("T27", kojinData.get("SEX"));
 
 			// 年齢
 			form.setField("T10", kojinData.get("AGE"));
-			form.setField("T28", kojinData.get("AGE"));
+			form_QA.setField("T28", kojinData.get("AGE"));
 
-// del s.inoue 2009/11/16
-//			if (kojinData.get("UKETUKE_ID") != null) {
-//				Hashtable<String, String> ResultItem = null;
-//				// 追加の項目
-//				// 項目名
-//				int setCnt = 11;
-//				List tuika = this.tuika(kojinData);
-//				int tuikaSize = tuika.size();
-//
-//				if (tuikaSize > 0) {
-//					for (int i = 0; i < tuikaSize; i++) {
-//						ResultItem = (Hashtable<String, String>) tuika.get(i);
-//						form.setField("S" + Integer.toString(setCnt),
-//								ResultItem.get("KOUMOKU_NAME"));
-//						setCnt++;
-//					}
-//				}
-//
-//				// 項目名
-//				int setTani = 19;
-//				if (tuikaSize > 0) {
-//					for (int i = 0; i < tuikaSize; i++) {
-//						ResultItem = (Hashtable<String, String>) tuika.get(i);
-//						form.setField("S" + Integer.toString(setTani),
-//								ResultItem.get("TANI"));
-//						setTani++;
-//					}
-//				}
-//
-//			}
+			// move s.inoue 2011/08/22
+			// クローズ処理移動
 
-			stamp.setFormFlattening(true);
-			stamp.close();
+		// edit s.inoue 2011/07/04
+//		List pdfPathSplitList = new ArrayList();
 
-		} catch (Exception e) {
-			e.printStackTrace();
+		PrintNyuryokuHitokutei printHitokutei = new PrintNyuryokuHitokutei();
+//		Hashtable<String, String> kojinData = new Hashtable<String, String>();
+		Hashtable<String, String> KikanData = new Hashtable<String, String>();
+
+		List kensaNenList = new ArrayList();
+		kensaNenList.add(strKensaYmd);
+
+// del s.inoue 2011/08/19
+//		kojinData.put("SEX","男性");
+//		kojinData.put("KENSA_NENGAPI","2011年07月15日");
+//		kojinData.put("UKETUKE_ID","201107280001");
+//		kojinData.put("HKNJANUM","11111111");
+//		kojinData.put("AGE","61歳");
+//		kojinData.put("JYUSHIN_SEIRI_NO","00000000001");
+//		kojinData.put("HIHOKENJYASYO_NO","あ");
+//		kojinData.put("HIHOKENJYASYO_KIGOU","あ");
+//		kojinData.put("UKETUKE_NENGAPI","20110410");
+//		kojinData.put("KANANAME","ニチイタロウ");
+//		kojinData.put("NAME","");
+//		kojinData.put("BIRTHDAY","昭和25年5月1日");
+//		KikanData.put("TEL","03333333333");
+//		KikanData.put("ADR","東京都練馬区南大泉");
+//		KikanData.put("TIBAN","");
+//		KikanData.put("KIKAN_NAME","日医クリニック");
+//		KikanData.put("POST","1780064");
+//		KikanData.put("TKIKAN_NO","1111111111");
+
+		pdfPathHitokuteiList = printHitokutei.startAddMedical(kensaNenList,kojinData,KikanData,"お",1);
+
+		for (int i = 0; i < pdfPathHitokuteiList.size(); i++) {
+			filePathList.add(pdfPathHitokuteiList.get(i));
 		}
-		return file;
+
+		// add s.inoue 2011/08/22
+		// ページ番号
+		String totalPage = String.valueOf(filePathList.size() + 2);
+		form.setField("PAGE_NUM", "(1/" + totalPage +")");
+		form_QA.setField("PAGE_NUM","(" + totalPage + "/" + totalPage +")" );
+
+		stamp.setFormFlattening(true);
+		stamp.close();
+		stamp_QA.setFormFlattening(true);
+		stamp_QA.close();
+
+	} catch (Exception e) {
+		e.printStackTrace();
 	}
 
+
+
+		unitPdf(0,filePathList);
+
+		return nyutuokuFile;
+	}
+
+//	// edit s.inoue 2011/07/04
+//	/**
+//	 * 引数によりＰＤＦを結合するか判断して結合する。
+//	 */
+//	private void unitPdf(List filePathList) {
+//		int fileAddCnt = filePathList.size();
+//
+//		try {
+//			PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(file));
+//			for(int i = 0;i<fileAddCnt;i++){
+//				PdfReader reader = new PdfReader((String)filePathList.get(i));
+//				copy.addDocument(reader);
+//				new File((String)filePathList.get(i)).deleteOnExit();
+//				new File((String)filePathList.get(i)).deleteOnExit();
+//				reader.close();
+//			}
+//
+//			copy.close();
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (DocumentException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
+	/**
+	 * 引数によりＰＤＦを結合するか判断して結合する。
+	 */
+	private void unitPdf(int juge, List filePathList) {
+		PdfReader addpage1 ;
+		PdfReader addpage2 ;
+		PdfReader addpage3 ;
+		PdfReader addpage4 ;
+		// edit s.inoue 2009/12/29
+		PdfReader addpage5 ;
+
+		int fileAddCnt = filePathList.size();
+
+		try {
+			PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(outputPath));
+			// edit s.inoue 2011/07/05
+			// addpage1 = new PdfReader(PrintDefine.WORK_PDF_TMP_DUMMY_PDF);
+			addpage1 = new PdfReader(templatePath);
+
+			copy.addDocument(addpage1);
+
+			for(int i = 0;i<fileAddCnt;i++){
+				PdfReader reader = new PdfReader((String)filePathList.get(i));
+				copy.addDocument(reader);
+				new File((String)filePathList.get(i)).deleteOnExit();
+				new File((String)filePathList.get(i)).deleteOnExit();
+				reader.close();
+			}
+
+			// edit s.inoue 2011/07/08
+			addpage2 = new PdfReader(templatePath_QA);
+			copy.addDocument(addpage2);
+
+			// edit s.inoue 2009/12/29
+			if(juge==1){
+				addpage2 = new PdfReader(PrintDefine.WORK_PDF_DUMMY2_PDF);
+				copy.addDocument(addpage2);
+			}else if(juge==2){
+				addpage2 = new PdfReader(PrintDefine.WORK_PDF_DUMMY2_PDF);
+				addpage3 = new PdfReader(PrintDefine.WORK_PDF_TMP_INKEKKA2PAGE_PDF);
+				copy.addDocument(addpage2);
+				copy.addDocument(addpage3);
+			}else if(juge==3){
+				addpage2 = new PdfReader(PrintDefine.WORK_PDF_DUMMY2_PDF);
+				addpage3 = new PdfReader(PrintDefine.WORK_PDF_TMP_INKEKKA2PAGE_PDF);
+				addpage4 = new PdfReader(PrintDefine.WORK_PDF_TMP_INKEKKA3PAGE_PDF);
+				copy.addDocument(addpage2);
+				copy.addDocument(addpage3);
+				copy.addDocument(addpage4);
+			}else if(juge==4){
+				addpage2 = new PdfReader(PrintDefine.WORK_PDF_DUMMY2_PDF);
+				addpage3 = new PdfReader(PrintDefine.WORK_PDF_TMP_INKEKKA2PAGE_PDF);
+				addpage4 = new PdfReader(PrintDefine.WORK_PDF_TMP_INKEKKA3PAGE_PDF);
+				addpage5 = new PdfReader(PrintDefine.WORK_PDF_TMP_INKEKKA4PAGE_PDF);
+				copy.addDocument(addpage2);
+				copy.addDocument(addpage3);
+				copy.addDocument(addpage4);
+				copy.addDocument(addpage5);
+			}
+			copy.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	/**
 	 * 入力票の追加の健診項目を作成する。
 	 */

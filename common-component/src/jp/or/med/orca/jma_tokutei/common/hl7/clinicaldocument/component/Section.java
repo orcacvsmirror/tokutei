@@ -138,8 +138,15 @@ public class Section {
 					entryElement.appendChild(observationElement);
 					element.appendChild(entryElement);
 				}else{
-					// add s.inoue 2009/12/29
-					entryElement.appendChild(doc.createComment(observationItem.getCodeDisplayName()));
+					// add s.inoue 2013/01/29
+					String tmpCd = observationItem.getCode();
+					String tmpAdd = "";
+					if (tmpCd.equals("3D045000001906202") || tmpCd.equals("3D045000001920402") || tmpCd.equals("3D045000001927102") || tmpCd.equals("3D045000001999902")){
+						tmpAdd = "(JDS)";
+					}else if (tmpCd.equals("3D046000001906202") || tmpCd.equals("3D046000001920402") || tmpCd.equals("3D046000001927102") || tmpCd.equals("3D046000001999902")){
+						tmpAdd = "(NGSP)";
+					}
+					entryElement.appendChild(doc.createComment(observationItem.getCodeDisplayName() +tmpAdd));
 					entryElement.appendChild(observationElement);
 					element.appendChild(entryElement);
 				}

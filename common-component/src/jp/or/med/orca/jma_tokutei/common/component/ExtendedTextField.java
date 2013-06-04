@@ -1,8 +1,13 @@
 package jp.or.med.orca.jma_tokutei.common.component;
 
+import java.awt.AWTKeyStroke;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -38,7 +43,9 @@ public class ExtendedTextField extends JTextField implements FocusListener{
 
 		this.setText(text);
 
-		initActions(handleEnterKey);
+		// eidt s.inoue 2012/11/27
+		// initActions(handleEnterKey);
+		addEnterPolicy(this);
 
 		this.imeController = new ImeController();
 		this.imeController.addFocusListenerForCharcterSubsets(this, mode);
@@ -98,6 +105,39 @@ public class ExtendedTextField extends JTextField implements FocusListener{
 		}
 	}
 
+	// enterキー制御
+	private void addEnterPolicy(JComponent comp) {
+		  //次へのフォーカス設定
+		  Set<AWTKeyStroke> keystrokes = new HashSet<AWTKeyStroke>();
+		  Set<AWTKeyStroke> oldKeyStrokes = comp
+		          .getFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
+		  if (oldKeyStrokes != null) {
+		      //既に登録されているKeySetをがあればコピーする。
+		  //標準であればTabKeyなどが入っているはず
+		      for (AWTKeyStroke akw : oldKeyStrokes) {
+		          keystrokes.add(akw);
+		      }
+		  }
+
+		  //ENTERを追加
+		  keystrokes.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_ENTER, 0));
+		  comp.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, keystrokes);
+
+		  //前へのフォーカス設定
+		  keystrokes = new HashSet<AWTKeyStroke>();
+		  oldKeyStrokes = comp.getFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
+		  if (oldKeyStrokes != null) {
+		      //既に登録されているKeySetをがあればコピーする。
+		  //標準であればShft+TabKeyなどが入っているはず
+		      for (AWTKeyStroke akw : oldKeyStrokes) {
+		          keystrokes.add(akw);
+		      }
+		  }
+
+		  // Shift+Enterを追加
+		  keystrokes.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_MASK));
+		  comp.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, keystrokes);
+	}
 	public void setLimit(int limit) {
 		LengthLimitableDocument doc = (LengthLimitableDocument)getDocument();
 		doc.setLimit(limit);

@@ -25,12 +25,7 @@ public class ViewSettings {
 //	private static Properties properties;
 
 	private static String commonTitle = null;
-
-	/* Added 2008/05/15 若月  */
-	/* --------------------------------------------------- */
 	private static String adminCommonTitleWithVersion = null;
-	/* --------------------------------------------------- */
-
 	private static String commonTitleWithKikanInfomation = null;
 
 	/**
@@ -77,16 +72,7 @@ public class ViewSettings {
 	 */
 	public static String getTokuteFrameTitle() {
 		String value = commonTitle;
-
-		/* Modified 2008/05/14 若月  */
-		/* --------------------------------------------------- */
-//		if (commonTitle == null || commonTitle.isEmpty()) {
-//			value = getUsingValue("tokutei.frame.title.text");
-//		}
-		/* --------------------------------------------------- */
 		value = getUsingValue("tokutei.frame.title.text");
-		/* --------------------------------------------------- */
-
 		return value;
 	}
 
@@ -97,6 +83,15 @@ public class ViewSettings {
 		return commonTitleWithKikanInfomation;
 	}
 
+// del s.inoue 2011/05/10
+//	/**
+//	 * <p>Form の共通グリッドサイズを取得する</p>
+//	 * @eturn String 共通グリッドサイズ
+//	 */
+//	public static int getGridPageSize() {
+//		return getUsingValueInt("common.form.grid.view.pagesize");
+//	}
+
 	/**
 	 * <p>Frame の共通サイズを取得する</p>
 	 * @eturn String 共通サイズ
@@ -104,6 +99,17 @@ public class ViewSettings {
 	public static Dimension getFrameCommonSize() {
 		int width = getUsingValueInt("common.frame.width");
 		int height = getUsingValueInt("common.frame.height");
+
+		return new Dimension(width, height);
+	}
+
+	/**
+	 * <p>Form の共通サイズを取得する</p>
+	 * @eturn String 共通サイズ
+	 */
+	public static Dimension getFormCommonSize() {
+		int width = getUsingValueInt("common.form.width");
+		int height = getUsingValueInt("common.form.height");
 
 		return new Dimension(width, height);
 	}
@@ -143,6 +149,45 @@ public class ViewSettings {
 
 		return color;
 	}
+
+
+    /*
+     * カラーテーブル前景色
+     */
+    public static Color getRequiedItemFrColor()
+    {
+        Color color = getUsingValueColor("common.frame.requireditem.frcolor");
+        return color;
+    }
+    public static Color getSyosaiItemFrColor()
+    {
+        Color color = getUsingValueColor("common.frame.syosai.frcolor");
+        return color;
+    }
+    public static Color getTuikaItemFrColor()
+    {
+        Color color = getUsingValueColor("common.frame.tuika.frcolor");
+        return color;
+    }
+
+    /*
+     * カラーテーブル背景色
+     */
+    public static Color getKihonItemBgColor()
+    {
+        Color color = getUsingValueColor("common.frame.kihon.bgcolor");
+        return color;
+    }
+    public static Color getSyosaiItemBgColor()
+    {
+        Color color = getUsingValueColor("common.frame.syosai.bgcolor");
+        return color;
+    }
+    public static Color getTuikaItemBgColor()
+    {
+        Color color = getUsingValueColor("common.frame.tuika.bgcolor");
+        return color;
+    }
 
 	/**
 	 * 重要項目の背景色を取得する。
@@ -465,8 +510,6 @@ public class ViewSettings {
 		return font;
 	}
 
-	/* Added 2008/05/15 若月  */
-	/* --------------------------------------------------- */
 	public static String getAdminCommonTitleWithVersion() {
 		return adminCommonTitleWithVersion;
 	}

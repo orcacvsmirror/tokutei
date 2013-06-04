@@ -31,7 +31,8 @@ public abstract class JMTHantei
 	 *
 	 *    @return none
 	 */
-	public static int checkMT( JMTHanteiData data )
+	// eidt s.inoue 2012/09/14
+	public static int checkMT( JMTHanteiData data,boolean newHbA1c)
 	{
 		boolean isFirstStep = false;
 
@@ -63,7 +64,7 @@ public abstract class JMTHantei
 				// 判定不能
 				return RESULT_INABILLITY;
 			}
-			
+
 			switch( (int)data.getGender() )
 			{
 				/**
@@ -72,7 +73,7 @@ public abstract class JMTHantei
 				case GENDER_MAN:
 					{
 						Float iStomach[] = data.getStomach();
-						
+
 						if( iStomach[ 0 ] == null && iStomach[ 1 ] == null && iStomach[ 2 ] == null )
 						{
 							// 判定不能
@@ -90,7 +91,7 @@ public abstract class JMTHantei
 									{
 										isFirstStep = true;
 									}
-									
+
 									break;
 								}
 							}
@@ -104,7 +105,7 @@ public abstract class JMTHantei
 				case GENDER_WOMAN:
 					{
 						Float iStomach[] = data.getStomach();
-						
+
 						if( iStomach[ 0 ] == null && iStomach[ 1 ] == null && iStomach[ 2 ] == null )
 						{
 							// 判定不能
@@ -122,14 +123,14 @@ public abstract class JMTHantei
 									{
 										isFirstStep = true;
 									}
-									
+
 									break;
 								}
 							}
 						}
 					}
 					break;
-					
+
 				default:
 					{
 						// 判定不能
@@ -166,7 +167,12 @@ public abstract class JMTHantei
 			else if( data.getHbA1c() != null )
 			{
 				// HbA1c 5.5 以上
-				if( data.getHbA1c().floatValue() >= 5.5 )
+				// eidt s.inoue 2012/09/14
+				double dblHbA1c = 0;
+				if (newHbA1c)
+					dblHbA1c = 0.5;
+
+				if( data.getHbA1c().floatValue() >= (5.5 + dblHbA1c))
 				{
 					isCategory1 = true;
 				}
@@ -203,7 +209,7 @@ public abstract class JMTHantei
 					{
 						isCategory2 = true;
 					}
-					
+
 					break;
 				}
 			}
@@ -218,7 +224,7 @@ public abstract class JMTHantei
 					{
 						isCategory2 = true;
 					}
-					
+
 					break;
 				}
 			}
@@ -251,9 +257,9 @@ public abstract class JMTHantei
 					isCategory3 = true;
 				}
 			}
-				
+
 			if( data.getHDL() != null )
-			{	
+			{
 				// HDL コレステロール 40 未満
 				if( data.getHDL().intValue() < 40 )
 				{
@@ -299,7 +305,7 @@ public abstract class JMTHantei
 			{
 				// 該当
 				iResult = RESULT_STANDARD_CORRESPOND;
-			}	
+			}
 		}
 
 		// 欠損値を考慮した判定

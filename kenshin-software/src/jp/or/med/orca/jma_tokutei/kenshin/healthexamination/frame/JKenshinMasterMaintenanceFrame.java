@@ -494,7 +494,7 @@ public class JKenshinMasterMaintenanceFrame extends JFrame implements ActionList
 			gridBagConstraints5.insets = new Insets(0, 10, 0, 180);
 			jLabelkanou = new ExtendedLabel();
 			jLabelkanou.setFont(new Font("Dialog", Font.PLAIN, 12));
-			jLabelkanou.setText("“ü—Í‰Â”\€–Ú");
+			jLabelkanou.setText("“ü—Í€–Ú");
 			GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
 			gridBagConstraints6.gridx = 1;
 			gridBagConstraints6.gridy = 0;

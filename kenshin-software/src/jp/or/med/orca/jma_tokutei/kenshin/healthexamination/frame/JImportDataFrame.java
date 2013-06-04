@@ -270,7 +270,7 @@ public class JImportDataFrame extends JFrame implements ActionListener,ItemListe
 			gridLayout1.setRows(2);
 
 			jLabel_MainExpl = new ExtendedLabel();
-			jLabel_MainExpl.setText("検査センターからのデータファイルを取り込みます。");
+			jLabel_MainExpl.setText("検査センターからのデータファイル(txt,csv)、本システムより出力済みHL7ファイル(xml,zip)を取り込みます。");
 			jLabel_MainExpl.setFont(new Font("Dialog", Font.PLAIN, 14));
 			jLabel_MainExpl.setName("jLabel1");
 

@@ -15,6 +15,8 @@ import org.apache.log4j.PropertyConfigurator;
 import jp.or.med.orca.jma_tokutei.onlineupdate.task.*;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.app.JPath;
+import jp.or.med.orca.jma_tokutei.common.component.ExtendedButton;
+import jp.or.med.orca.jma_tokutei.common.component.ExtendedImageIcon;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
 import jp.or.med.orca.jma_tokutei.common.frame.ProgressWindow;
@@ -31,7 +33,7 @@ import jp.or.med.orca.jma_tokutei.common.frame.ViewSettingsFile;
  *    オンラインアップデート基本画面
  *    Modified 2008/03/09 井上
  */
-public class JMainFrame extends JFrame implements ActionListener {
+public class JMainFrame extends JFrame implements ActionListener,KeyListener {
 	private static final long serialVersionUID = 1L;
 
 	private JLabel m_guiStatus = null;
@@ -45,18 +47,9 @@ public class JMainFrame extends JFrame implements ActionListener {
 
 	/**
 	 *  メイン関数
-	 *
-	 *    @param  none
-	 *
-	 *    @return none
 	 */
 	public static void main(String[] args) {
-		/* Modified 2008/06/29 若月  */
-		/* --------------------------------------------------- */
-//		new JMainFrame("特定健診アップデートツール");
-		/* --------------------------------------------------- */
 		new JMainFrame("アップデートソフトウェア");
-		/* --------------------------------------------------- */
 	}
 
 	/**
@@ -73,23 +66,37 @@ public class JMainFrame extends JFrame implements ActionListener {
 		HttpConnecter.setProxyPort(PropertyUtil.getProperty("http.proxyPort"));
 		HttpConnecter.setNonProxyHosts(PropertyUtil
 				.getProperty("http.nonProxyHosts"));
-		//s.inoue 20080620
 		String logfile = PropertyUtil.getProperty("log.filename");
 		PropertyConfigurator.configure(logfile);
 
 		// 実行ボタン
-		JButton update = new JButton("アップデート実行");
+		// eidt s.inoue 2011/12/19
+		// ExtendedButton update = new ExtendedButton("アップデート実行(F9)");
+		ExtendedImageIcon iIconUpdate = new ExtendedImageIcon(JPath.Ico_Common_Update);
+		ImageIcon iconUpdate = iIconUpdate.setStrechIcon(this, 0.7);
+		ExtendedButton update= new ExtendedButton(
+				"Decide","実行(D)","実行(ALT+D)",KeyEvent.VK_D,iconUpdate);
+
 		update.setActionCommand("update");
 		update.addActionListener(this);
 
 		// 設定ボタン
-		JButton proxy = new JButton("プロキシ設定");
+		// ExtendedButton proxy = new ExtendedButton("プロキシ設定(F11)");
+		ExtendedImageIcon iIconproxy = new ExtendedImageIcon(JPath.Ico_Common_Proxy);
+		ImageIcon iconproxy = iIconproxy.setStrechIcon(this, 0.7);
+		ExtendedButton proxy= new ExtendedButton(
+				"Proxy","プロキシ(P)","プロキシ(ALT+P)",KeyEvent.VK_P,iconproxy);
+
 		proxy.setActionCommand("proxy");
 		proxy.addActionListener(this);
 
-
 		// 終了ボタン
-		JButton cancel = new JButton("終了");
+		// ExtendedButton cancel = new ExtendedButton("終了(F12)");
+		ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Common_Exit);
+		ImageIcon icon = iIcon.setStrechIcon(this, 0.7);
+		ExtendedButton cancel= new ExtendedButton(
+				"End","終了(E)","終了(ALT+E)",KeyEvent.VK_E,icon);
+
 		cancel.setActionCommand("cancel");
 		cancel.addActionListener(this);
 
@@ -104,21 +111,48 @@ public class JMainFrame extends JFrame implements ActionListener {
 		update.setFont(new Font("Dialog", Font.PLAIN, 12));
 		proxy.setFont(new Font("Dialog", Font.PLAIN, 12));
 		cancel.setFont(new Font("Dialog", Font.PLAIN, 12));
+
+		// add s.inoue 2009/12/03
+		// functionキー
+		update.addKeyListener(this);
+		proxy.addKeyListener(this);
+		cancel.addKeyListener(this);
+
 		m_guiStatus.setFont(new Font("Dialog", Font.PLAIN, 12));
 
 		// パネル作成
-		getContentPane().setLayout(new CardLayout(5, 5));
+		getContentPane().setLayout(new CardLayout(3, 3));
 		JPanel panelButton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
 		panelButton.add(update);
 		panelButton.add(proxy);
 		panelButton.add(cancel);
 
-		JPanel panelScreen = new JPanel(new GridLayout(3, 1));
+		// eidt s.inoue 2011/12/19
+		// JPanel panelScreen = new JPanel(new GridLayout(3, 1));
+		JPanel panelScreen = new JPanel(new GridBagLayout());
 
-		panelScreen.add(m_guiStatus);
-		panelScreen.add(m_guiProgress);
-		panelScreen.add(panelButton);
+		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+		gridBagConstraints1.fill = GridBagConstraints.BOTH;
+		gridBagConstraints1.gridy = 0;
+		gridBagConstraints1.gridx = 0;
+		gridBagConstraints1.weightx = 1.0D;
+
+		GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
+		gridBagConstraints2.fill = GridBagConstraints.BOTH;
+		gridBagConstraints2.gridy = 1;
+		gridBagConstraints2.gridx = 0;
+		gridBagConstraints2.weightx = 1.0D;
+
+		GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
+		gridBagConstraints3.fill = GridBagConstraints.BOTH;
+		gridBagConstraints3.gridy = 2;
+		gridBagConstraints3.gridx = 0;
+		gridBagConstraints3.weightx = 1.0D;
+
+		panelScreen.add(m_guiStatus,gridBagConstraints1);
+		panelScreen.add(m_guiProgress,gridBagConstraints2);
+		panelScreen.add(panelButton,gridBagConstraints3);
 
 		getContentPane().add("ScreenGap", panelScreen);
 
@@ -157,6 +191,27 @@ public class JMainFrame extends JFrame implements ActionListener {
 				// s.inoue 20080620
 				logger.warn(err.getMessage());
 			}
+	}
+
+	// add s.inoue 2009/12/03
+	@Override
+	public void keyPressed(KeyEvent keyEvent) {
+		try {
+			switch(keyEvent.getKeyCode()){
+				case KeyEvent.VK_F9:
+					logger.info("アップデート実行(F9)");
+					executeTaskXML();break;
+				case KeyEvent.VK_F11:
+					logger.info("プロキシ設定(F11)");
+					new ProxySelect(this);break;
+				case KeyEvent.VK_F12:
+					logger.info("終了(F12)");
+					System.exit(0);break;
+			}
+			}catch (Exception err){
+				logger.error(err.getMessage());
+			}
+
 	}
 
 	/**
@@ -242,5 +297,17 @@ public class JMainFrame extends JFrame implements ActionListener {
 		}
 
 		System.out.println("executeTaskXML():end");
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 }

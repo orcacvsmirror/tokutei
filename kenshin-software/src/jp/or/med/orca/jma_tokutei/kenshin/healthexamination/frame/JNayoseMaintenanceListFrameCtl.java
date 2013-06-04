@@ -166,8 +166,9 @@ public class JNayoseMaintenanceListFrameCtl extends JNayoseMaintenanceListFrame
             if(i<3) {
                 table.removeColumn(table.getColumnModel().getColumn(i));
                 modelfixed.getColumnModel().getColumn(i).setResizable(false);
-            }else{
-                modelfixed.removeColumn(modelfixed.getColumnModel().getColumn(i));
+                // del s.inoue 2010/07/07
+//            }else{
+//                modelfixed.removeColumn(modelfixed.getColumnModel().getColumn(i));
             }
         }
 
@@ -252,8 +253,9 @@ public class JNayoseMaintenanceListFrameCtl extends JNayoseMaintenanceListFrame
 	            if(i<3) {
 	                table.removeColumn(table.getColumnModel().getColumn(i));
 	                modelfixed.getColumnModel().getColumn(i).setResizable(false);
-	            }else{
-	                modelfixed.removeColumn(modelfixed.getColumnModel().getColumn(i));
+	            // del s.inoue 2010/07/07
+//	            }else{
+//	                modelfixed.removeColumn(modelfixed.getColumnModel().getColumn(i));
 	            }
 	        	}
 
@@ -495,7 +497,9 @@ public class JNayoseMaintenanceListFrameCtl extends JNayoseMaintenanceListFrame
 				.ConnectKikanDatabase(JApplication.kikanNumber);
 			// edit s.inoue 2009/11/14
 			// initializeTable();
-			resultRefresh();
+			// edit y.okano 2010/05/18
+			//resultRefresh();
+			searchRefresh();
 		} catch (SQLException ex) {
 			logger.error(ex.getMessage());
 		}
@@ -507,17 +511,19 @@ public class JNayoseMaintenanceListFrameCtl extends JNayoseMaintenanceListFrame
 	public void pushedChangeButton(ActionEvent e) {
 		if (table.getSelectedRowCount() == 1) {
 			// edit s.inoue 2009/12/04 ずれ補正
+			// edit s.inoue 2010/07/07
 			// 紐付けID,整理番号,氏名漢字,氏名カナ,生年月日,性別,更新日時
-			String himotukeID = (String) modelfixed.getData(table.getSelectedRow()).get(0);
-			String name = (String) modelfixed.getData(table.getSelectedRow()).get(3);
-			String nameKana = (String) table.getData(table.getSelectedRow()).get(2);
-			String birthDay = (String) table.getData(table.getSelectedRow()).get(4);
-			String sex = (String) table.getData(table.getSelectedRow()).get(5);
-			String home = (String) table.getData(table.getSelectedRow()).get(6);
-			String hiKigou = (String) table.getData(table.getSelectedRow()).get(7);
-			String hiBangou = (String) table.getData(table.getSelectedRow()).get(8);
-			String updatetime = (String) table.getData(table.getSelectedRow()).get(9);
-			String uketukeID =hm.get(table.getSelectedRow());
+			String himotukeID = (String) modelfixed.getData(table.getDoubleClickedSelectedRow()).get(0);
+			String name = (String) modelfixed.getData(table.getDoubleClickedSelectedRow()).get(3);
+			String nameKana = (String) table.getData(table.getDoubleClickedSelectedRow()).get(2);
+			String birthDay = (String) table.getData(table.getDoubleClickedSelectedRow()).get(4);
+			String sex = (String) table.getData(table.getDoubleClickedSelectedRow()).get(5);
+			String home = (String) table.getData(table.getDoubleClickedSelectedRow()).get(6);
+			String hiKigou = (String) table.getData(table.getDoubleClickedSelectedRow()).get(7);
+			String hiBangou = (String) table.getData(table.getDoubleClickedSelectedRow()).get(8);
+			String updatetime = (String) table.getData(table.getDoubleClickedSelectedRow()).get(9);
+			// edit s.inoue 2010/07/07
+			String uketukeID =hm.get(table.getDoubleClickedSelectedRow());
 
 			JScene.CreateDialog(this,
 					new JNayoseMaintenanceEditFrameCtl(himotukeID,uketukeID,name,nameKana,birthDay,sex,home,hiKigou,hiBangou),

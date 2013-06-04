@@ -103,9 +103,15 @@ public class OrcaConnection {
 		buffer.append(" ON ");
 		buffer.append(" NUM.PTID = INF.PTID ");
 
+		// eidt s.inoue 2012/08/20
+		buffer.append(" AND INF.HOSPNUM = NUM.HOSPNUM ");
+
 		buffer.append(" INNER JOIN TBL_PTHKNINF AS HKNINF ");
 		buffer.append(" ON ");
 		buffer.append(" NUM.PTID = HKNINF.PTID ");
+
+		// eidt s.inoue 2012/08/20
+		buffer.append(" AND HKNINF.HOSPNUM = NUM.HOSPNUM ");
 
 		buffer.append(" WHERE ");
 		buffer.append(" NUM.PTNUM = ?");

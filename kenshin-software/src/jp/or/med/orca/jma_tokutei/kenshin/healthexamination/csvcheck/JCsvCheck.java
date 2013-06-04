@@ -69,9 +69,6 @@ public abstract class JCsvCheck
 		return false;
 	}
 }
-
-
-
 //Source Code Version Tag System v1.00  -- Do not remove --
 //Product-Tag: {4F85C2F4EE-5847B3BB7A9-ADC5AC59E3-EF66F79A1}
 

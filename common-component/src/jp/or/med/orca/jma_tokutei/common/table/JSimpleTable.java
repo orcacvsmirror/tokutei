@@ -1,5 +1,6 @@
 package jp.or.med.orca.jma_tokutei.common.table;
 
+import java.awt.AWTKeyStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FontMetrics;
@@ -8,6 +9,7 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -17,6 +19,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -513,6 +517,9 @@ public class JSimpleTable extends JTable implements TableModel
 
 		getTableHeader().setReorderingAllowed( false );
 
+		// add s.inoue 2012/07/09
+		addEnterPolicy(this);
+
 		/**
 		 *  @Override addFocusListener::focusLost
 		 */
@@ -541,6 +548,12 @@ public class JSimpleTable extends JTable implements TableModel
 					getCellEditor().stopCellEditing();
 				}
 
+				// edit s.inoue 2010/07/12 行の選択状態変更
+				clearSelection();
+				int row = getDoubleClickedSelectedRow();
+				int col = getSelectedColumn();
+
+				changeSelection(row, col, true, true);
 // del s.inoue 2009/12/15
 //				// add s.inoue 2009/12/15
 //				int[] selection = getSelectedRows();
@@ -560,6 +573,8 @@ public class JSimpleTable extends JTable implements TableModel
 		    public void focusGained(FocusEvent e) {
 			super.focusGained(e);
 			JSimpleTable table = JSimpleTable.this;
+			// eidt s.inoue 2012/07/06
+			if (table == null) return;
 			if (table.getRowCount() == 0) {
 			    table.transferFocus();
 			}
@@ -570,6 +585,39 @@ public class JSimpleTable extends JTable implements TableModel
 		});
 	}
 
+	// enterキー制御
+	private void addEnterPolicy(JComponent comp) {
+		  //次へのフォーカス設定
+		  Set<AWTKeyStroke> keystrokes = new HashSet<AWTKeyStroke>();
+		  Set<AWTKeyStroke> oldKeyStrokes = comp
+		          .getFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
+		  if (oldKeyStrokes != null) {
+		      //既に登録されているKeySetをがあればコピーする。
+		  //標準であればTabKeyなどが入っているはず
+		      for (AWTKeyStroke akw : oldKeyStrokes) {
+		          keystrokes.add(akw);
+		      }
+		  }
+
+		  //ENTERを追加
+		  keystrokes.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_ENTER, 0));
+		  comp.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, keystrokes);
+
+		  //前へのフォーカス設定
+		  keystrokes = new HashSet<AWTKeyStroke>();
+		  oldKeyStrokes = comp.getFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
+		  if (oldKeyStrokes != null) {
+		      //既に登録されているKeySetをがあればコピーする。
+		  //標準であればShft+TabKeyなどが入っているはず
+		      for (AWTKeyStroke akw : oldKeyStrokes) {
+		          keystrokes.add(akw);
+		      }
+		  }
+
+		  // Shift+Enterを追加
+		  keystrokes.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_MASK));
+		  comp.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, keystrokes);
+	}
 	// add s.inoue 2009/12/15
 	public int[] getSelectedRows() {
 		int[] rows = super.getSelectedRows();
@@ -582,8 +630,15 @@ public class JSimpleTable extends JTable implements TableModel
 		return rows;
 	}
 
-	// add s.inoue 2009/12/15
+	// edit s.inoue 2010/07/07 singleClick
 	public int getSelectedRow() {
+		int row = super.getSelectedRow();
+		if(row <= 0) return 0;
+		return row;
+	}
+
+	// edit s.inoue 2010/07/07 doubleClick
+	public int getDoubleClickedSelectedRow() {
 		int row = super.getSelectedRow();
 		if(row <= 0) return 0;
 		return convertRowIndexToModel(row);

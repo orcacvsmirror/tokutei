@@ -35,13 +35,16 @@ public class JPath {
 	/**
 	 *  データベース拡張子
 	 */
-	final public static String DATA_BASE_EXTENSION =
-		".fdb";
-
-	public static final String PATH_FILE_PROPERTIES = "file.properties";
-
-
+	final public static String DATA_BASE_EXTENSION =".fdb";
+// del s.inoue 2011/04/12
+//	public static final String PATH_FILE_PROPERTIES = "file.properties";
 	public static final String CURRENT_DIR_PATH = getCurrnetPath();
+	public static final double CONST_FIX_ICON =0.9;
+	public static final double CONST_FIX_ICON_SABU =0.8;
+	// add s.inoue 2012/07/06
+	public static final double CONST_SYSTEM_FIX_ICON =0.6;
+	public static final double CONST_KENSHIN_FIX_ICON =0.3;
+
 	private static org.apache.log4j.Logger logger = Logger.getLogger(JPath.class);
 
 	private static String getCurrnetPath(){
@@ -59,10 +62,78 @@ public class JPath {
 	}
 
 	/**
+	 *  Imagesフォルダ
+	 */
+	final public static String IcoPath = "Images" + JApplication.FILE_SEPARATOR;
+	final public static String IcoNayose = IcoPath + "keinenExcute.png";
+
+	final public static String Ico_Common_METABO =IcoPath + "icon.png";
+	/* 共通静的 */
+	final public static String Ico_Common_Print1 =IcoPath + "common_Print1.png";
+	final public static String Ico_Common_Print2 =IcoPath + "common_Print2.png";
+	final public static String Ico_Common_Detail =IcoPath + "common_Detail.png";
+	final public static String Ico_Common_Select =IcoPath + "common_Select.png";
+	final public static String Ico_Common_Decide =IcoPath + "common_Decide.png";
+	final public static String Ico_Common_HL7Export =IcoPath + "common_HL7Export.png";
+	final public static String Ico_Common_Delete =IcoPath + "del.png";
+	final public static String Ico_Common_Reload =IcoPath + "reload.png";
+
+	final public static String Ico_Common_Check =IcoPath + "common_check.png";
+	final public static String Ico_Common_Exit =IcoPath + "common_Exit.png";
+	final public static String Ico_Common_Back =IcoPath + "common_back.png";
+	final public static String Ico_Common_Add =IcoPath + "common_add.png";
+//	final public static String Ico_Common_DialogClose = IcoPath + "closewindow.png";
+//	final public static String Ico_Common_HelpBook = IcoPath + "common_Help.png";
+	// eidt s.inoue 2013/03/12 大文字
+	final public static String Ico_Common_Redo = IcoPath + "common_redo.png";
+	final public static String Ico_Common_Deplicate = IcoPath + "common_Deplicate.png";
+	final public static String Ico_Common_Clear = IcoPath + "common_Clear.png";
+	final public static String Ico_Common_Register = IcoPath + "common_Save.png";
+//	final public static String Ico_Common_Title1 = IcoPath + "common_help_base02.gif";
+	final public static String Ico_Common_Orca= IcoPath + "common_orca.png";
+	final public static String Ico_Common_Version= IcoPath + "common_Version.png";
+
+	// add s.inoue 2012/07/04
+	final public static String Ico_Common_Pattern= IcoPath + "kekkapattern_AddPattern.png";
+	final public static String Ico_Common_Proxy= IcoPath + "proxy.png";
+	final public static String Ico_Common_Update= IcoPath + "onlineupdate.png";
+
+	/* ログイン */
+	final public static String Ico_Login_Setting=IcoPath + "login_Setting.png";
+	final public static String Ico_Login_Login=IcoPath + "common_Login.png";
+
+	/* バックアップ＆復元 */
+	final public static String Ico_Common_Import =IcoPath + "common_Imort.png";
+	final public static String Ico_Common_Export =IcoPath + "common_Export.png";
+	/* 受診券 */
+	final public static String Ico_Jusin_Call =IcoPath + "jusinken_call.png";
+	final public static String Ico_Jusin_Orca =IcoPath + "jusinken_orca.png";
+
+	final public static String Ico_Seikyu_Calc =IcoPath + "seikyu_calc.png";
+
+	/* メニュー */
+	final public static String Ico_System_Kikan =IcoPath + "7-1.png";
+	final public static String Ico_System_User =IcoPath + "7-2.png";
+	final public static String Ico_System_Backup =IcoPath + "7-3.png";
+	final public static String Ico_System_Usability =IcoPath + "7-4.png";
+
+	/* 結果入力 */
+	final public static String Ico_Kekka_Delete =IcoPath + "kekkaInput_DelKekka.png";
+	final public static String Ico_Kekka_DeleteJusinken = IcoPath + "kekkaInput_DelJusinken.png";
+	final public static String Ico_Kekka_AddJusinken = IcoPath + "kekkaInput_AddJusinken.png";
+	final public static String Ico_Kekka_Copy =IcoPath + "kekkaInput_CopyKekka.png";
+	final public static String Ico_Kekka_InputJusinken =IcoPath + "kekkaInput_CallJusinken.png";
+	final public static String Ico_Hantei_Graph =IcoPath + "hantei_Graph.png";
+
+	/* メタボ判定 */
+	final public static String Ico_Hantei_Detail =IcoPath + "hantei_Metabohantei.png";
+
+	/**
 	 *  スプラッシュイメージ
 	 */
+	// edit s.inoue 2010/11/10
 	final public static String SplashPath =
-		"SplashImage.png";
+		IcoPath + "SplashImage.png";
 
 	/**
 	 *  データベースフォルダ
@@ -154,25 +225,30 @@ public class JPath {
 	 */
 	public static String GetSystemDatabaseFilePathToInitJSql()
 	{
-		/* Modified 2008/07/29 若月  */
-		/* --------------------------------------------------- */
-//		return JFile.GetCurrentDirectory() + "DB" + JApplication.FILE_SEPARATOR + "System" + DATA_BASE_EXTENSION;
-		/* --------------------------------------------------- */
 		String dbDirectory = JApplication.systemDBPath;
-
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(dbDirectory);
-//		if (! dbDirectory.endsWith(JApplication.FILE_SEPARATOR) ) {
-//			buffer.append(JApplication.FILE_SEPARATOR);
-//		}
 		buffer.append("System");
 		buffer.append(DATA_BASE_EXTENSION);
 
 		String path = buffer.toString();
 
 		return path;
-		/* --------------------------------------------------- */
 	}
+
+	// add s.inoue 2012/07/04
+    public static String GetHokenjyaDatabaseFilePathToInitJSql()
+    {
+		String dbDirectory = JApplication.systemDBPath;
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(dbDirectory);
+		buffer.append("M_INSURER");
+		buffer.append(DATA_BASE_EXTENSION);
+
+		String path = buffer.toString();
+
+		return path;
+    }
 
 	/**
 	 *  JSql 機関情報データベースのフルパスを取得する
@@ -207,22 +283,32 @@ public class JPath {
 	public static String getDesktopPath() {
 	    String ret = "";
 	  	try{
-	  		// デスクトップ
-		    File fs= new File(System.getProperty("user.home"), "Desktop");
-			ret = fs.getAbsolutePath();
+	  		// eidt s.inoue 2013/03/09
+			// add s.inoue 2013/03/09
+			String osname = System.getProperty("os.name");
+			if(osname.indexOf("Windows")>=0){
+				// デスクトップ
+			    File fs= new File(System.getProperty("user.home"), "Desktop");
+				ret = fs.getAbsolutePath();
 
-			if(!fs.exists()){
-		  		// デスクトップ
-			    File ffs= new File(System.getProperty("user.home"), "デスクトップ");
-				ret = ffs.getAbsolutePath();
-		  		logger.info("use vistaデスクトップ");
+				if(!fs.exists()){
+			  		// デスクトップ
+				    File ffs= new File(System.getProperty("user.home"), "デスクトップ");
+					ret = ffs.getAbsolutePath();
+			  		logger.info("use vistaデスクトップ");
 
-		  		// ユーザホーム
-		  		if(!ffs.exists()){
-			  		File fffs= new File(System.getProperty("user.home"));
-			  		ret = fffs.getAbsolutePath();
-			  		logger.info("use user.home");
-		  		}
+			  		// ユーザホーム
+			  		if(!ffs.exists()){
+				  		File fffs= new File(System.getProperty("user.home"));
+				  		ret = fffs.getAbsolutePath();
+				  		logger.info("use user.home");
+			  		}
+				}
+			}else{
+				// Linux等対応
+				File fffs= new File(System.getProperty("user.home"));
+		  		ret = fffs.getAbsolutePath();
+		  		logger.info("use user.home");
 			}
 	  	} catch (Exception e) {
 	  		// ユーザホーム
@@ -306,10 +392,3 @@ public class JPath {
 //	    return ret;
 //	  }
 }
-
-
-
-
-//Source Code Version Tag System v1.00  -- Do not remove --
-//Product-Tag: {4F85C2F4EE-5847B3BB7A9-ADC5AC59E3-EF66F79A1}
-

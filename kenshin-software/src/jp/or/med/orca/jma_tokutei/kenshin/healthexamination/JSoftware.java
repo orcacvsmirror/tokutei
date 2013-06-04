@@ -1,22 +1,15 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-
-import javax.swing.JFrame;
-
-import org.omg.CORBA.INITIALIZE;
-
 import jp.or.med.orca.jma_tokutei.common.app.JPath;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.frame.JSplashFrameCtrl;
-import jp.or.med.orca.jma_tokutei.common.frame.ProgressWindow;
+import jp.or.med.orca.jma_tokutei.common.frame.dialog.SettingDialog;
 import jp.or.med.orca.jma_tokutei.common.scene.JScene;
 import jp.or.med.orca.jma_tokutei.common.sql.JConnection;
 import jp.or.med.orca.jma_tokutei.common.util.PropertyUtil;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.JLoginFrameCtrl;
+//import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.menu.JLoginFrameCtrl;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
-import jp.or.med.orca.jma_tokutei.common.component.SettingDialog;
+import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.menu.JLoginFrameCtrl;
 
 /**
  * 特定健診ソフトウエア
@@ -77,6 +70,14 @@ public class JSoftware{
 				JErrorMessage.show("M0001", null);
 			}
 
+			// move s.inoue 2013/03/12 先に行う
+			// add s.inoue 2009/12/18
+			String lookAndFeel = getAppSettings();
+			if (!lookAndFeel.equals("")){
+				SettingDialog sd = new SettingDialog();
+				sd.changeTheLookAndFeel(lookAndFeel,true);
+			}
+
 			// 設定ファイルロード
 			JApplication.load();
 
@@ -106,13 +107,6 @@ public class JSoftware{
 		if (JConnection.IsExistKikanDatabase() == false) {
 			JErrorMessage.show("M1001", null);
 			System.exit(1);
-		}
-
-		// add s.inoue 2009/12/18
-		String lookAndFeel = getAppSettings();
-		if (!lookAndFeel.equals("")){
-			SettingDialog sd = new SettingDialog();
-			sd.changeTheLookAndFeel(lookAndFeel);
 		}
 
 		JScene.ChangeScene(new JLoginFrameCtrl());

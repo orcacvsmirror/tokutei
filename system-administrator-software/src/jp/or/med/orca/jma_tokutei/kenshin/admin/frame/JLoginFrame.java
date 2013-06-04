@@ -1,6 +1,8 @@
 package jp.or.med.orca.jma_tokutei.kenshin.admin.frame;
 
 import java.awt.BorderLayout;
+
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import java.awt.GridLayout;
@@ -20,7 +22,9 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Dimension;
 
+import jp.or.med.orca.jma_tokutei.common.app.JPath;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedButton;
+import jp.or.med.orca.jma_tokutei.common.component.ExtendedImageIcon;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedLabel;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedPasswordField;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedTextField;
@@ -55,8 +59,6 @@ public class JLoginFrame extends JFrame implements ActionListener,KeyListener {
 	protected ExtendedLabel jLabel1 = null;
 	protected ExtendedTextField jTextField_UserName = null;
 	protected ExtendedPasswordField jPasswordField_Password = null;
-	// del y.okano 2010/05/24
-	//protected ExtendedToggleButton jButton_Version = null;
 
 	/**
 	 * This is the default constructor
@@ -72,21 +74,11 @@ public class JLoginFrame extends JFrame implements ActionListener,KeyListener {
 	 * @return void
 	 */
 	private void initialize() {
-
-		/* Modified 2008/03/09 若月  */
-		/* --------------------------------------------------- */
-//		this.setSize(600, 280);
-//		this.setContentPane(getJPanel_Content());
-//		this.setTitle("特定健診システム");
-//		setLocationRelativeTo( null );
-//		this.setVisible(true);
-		/* --------------------------------------------------- */
 		this.setSize(ViewSettings.getAdminLoginFrameSize());
 		this.setContentPane(getJPanel_Content());
 		this.setTitle(ViewSettings.getTokuteFrameTitleWithKikanInfomation());
 		setLocationRelativeTo( null );
 		this.setVisible(true);
-		/* --------------------------------------------------- */
 	}
 
 	/**
@@ -100,8 +92,9 @@ public class JLoginFrame extends JFrame implements ActionListener,KeyListener {
 			borderLayout.setVgap(2);
 			jPanel_Content = new JPanel();
 			jPanel_Content.setLayout(borderLayout);
-			jPanel_Content.add(getJPanel_ButtonArea(), BorderLayout.SOUTH);
-			jPanel_Content.add(getJPanel_NaviArea(), BorderLayout.NORTH);
+			// eidt s.inoue 2011/04/08
+			jPanel_Content.add(getJPanel_ButtonArea(), BorderLayout.NORTH);
+//			jPanel_Content.add(getJPanel_NaviArea(), BorderLayout.NORTH);
 			jPanel_Content.add(getJPanel_MainArea(), BorderLayout.CENTER);
 		}
 		return jPanel_Content;
@@ -123,9 +116,11 @@ public class JLoginFrame extends JFrame implements ActionListener,KeyListener {
 			gridBagConstraints2.gridx = 0;
 			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
 			gridBagConstraints1.gridy = 0;
-			gridBagConstraints1.anchor = GridBagConstraints.EAST;
+			gridBagConstraints1.anchor = GridBagConstraints.WEST;
 			gridBagConstraints1.weightx = 1.0D;
 			gridBagConstraints1.gridx = 1;
+			gridBagConstraints1.insets = new Insets(0, 5, 0, 0);
+
 			jPanel_ButtonArea = new JPanel();
 			jPanel_ButtonArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 			jPanel_ButtonArea.setLayout(new GridBagLayout());
@@ -144,13 +139,19 @@ public class JLoginFrame extends JFrame implements ActionListener,KeyListener {
 	 */
 	private ExtendedButton getJButton_End() {
 		if (jButton_End == null) {
-			jButton_End = new ExtendedButton();
-			jButton_End.setHorizontalAlignment(SwingConstants.CENTER);
-			jButton_End.setActionCommand("終了");
-			jButton_End.setFont(new Font("Dialog", Font.PLAIN, 12));
-			jButton_End.setPreferredSize(new Dimension(100, 25));
-			jButton_End.setText("終了(F1)");
-			jButton_End.addActionListener(this);
+			// eidt s.inoue 2011/04/08
+//			jButton_End = new ExtendedButton();
+//			jButton_End.setHorizontalAlignment(SwingConstants.CENTER);
+//			jButton_End.setActionCommand("終了");
+//			jButton_End.setFont(new Font("Dialog", Font.PLAIN, 12));
+//			jButton_End.setPreferredSize(new Dimension(100, 25));
+//			jButton_End.setText("終了(F1)");
+//			jButton_End.addActionListener(this);
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Common_Exit);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
+			jButton_End= new ExtendedButton(
+					"End","終了(E)","終了(ALT+E)",KeyEvent.VK_E,icon);
+					jButton_End.addActionListener(this);
 		}
 		return jButton_End;
 	}
@@ -166,32 +167,12 @@ public class JLoginFrame extends JFrame implements ActionListener,KeyListener {
 			cardLayout2.setHgap(10);
 			cardLayout2.setVgap(10);
 
-			/* Modified 2008/03/09 若月  */
-			/* --------------------------------------------------- */
-//			jLabel_MainExpl = new JLabel();
-//			jLabel_MainExpl.setText("ユーザ名、パスワードを入力後、ログインボタンを押下してください。");
-//			jLabel_MainExpl.setFont(new Font("Dialog", Font.PLAIN, 14));
-//			jLabel_MainExpl.setName("jLabel1");
-//			jLabel_Title = new JLabel();
-//			jLabel_Title.setText("システムメンテナンスログイン");
-//			jLabel_Title.setFont(new Font("Dialog", Font.PLAIN, 18));
-//			jLabel_Title.setFont(ViewSettings.getCommonFrameTitlelabelFont());
-//
-//			jLabel_Title.setBackground(new Color(153, 204, 255));
-//			jLabel_Title.setForeground(new Color(51, 51, 51));
-//			jLabel_Title.setOpaque(true);
-//			jLabel_Title.setName("jLabel");
-//			jPanel_NaviArea = new JPanel();
-//			jPanel_NaviArea.setLayout(cardLayout2);
-//			jPanel_NaviArea.add(getJPanel_TitleArea(), getJPanel_TitleArea().getName());
-			/* --------------------------------------------------- */
 			jLabel_MainExpl = new GuidanceLabel("admin.login.frame.guidance.main");
 			jLabel_Title = new TitleLabel("admin.login.frame.title");
 
 			jPanel_NaviArea = new JPanel();
 			jPanel_NaviArea.setLayout(cardLayout2);
 			jPanel_NaviArea.add(getJPanel_TitleArea(), getJPanel_TitleArea().getName());
-			/* --------------------------------------------------- */
 		}
 		return jPanel_NaviArea;
 	}
@@ -282,10 +263,16 @@ public class JLoginFrame extends JFrame implements ActionListener,KeyListener {
 	 */
 	private ExtendedButton getJButton_Login() {
 		if (jButton_Login == null) {
-			jButton_Login = new ExtendedButton();
-			jButton_Login.setText("ログイン(F12)");
-			jButton_Login.setPreferredSize(new Dimension(120, 25));
-			jButton_Login.setFont(new Font("Dialog", Font.PLAIN, 12));
+			// eidt s.inoue 2011/04/08
+//			jButton_Login = new ExtendedButton();
+//			jButton_Login.setText("ログイン(F12)");
+//			jButton_Login.setPreferredSize(new Dimension(120, 25));
+//			jButton_Login.setFont(new Font("Dialog", Font.PLAIN, 12));
+//			jButton_Login.addActionListener(this);
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Login_Login);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
+			jButton_Login= new ExtendedButton(
+					"Login","ログイン(L)","ログイン(ALT+L)",KeyEvent.VK_L,icon);
 			jButton_Login.addActionListener(this);
 		}
 		return jButton_Login;
@@ -381,39 +368,13 @@ public class JLoginFrame extends JFrame implements ActionListener,KeyListener {
 		}
 		return jPasswordField_Password;
 	}
-
-	/**
-	 * This method initializes jButton_Version
-	 *
-	 * @return jp.or.med.orca.jma_tokutei.common.component.ExtendedToggleButton
-	 */
-	// del y.okano 2010/05/24
-	//private ExtendedToggleButton getJButton_Version() {
-	//	if (jButton_Version == null) {
-	//		jButton_Version = new ExtendedToggleButton();
-	//		jButton_Version.setText("バージョン(F9)");
-	//		jButton_Version.setPreferredSize(new Dimension(120, 25));
-	//		jButton_Version.setVisible(true);
-	//		jButton_Version.addActionListener(this);
-	//	}
-	//	return jButton_Version;
-	//}
-
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO 自動生成されたメソッド・スタブ
-
 	}
-
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO 自動生成されたメソッド・スタブ
-
 	}
-
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO 自動生成されたメソッド・スタブ
-
 	}
 }

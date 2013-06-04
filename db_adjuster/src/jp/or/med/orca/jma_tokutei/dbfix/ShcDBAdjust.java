@@ -54,7 +54,7 @@ public class ShcDBAdjust {
       int updateStatus = 0;
       dataVersion = "0.0.0";
       schemaVersion = "0.0.0";
-      zipVersion = "2010-04-01";
+      zipVersion = "9999-NOT-Available-yet";
       DngDBAccess dbm = new DngDBAccess("firebird",dbUri,dbUser,dbPass);
       if (dbm.connect()) {
         try {
@@ -100,6 +100,9 @@ public class ShcDBAdjust {
           if (rows1>0) {
              zipVersion=(dbm.getData("MAX",0).toString()).substring(0,10);
           }
+        }
+        else if (updateSchemaVersion.compareTo("1.2.8")>=0) {
+          zipVersion = "2010-06-01";
         }
         updateZipcode = ins.getCurrentMaxVersion("dataZipup");
         System.out.println("Zipcode: last modify on System = "+zipVersion + " current distribution = "+ updateZipcode);

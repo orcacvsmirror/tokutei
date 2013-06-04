@@ -463,11 +463,11 @@ public class DateSelectDialog extends JDialog
 		return null;
 	}
 
-	@Override
-	public String getFilePath() {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
-	}
+//	@Override
+//	public String getFilePath() {
+//		// TODO 自動生成されたメソッド・スタブ
+//		return null;
+//	}
 
 	@Override
 	public void setDialogTitle(String title) {
@@ -485,6 +485,12 @@ public class DateSelectDialog extends JDialog
 	public void setSaveFileName(String title) {
 		// TODO 自動生成されたメソッド・スタブ
 
+	}
+
+	@Override
+	public String getTextValue() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
 	}
 
 

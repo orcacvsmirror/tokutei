@@ -18,6 +18,7 @@ public class JTKenshinPrint extends JGraphicPrinter
 	protected TreeMap<String, Object> printSeikyuNitijiData = null;
 	// add s.inoue 2009/09/21
 	protected TreeMap<String, Object> printSeikyuGetujiData = null;
+	protected TreeMap<String, Object> printRyosyusyoData;
 
 	// edit s.inoue 2009/11/02
 	protected ArrayList<String> keyList = new ArrayList<String>();
@@ -49,6 +50,12 @@ public class JTKenshinPrint extends JGraphicPrinter
 	 {
 		 printSeikyuGetujiData = queryResult;
 	 }
+
+	 // add s.inoue 2012/07/04
+     public void setQueryRyosyusyoResult(TreeMap<String, Object> queryResult)
+     {
+         printRyosyusyoData = queryResult;
+     }
 
 	 // edit s.inoue 2009/11/02
 	 public void setKeys(ArrayList<String> keys )

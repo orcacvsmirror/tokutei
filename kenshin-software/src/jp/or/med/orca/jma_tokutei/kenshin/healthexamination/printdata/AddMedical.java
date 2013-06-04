@@ -13,9 +13,9 @@ import org.apache.log4j.Logger;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.JKenshinPatternMaintenanceEditFrameData;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintDefine;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintShukeiList;
+import jp.or.med.orca.jma_tokutei.common.origine.JKenshinPatternMaintenanceEditFrameData;
 import jp.or.med.orca.jma_tokutei.common.util.FiscalYearUtil;
 
 /**
@@ -342,6 +342,9 @@ public class AddMedical {
 	private static final String SELECT_ALL_KIHON_CHK_KEYS_SQL = getKihonChkKeysSql();
 	private static final String SELECT_ALL_KIHON_CHK_SINGLEKEY_SQL = getKihonChkSingleKeySql();
 
+	// add s.inoue 2013/01/21
+//	private static int paramLength = 0;
+
 	// add s.inoue 2009/09/20
 //	private static final String SELECT_SYUKEI_LIST_SQL = getSyukeiListSql();
 
@@ -435,9 +438,22 @@ public class AddMedical {
 		buffer.append(" AND TS.KEKA_TI <> '' ");
 		buffer.append(" AND TK.HISU_FLG <> '1' ");
 		buffer.append(" AND TS.KOUMOKU_CD IN");
-		buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
-		buffer.append(" ORDER BY KENSA_NENGAPI DESC,XMLITEM_SEQNO ");
+		// eidt s.inoue 2013/01/22
+		// 29個から25個へ変更？？？なぜ変更
+		// buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
+		buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
+		// add s.inoue 2013/01/21
+//		String bf = "";
+//		for (int i = 0; i < paramLength; i++) {
+//			bf +="?";
+//			if(i != paramLength-1)
+//				bf += ",";
+//		}
+//		if (paramLength > 0)
+//		buffer.append("(" + bf + ")");
+		buffer.append(" ORDER BY KENSA_NENGAPI DESC,XMLITEM_SEQNO ");
+		System.out.println(buffer.toString());
 		return buffer.toString();
 	}
 
@@ -550,7 +566,23 @@ public class AddMedical {
 //					result = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_ALL_KIHON_CHK_SQL, params);
 //				}else{
 					//String[] params = {kojinData.get("UKETUKE_ID"),kensaNenGappi,kojinData.get("HKNJANUM")};
-					result = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_KIHON_CHK_SQL, params);
+
+				// add s.inoue 2013/01/21
+//				this.paramLength = params.length;
+//				String ss = getSelectKihonChkSql();
+
+				result = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_KIHON_CHK_SQL, params);
+				// result = JApplication.kikanDatabase.sendExecuteSortedQuery(buffer.toString(), params);
+
+				// ex
+//				String sb = "SELECT DISTINCT TS.KENSA_NENGAPI,TK.KOUMOKU_CD,TK.KOUMOKU_NAME, TK.TANI, TK.DS_JYOUGEN, TK.DS_KAGEN, TS.KEKA_TI, TK.DATA_TYPE From T_KENSAKEKA_SONOTA TS,T_KENSHINMASTER TK  WHERE TS.UKETUKE_ID = '201209060002' AND TS.KOUMOKU_CD = TK.KOUMOKU_CD  AND TK.HKNJANUM = '34420018' AND TS.KENSA_NENGAPI = '20120824' --AND TS.KEKA_TI <> ''"
+//				 + "AND TK.HISU_FLG <> '1'  AND TS.KOUMOKU_CD IN"
+//				 // + "('9N811000000000011','9N816000000000011','9N821000000000011','9N826000000000011','9N831000000000011','9N836000000000011','9N841000000000011','9N846000000000011','9N851000000000011','9N856000000000011','9N861000000000011','9N866000000000001','9N871000000000011','9N876000000000011','9N881000000000011','9N886000000000011','9N891000000000011','9N896000000000011','9N901000000000011','9N906000000000011','9N911000000000011','9N916000000000011','9N921000000000011','9N926000000000011','9N931000000000011')"
+//				 + "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+//				 + "ORDER BY KENSA_NENGAPI DESC,XMLITEM_SEQNO ";
+//
+//				ArrayList<Hashtable<String, String>> as = JApplication.kikanDatabase.sendExecuteQuery(getSelectKihonChkSql(),params);
+//				System.out.println(as.get(0));
 //				}
 
 		} catch (SQLException e) {

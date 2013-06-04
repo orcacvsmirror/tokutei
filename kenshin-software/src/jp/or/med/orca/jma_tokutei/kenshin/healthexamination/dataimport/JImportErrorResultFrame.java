@@ -1,6 +1,8 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.dataimport;
 
 import java.awt.BorderLayout;
+
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,6 +17,9 @@ import java.awt.Font;
 import java.awt.Color;
 import java.awt.event.*;
 
+import jp.or.med.orca.jma_tokutei.common.app.JPath;
+import jp.or.med.orca.jma_tokutei.common.component.ExtendedButton;
+import jp.or.med.orca.jma_tokutei.common.component.ExtendedImageIcon;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 
 public class JImportErrorResultFrame extends JFrame implements ActionListener
@@ -65,8 +70,9 @@ public class JImportErrorResultFrame extends JFrame implements ActionListener
 			borderLayout.setVgap(2);
 			jPanel_Content = new JPanel();
 			jPanel_Content.setLayout(borderLayout);
-			jPanel_Content.add(getJPanel_ButtonArea(), BorderLayout.SOUTH);
-			jPanel_Content.add(getJPanel_NaviArea(), BorderLayout.NORTH);
+			// eidt s.inoue 2011/06/07
+			jPanel_Content.add(getJPanel_ButtonArea(), BorderLayout.NORTH);
+			// jPanel_Content.add(getJPanel_NaviArea(), BorderLayout.NORTH);
 			jPanel_Content.add(getJPanel_MainArea(), BorderLayout.CENTER);
 		}
 		return jPanel_Content;
@@ -80,7 +86,8 @@ public class JImportErrorResultFrame extends JFrame implements ActionListener
 	private JPanel getJPanel_ButtonArea() {
 		if (jPanel_ButtonArea == null) {
 			FlowLayout flowLayout = new FlowLayout();
-			flowLayout.setAlignment(FlowLayout.RIGHT);
+			// eidt s.inoue 2011/06/07
+			flowLayout.setAlignment(FlowLayout.LEFT);
 			jPanel_ButtonArea = new JPanel();
 			jPanel_ButtonArea.setLayout(flowLayout);
 			jPanel_ButtonArea.add(getJButton_End(), null);
@@ -95,11 +102,17 @@ public class JImportErrorResultFrame extends JFrame implements ActionListener
 	 */
 	private JButton getJButton_End() {
 		if (jButton_End == null) {
-			jButton_End = new JButton();
-			jButton_End.setHorizontalAlignment(SwingConstants.CENTER);
-			jButton_End.setFont(new Font("Dialog", Font.PLAIN, 12));
-			jButton_End.setText("終了");
-			jButton_End.addActionListener(this);
+			// eidt s.inoue 2011/06/07
+//			jButton_End = new JButton();
+//			jButton_End.setHorizontalAlignment(SwingConstants.CENTER);
+//			jButton_End.setFont(new Font("Dialog", Font.PLAIN, 12));
+//			jButton_End.setText("終了");
+//			jButton_End.addActionListener(this);
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Common_Exit);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
+			jButton_End= new ExtendedButton(
+					"End","終了(E)","終了(ALT+E)",KeyEvent.VK_E,icon);
+					jButton_End.addActionListener(this);
 		}
 		return jButton_End;
 	}

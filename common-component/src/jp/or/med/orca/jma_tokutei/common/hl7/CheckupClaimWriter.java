@@ -50,10 +50,11 @@ public class CheckupClaimWriter {
 		Element root = document.getDocumentElement();
 		root.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
+		// edit s.inoue 2010/07/05
 		// edit s.inoue 2009/12/09
 		// edit s.inoue 2009/12/09 XSD‘Š‘ÎƒpƒX‰ñ”ğ
-		// root.setAttribute("xsi:schemaLocation", "http://tokuteikenshin.jp/checkup/2007 ../XSD/cc08_V08.xsd");
-		root.setAttribute("xsi:schemaLocation", "http://tokuteikenshin.jp/checkup/2007 ./XSD/cc08_V08.xsd");
+		// root.setAttribute("xsi:schemaLocation", "http://tokuteikenshin.jp/checkup/2007 ./XSD/cc08_V08.xsd");
+		root.setAttribute("xsi:schemaLocation", "http://tokuteikenshin.jp/checkup/2007 ../XSD/cc08_V08.xsd");
 
 		// add s.inoue 2010/01/18
 		root.appendChild(document.createComment("ófî•ñ"));

@@ -157,7 +157,8 @@ public class JUserMaintenanceFrameCtrl extends JUserMaintenanceFrame {
 			return;
 		}
 
-		String userName = (String) model.getData(model.getSelectedRow(), 0);
+		// edit s.inoue 2010/07/07
+		String userName = (String) model.getData(model.getDoubleClickedSelectedRow(), 0);
 
 		JScene.CreateDialog(
 				this,

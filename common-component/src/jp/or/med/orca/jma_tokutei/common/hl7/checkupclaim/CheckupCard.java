@@ -151,7 +151,7 @@ public class CheckupCard {
 //
 //				Element element_amount = doc.createElement("amount");
 //				element_amount.setAttribute("value", MaxInsurance);
-//				element_amount.setAttribute("currence", "JPY");
+//				element_amount.setAttribute("currency", "JPY");
 //				element_max.appendChild(element_amount);
 //
 //				element_dock.appendChild(element_max);
@@ -168,7 +168,8 @@ public class CheckupCard {
 
 				Element element_amount = doc.createElement("amount");
 				element_amount.setAttribute("value", MaxInsurance);
-				element_amount.setAttribute("currence", "JPY");
+				// edit s.inoue 2010/08/11
+				element_amount.setAttribute("currency", "JPY");
 				element_max.appendChild(element_amount);
 
 				element_dock.appendChild(element_max);

@@ -24,9 +24,28 @@ public class JKaisoukaHanteiData {
 	private double KakutyoKetsuatsuOther = -1;
 	private double KetsuatsuHukuyaku = -1;
 	private double Kitsuen = -1;
+	// add s.inoue 2013/01/29
+	private String KensinjisiDate = "";
 
 	// add ver2 s.inoue 2009/08/19
 	private boolean ageTarget = false;
+
+	/**
+	 * @param KensinjisiDate
+	 */
+	public void setKensinJisiDate(String KensinjisiDate) {
+		if( !KensinjisiDate.isEmpty() )
+		{
+			// add s.inoue 2013/03/06
+			// this.が無かったので、エラー
+			this.KensinjisiDate = KensinjisiDate;
+		}
+	}
+	public String getKensinJisiDate() {
+		return KensinjisiDate;
+	}
+
+
 	/**
 	 * @param gender 性別
 	 */
@@ -201,13 +220,18 @@ public class JKaisoukaHanteiData {
 	 */
 	public double getShushukuKetsuatsu() {
 		// 収縮時血圧、拡張血圧をペアとして取り扱う。
-		if(ShushukuKetsuatsuOther != -1 && KakutyoKetsuatsuOther != -1)
+		// eidt s.inoue 2012/09/25
+		// ペアにすると判定に影響が出る
+		// if(ShushukuKetsuatsuOther != -1 && KakutyoKetsuatsuOther != -1)
+		if(ShushukuKetsuatsuOther != -1)
 		{
 			return ShushukuKetsuatsuOther;
-		}else if(ShushukuKetsuatsuNo2 != -1 && KakutyoKetsuatsuNo2 != -1)
+		}else if(ShushukuKetsuatsuNo2 != -1)
+		// }else if(ShushukuKetsuatsuNo2 != -1 && KakutyoKetsuatsuNo2 != -1)
 		{
 			return ShushukuKetsuatsuNo2;
-		}else if(ShushukuKetsuatsuNo1 != -1 && KakutyoKetsuatsuNo1 != -1)
+		}else if(ShushukuKetsuatsuNo1 != -1)
+		// }else if(ShushukuKetsuatsuNo1 != -1 && KakutyoKetsuatsuNo1 != -1)
 		{
 			return ShushukuKetsuatsuNo1;
 		}
@@ -241,13 +265,18 @@ public class JKaisoukaHanteiData {
 	 */
 	public double getKakutyoKetsuatsu() {
 		// 収縮時血圧、拡張血圧をペアとして取り扱う。
-		if(KakutyoKetsuatsuOther != -1 && ShushukuKetsuatsuOther != -1)
+		// eidt s.inoue 2012/09/25
+		// ペアにすると判定に影響が出る
+		if(KakutyoKetsuatsuOther != -1)
+		// if(KakutyoKetsuatsuOther != -1 && ShushukuKetsuatsuOther != -1)
 		{
 			return KakutyoKetsuatsuOther;
-		}else if(KakutyoKetsuatsuNo2 != -1 && ShushukuKetsuatsuNo2 != -1)
+		}else if(KakutyoKetsuatsuNo2 != -1)
+		// }else if(KakutyoKetsuatsuNo2 != -1 && ShushukuKetsuatsuNo2 != -1)
 		{
 			return KakutyoKetsuatsuNo2;
-		}else if(KakutyoKetsuatsuNo1 != -1 && ShushukuKetsuatsuNo1 != -1)
+		}else if(KakutyoKetsuatsuNo1 != -1)
+		// }else if(KakutyoKetsuatsuNo1 != -1 && ShushukuKetsuatsuNo1 != -1)
 		{
 			return KakutyoKetsuatsuNo1;
 		}

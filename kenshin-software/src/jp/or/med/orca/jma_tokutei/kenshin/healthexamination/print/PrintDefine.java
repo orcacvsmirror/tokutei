@@ -3,6 +3,7 @@ package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import jp.or.med.orca.jma_tokutei.common.app.JConstantString;
 
 public class PrintDefine {
 
@@ -30,8 +31,9 @@ public class PrintDefine {
 	public static final String WORK_PDF_INKEKKA3PAGE_PDF = "."+File.separator+"work"+File.separator+"PDF"+File.separator+"inkekka3page.pdf";
 	public static final String WORK_PDF_INKEKKA4PAGE_PDF = "."+File.separator+"work"+File.separator+"PDF"+File.separator+"inkekka4page.pdf";
 	public static final String WORK_PDF_TMP_DUMMY_PDF = "."+File.separator+"work"+File.separator+"PDF"+File.separator+"tmp"+File.separator+"dummy.pdf";
-	// add s.inoue 2009/12/25
-	public static final String WORK_PDF_DUMMY2_PDF = "."+File.separator+"work"+File.separator+"PDF"+File.separator+"tmp"+File.separator+"inKekkaTemplate_2.pdf";
+	// edit s.inoue 2010/05/10
+	// public static final String WORK_PDF_DUMMY2_PDF = "."+File.separator+"work"+File.separator+"PDF"+File.separator+"tmp"+File.separator+"inKekkaTemplate_2.pdf";
+	public static final String WORK_PDF_DUMMY2_PDF = "."+File.separator+"work"+File.separator+"PDF"+File.separator+"inKekkaTemplate_2.pdf";
 
 	public static final String WORK_PDF_TMP_INKEKKA2PAGE_PDF = "."+File.separator+"work"+File.separator+"PDF"+File.separator+"tmp"+File.separator+"inkekka2page.pdf";
 	public static final String WORK_PDF_TMP_INKEKKA3PAGE_PDF = "."+File.separator+"work"+File.separator+"PDF"+File.separator+"tmp"+File.separator+"inkekka3page.pdf";
@@ -39,8 +41,11 @@ public class PrintDefine {
 	// edit s.inoue 2009/09/28
 	public static final String WORK_GEKEI_PDF = "."+File.separator+"work"+File.separator+"PDF"+File.separator+"gekei.pdf";
 	public static final String WORK_SHUKEI_PDF = "."+File.separator+"work"+File.separator+"PDF"+File.separator+"shukeihyo.pdf";
+	public static final String WORK_RYOSYU_PDF = "."+File.separator+"work"+File.separator+"PDF"+File.separator+"ryosyusyo.pdf";
+
 	public static final String OUT_GEKEI_PDF = "."+File.separator+"Data"+File.separator+"PDF"+File.separator+"out_getkei.pdf";
 	public static final String OUT_SHUKEI_PDF = "."+File.separator+"Data"+File.separator+"PDF"+File.separator+"out_shukeihyo.pdf";
+	public static final String OUT_RYOSYUSYO_PDF = "."+File.separator+"Data"+File.separator+"PDF"+File.separator+"out_ryosyusyo.pdf";
 
 	public static final String CODE_GANTEI_SONOTA_SYOKEN = "9E100160900000049";
 	public static final String CODE_SINDENZU_SYOKEN_UMU = "9A110160700000011";
@@ -52,10 +57,21 @@ public class PrintDefine {
 	public static final String CODE_HEMATCLIT = "2A040000001930102";
 	public static final String CODE_KESIKISOSU = "2A030000001930101";
 	public static final String CODE_SEKEKYUSU = "2A020000001930101";
-	public static final String CODE_HBA1C_SONOTA = "3D045000001999902";
-	public static final String CODE_HBA1C_COUSOHO = "3D045000001927102";
-	public static final String CODE_HBA1C_HPLC = "3D045000001920402";
-	public static final String CODE_HBA1C_RATEX = "3D045000001906202";
+
+	// edit s.inoue 2012/09/04
+	public static final String CODE_HBA1C_SONOTA_JDS = "3D045000001999902";
+	public static final String CODE_HBA1C_COUSOHO_JDS = "3D045000001927102";
+	public static final String CODE_HBA1C_HPLC_JDS = "3D045000001920402";
+	public static final String CODE_HBA1C_RATEX_JDS = "3D045000001906202";
+	public static String CODE_HBA1C_SONOTA = CODE_HBA1C_SONOTA_JDS;
+	public static String CODE_HBA1C_COUSOHO = CODE_HBA1C_COUSOHO_JDS;
+	public static String CODE_HBA1C_HPLC = CODE_HBA1C_HPLC_JDS;
+	public static String CODE_HBA1C_RATEX = CODE_HBA1C_RATEX_JDS;
+	public static final String CODE_HBA1C_SONOTA_NGSP = "3D046000001999902";
+	public static final String CODE_HBA1C_COUSOHO_NGSP = "3D046000001927102";
+	public static final String CODE_HBA1C_HPLC_NGSP = "3D046000001920402";
+	public static final String CODE_HBA1C_RATEX_NGSP = "3D046000001906202";
+
 	public static final String CODE_KUHUKUZI_KETO_SONOTA = "3D010000001999901";
 	public static final String CODE_KUHUKUZI_KETO_SIGAI = "3D010000001927201";
 	public static final String CODE_KUHUKUZI_KETO_KASI = "3D010000002227101";
@@ -321,84 +337,84 @@ public class PrintDefine {
 		initializeSyokenUmu();
 		initializeSyoken();
 	}
-
-	//生活基本チェックリストの項目
-
-	public static final String SEIKATU_HYOKA_1 = "9N556000000000011";	//生活機能評価の結果１
-	public static final String SEIKATU_HYOKA_2 = "9N561000000000011";	//生活機能評価の結果２
-	public static final String SEIKATU_HYOKA_3 = "9N566000000000049";	//生活機能評価の結果３
-	public static final String ISHINO_HANDAN = "9N571000000000049";	//医師の診断（判定）（生活機能評価）
-
-	public static final String KINOU_1 = "9N811000000000011";	//１．バスや電車で1人で外出していますか
-	public static final String KINOU_2 = "9N816000000000011";	//２．日用品の買物をしていますか
-	public static final String KINOU_3 = "9N821000000000011";	//３．預貯金の出し入れをしていますか
-	public static final String KINOU_4 = "9N826000000000011";	//４．友人の家を訪ねていますか
-	public static final String KINOU_5 = "9N831000000000011";	//５．家族や友人の相談にのっていますか
-	public static final String KINOU_6 = "9N836000000000011";	//６．階段を手すりや壁をつたわらずに昇っていますか
-	public static final String KINOU_7 = "9N841000000000011";	//７．椅子に座った状態から何もつかまらずに立ち上がっていますか
-	public static final String KINOU_8 = "9N846000000000011";	//８．15分位続けて歩いていますか
-	public static final String KINOU_9 = "9N851000000000011";	//９．この1年間に転んだことがありますか
-	public static final String KINOU_10 = "9N856000000000011";	//１０．転倒に対する不安は大きいですか
-	public static final String KINOU_11 = "9N861000000000011";	//１１．6ヵ月間で2～3kg以上の体重減少がありましたか
-	public static final String KINOU_12 = "9N866000000000001";	//１２．身長　　　　　ｃｍ　　　体重　　　　　ｋｇ　（ＢＭＩ＝　　　　）
-	public static final String KINOU_13 = "9N871000000000011";	//１３．半年前に比べて固いものが食べにくくなりましたか
-	public static final String KINOU_14 = "9N876000000000011";	//１４．お茶や汁物等でむせることがありますか
-	public static final String KINOU_15 = "9N881000000000011";	//１５．口の渇きが気になりますか
-	public static final String KINOU_16 = "9N886000000000011";	//１６．週に１回以上は外出していますか
-	public static final String KINOU_17 = "9N891000000000011";	//１７．昨年と比べて外出の回数が減っていますか
-	public static final String KINOU_18 = "9N896000000000011";	//１８．周りの人から「いつも同じ事を聞く」などの物忘れがあると言われますか
-	public static final String KINOU_19 = "9N901000000000011";	//１９．自分で電話番号を調べて、電話をかけることをしていますか
-	public static final String KINOU_20 = "9N906000000000011";	//２０．今日が何月何日かわからない時がありますか
-	public static final String KINOU_21 = "9N911000000000011";	//２１．（ここ2週間）毎日の生活に充実感がない
-	public static final String KINOU_22 = "9N916000000000011";	//２２．（ここ2週間）これまで楽しんでやれていたことが楽しめなくなった
-	public static final String KINOU_23 = "9N921000000000011";	//２３．（ここ2週間）以前は楽にできていたことが今ではおっくうに感じられる
-	public static final String KINOU_24 = "9N926000000000011";	//２４．（ここ2週間）自分が役に立つ人間だと思えない
-	public static final String KINOU_25 = "9N931000000000011";	//２５．（ここ2週間）わけもなく疲れたような感じがする
+// move s.inoue 2011/09/30
+//	//生活基本チェックリストの項目
+//
+//	public static final String SEIKATU_HYOKA_1 = "9N556000000000011";	//生活機能評価の結果１
+//	public static final String SEIKATU_HYOKA_2 = "9N561000000000011";	//生活機能評価の結果２
+//	public static final String SEIKATU_HYOKA_3 = "9N566000000000049";	//生活機能評価の結果３
+//	public static final String ISHINO_HANDAN = "9N571000000000049";	//医師の診断（判定）（生活機能評価）
+//
+//	public static final String KINOU_1 = "9N811000000000011";	//１．バスや電車で1人で外出していますか
+//	public static final String KINOU_2 = "9N816000000000011";	//２．日用品の買物をしていますか
+//	public static final String KINOU_3 = "9N821000000000011";	//３．預貯金の出し入れをしていますか
+//	public static final String KINOU_4 = "9N826000000000011";	//４．友人の家を訪ねていますか
+//	public static final String KINOU_5 = "9N831000000000011";	//５．家族や友人の相談にのっていますか
+//	public static final String KINOU_6 = "9N836000000000011";	//６．階段を手すりや壁をつたわらずに昇っていますか
+//	public static final String KINOU_7 = "9N841000000000011";	//７．椅子に座った状態から何もつかまらずに立ち上がっていますか
+//	public static final String KINOU_8 = "9N846000000000011";	//８．15分位続けて歩いていますか
+//	public static final String KINOU_9 = "9N851000000000011";	//９．この1年間に転んだことがありますか
+//	public static final String KINOU_10 = "9N856000000000011";	//１０．転倒に対する不安は大きいですか
+//	public static final String KINOU_11 = "9N861000000000011";	//１１．6ヵ月間で2～3kg以上の体重減少がありましたか
+//	public static final String KINOU_12 = "9N866000000000001";	//１２．身長　　　　　ｃｍ　　　体重　　　　　ｋｇ　（ＢＭＩ＝　　　　）
+//	public static final String KINOU_13 = "9N871000000000011";	//１３．半年前に比べて固いものが食べにくくなりましたか
+//	public static final String KINOU_14 = "9N876000000000011";	//１４．お茶や汁物等でむせることがありますか
+//	public static final String KINOU_15 = "9N881000000000011";	//１５．口の渇きが気になりますか
+//	public static final String KINOU_16 = "9N886000000000011";	//１６．週に１回以上は外出していますか
+//	public static final String KINOU_17 = "9N891000000000011";	//１７．昨年と比べて外出の回数が減っていますか
+//	public static final String KINOU_18 = "9N896000000000011";	//１８．周りの人から「いつも同じ事を聞く」などの物忘れがあると言われますか
+//	public static final String KINOU_19 = "9N901000000000011";	//１９．自分で電話番号を調べて、電話をかけることをしていますか
+//	public static final String KINOU_20 = "9N906000000000011";	//２０．今日が何月何日かわからない時がありますか
+//	public static final String KINOU_21 = "9N911000000000011";	//２１．（ここ2週間）毎日の生活に充実感がない
+//	public static final String KINOU_22 = "9N916000000000011";	//２２．（ここ2週間）これまで楽しんでやれていたことが楽しめなくなった
+//	public static final String KINOU_23 = "9N921000000000011";	//２３．（ここ2週間）以前は楽にできていたことが今ではおっくうに感じられる
+//	public static final String KINOU_24 = "9N926000000000011";	//２４．（ここ2週間）自分が役に立つ人間だと思えない
+//	public static final String KINOU_25 = "9N931000000000011";	//２５．（ここ2週間）わけもなく疲れたような感じがする
 
 	public static final ArrayList<String> seikatuKihon = new ArrayList<String>();
 
-
-	public static final String[] codesSeikatuKihon = {
-		"9N811000000000011","9N816000000000011","9N821000000000011","9N826000000000011",
-		"9N831000000000011","9N836000000000011","9N841000000000011","9N846000000000011",
-		"9N851000000000011","9N856000000000011","9N861000000000011","9N866000000000001",
-		"9N871000000000011","9N876000000000011","9N881000000000011","9N886000000000011",
-		"9N891000000000011","9N896000000000011","9N901000000000011","9N906000000000011",
-		"9N911000000000011","9N916000000000011","9N921000000000011","9N926000000000011",
-		"9N931000000000011",
-		"9N556000000000011","9N561000000000011","9N566000000000049","9N571000000000049"
-	};
+// move s.inoue 2011/09/30
+//	public static final String[] codesSeikatuKihon = {
+//		"9N811000000000011","9N816000000000011","9N821000000000011","9N826000000000011",
+//		"9N831000000000011","9N836000000000011","9N841000000000011","9N846000000000011",
+//		"9N851000000000011","9N856000000000011","9N861000000000011","9N866000000000001",
+//		"9N871000000000011","9N876000000000011","9N881000000000011","9N886000000000011",
+//		"9N891000000000011","9N896000000000011","9N901000000000011","9N906000000000011",
+//		"9N911000000000011","9N916000000000011","9N921000000000011","9N926000000000011",
+//		"9N931000000000011",
+//		"9N556000000000011","9N561000000000011","9N566000000000049","9N571000000000049"
+//	};
 
 	private static final void initializeSeikatuKihon(){
-		seikatuKihon.add(KINOU_1);
-		seikatuKihon.add(KINOU_2);
-		seikatuKihon.add(KINOU_3);
-		seikatuKihon.add(KINOU_4);
-		seikatuKihon.add(KINOU_5);
-		seikatuKihon.add(KINOU_6);
-		seikatuKihon.add(KINOU_7);
-		seikatuKihon.add(KINOU_8);
-		seikatuKihon.add(KINOU_9);
-		seikatuKihon.add(KINOU_10);
-		seikatuKihon.add(KINOU_11);
-		seikatuKihon.add(KINOU_12);
-		seikatuKihon.add(KINOU_13);
-		seikatuKihon.add(KINOU_14);
-		seikatuKihon.add(KINOU_15);
-		seikatuKihon.add(KINOU_16);
-		seikatuKihon.add(KINOU_17);
-		seikatuKihon.add(KINOU_18);
-		seikatuKihon.add(KINOU_19);
-		seikatuKihon.add(KINOU_20);
-		seikatuKihon.add(KINOU_21);
-		seikatuKihon.add(KINOU_22);
-		seikatuKihon.add(KINOU_23);
-		seikatuKihon.add(KINOU_24);
-		seikatuKihon.add(KINOU_25);
-		seikatuKihon.add(SEIKATU_HYOKA_1);
-		seikatuKihon.add(SEIKATU_HYOKA_2);
-		seikatuKihon.add(SEIKATU_HYOKA_3);
-		seikatuKihon.add(ISHINO_HANDAN);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_1);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_2);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_3);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_4);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_5);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_6);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_7);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_8);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_9);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_10);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_11);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_12);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_13);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_14);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_15);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_16);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_17);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_18);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_19);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_20);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_21);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_22);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_23);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_24);
+		seikatuKihon.add(JConstantString.MONSHIN_KINOU_25);
+		seikatuKihon.add(JConstantString.SEIKATU_HYOKA_1);
+		seikatuKihon.add(JConstantString.SEIKATU_HYOKA_2);
+		seikatuKihon.add(JConstantString.SEIKATU_HYOKA_3);
+		seikatuKihon.add(JConstantString.ISHINO_HANDAN);
 	}
 
 	static {

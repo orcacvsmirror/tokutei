@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 
 import jp.or.med.orca.jma_tokutei.common.convert.JZenkakuKatakanaToHankakuKatakana;
 import jp.or.med.orca.jma_tokutei.common.printer.JTKenshinPrint;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.JSearchResultListFrameCtrl;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Iraisho;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Kikan;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Gekeihyo;

@@ -11,13 +11,13 @@ import org.apache.log4j.Logger;
 
 import jp.or.med.orca.jma_tokutei.common.convert.JCalendarConvert;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
+import jp.or.med.orca.jma_tokutei.common.convert.JYearAge;
 import jp.or.med.orca.jma_tokutei.common.util.FiscalYearUtil;
 import jp.or.med.orca.jma_tokutei.common.validate.JValidate;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 
 import jp.or.med.orca.jma_tokutei.common.convert.JCalendarConvert;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.JKekkaListFrameCtrl;
 
 /**
  * 印刷に用いる患者個人データを受け渡すクラス
@@ -26,6 +26,8 @@ public class Kojin {
 	//患者個人データ
 	private Hashtable<String, String> kojinData = new Hashtable<String, String>();
 	private static Logger logger = Logger.getLogger(Kojin.class);
+	// eidt s.inoue 2011/08/01
+	private boolean yearOld_flg = false;
 
 	/**
 	 * 患者個人データ set
@@ -138,7 +140,33 @@ public class Kojin {
 //						}
 //					}
 
-					this.kojinData.put("AGE", FiscalYearUtil.getFiscalYear(birthday) + "歳");
+
+
+					// add s.inoue 2011/08/03
+					/* --------------------------------------------------- */
+					initilazeFunctionSetting();
+					String selectedItem = JValidate.validateSendSeinengapi(birthday);
+					String kensaJissiDate = data.get("KENSA_NENGAPI");
+
+					int age =0;
+					if (yearOld_flg){
+						if (!kensaJissiDate.equals("")){
+							age = FiscalYearUtil.getFiscalYear(selectedItem,kensaJissiDate);
+						}else{
+							age = FiscalYearUtil.getFiscalYear(selectedItem);
+						}
+					}else{
+						if (!kensaJissiDate.equals("")){
+							age = Integer.parseInt(JYearAge.getAge(selectedItem,kensaJissiDate));
+						}else{
+							age = Integer.parseInt(JYearAge.getAge(selectedItem));
+						}
+					}
+
+					System.out.println("age:" + age);
+					this.kojinData.put("AGE", age+ "歳");
+
+					// this.kojinData.put("AGE", FiscalYearUtil.getFiscalYear(birthday) + "歳");
 					/* --------------------------------------------------- */
 				}
 			}
@@ -363,21 +391,37 @@ public class Kojin {
 //				--age;
 //			}
 //		}
-		// edit s.inoue 20081113　年度末年齢仕様の場合
-		//int age =FiscalYearUtil.getFiscalYear(JCalendarConvert.JCtoAD(birthday));
 
-		// edit s.inoue 2010/04/15
-		// this.kojinData.put("AGE", age + "歳");
-		String selectedItem
-		= JValidate.validateSendSeinengapi(birthday);
+		// add s.inoue 2011/08/03
+		/* --------------------------------------------------- */
+		initilazeFunctionSetting();
+		String selectedItem = JValidate.validateSendSeinengapi(birthday);
+		String kensaJissiDate = data.get("KENSA_NENGAPI");
 
-		this.kojinData.put("AGE", FiscalYearUtil.getFiscalYear(selectedItem) + "歳");
+		int age =0;
+		if (yearOld_flg){
+			if (!kensaJissiDate.equals("")){
+				age = FiscalYearUtil.getFiscalYear(selectedItem,kensaJissiDate);
+			}else{
+				age = FiscalYearUtil.getFiscalYear(selectedItem);
+			}
+		}else{
+			if (!kensaJissiDate.equals("")){
+				age = Integer.parseInt(JYearAge.getAge(selectedItem,kensaJissiDate));
+			}else{
+				age = Integer.parseInt(JYearAge.getAge(selectedItem));
+			}
+		}
+
+		System.out.println("age:" + age);
+		this.kojinData.put("AGE", age+ "歳");
+//		String selectedItem = JValidate.validateSendSeinengapi(birthday);
+//		this.kojinData.put("AGE", FiscalYearUtil.getFiscalYear(selectedItem) + "歳");
 
 		/* --------------------------------------------------- */
 
-//		2008/3/25 藪 修正
-//		T_KOJIN,T_KENSAKEKA_TOKUTEIにUKETUKE_ID追加対応
-//		-------------------------------------------------------------------------------------------------------
+
+
 		this.kojinData.put("UKETUKE_ID",data.get("UKETUKE_ID") );
 		/*
 		 * 受診日
@@ -402,6 +446,35 @@ public class Kojin {
 		this.kojinData.put("HIHOKENJYASYO_NO", data.get("HIHOKENJYASYO_NO"));
 
 		return true;
+	}
+
+	// eidt s.inoue 2011/08/03
+	/* 個別設定用 */
+	private void initilazeFunctionSetting(){
+		ArrayList<Hashtable<String, String>> result = null;
+
+		try{
+			StringBuilder sb = new StringBuilder();
+			sb.append("SELECT FUNCTION_CD,FUNCTION_FLG");
+			sb.append(" FROM T_SCREENFUNCTION ");
+			sb.append(" WHERE SCREEN_CD = ");
+			sb.append(JQueryConvert.queryConvert("011"));
+
+			result = JApplication.kikanDatabase.sendExecuteQuery(sb.toString());
+		}catch(Exception ex){
+			logger.error(ex.getMessage());
+		}
+
+		for (int i = 0; i < result.size(); i++) {
+			Hashtable<String, String> item = result.get(i);
+
+			String functionCd = item.get("FUNCTION_CD");
+
+			if (JApplication.func_yearOldCode.equals(functionCd)){
+				yearOld_flg =  item.get("FUNCTION_FLG").equals("1")?true:false;
+			}
+		}
+
 	}
 
 	/**

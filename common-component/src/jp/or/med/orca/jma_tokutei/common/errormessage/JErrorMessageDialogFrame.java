@@ -70,6 +70,9 @@ public class JErrorMessageDialogFrame extends JDialog implements ActionListener,
 		// edit ver2 s.inoue 2009/04/15
 		//this.setSize(440, 200);
 		this.setSize(500, 250);
+		// del s.inoue 2012/12/21
+//		// add s.inoue 2012/07/12
+//		setAlwaysOnTop(true);
 
 		this.setContentPane(getJPanel_Content());
 		this.setModal(true);
@@ -244,13 +247,15 @@ public class JErrorMessageDialogFrame extends JDialog implements ActionListener,
 			jTextArea_ErrorMessage.setRows(3);
 			jTextArea_ErrorMessage.setLineWrap(true);
 			// dell s.inoue 2009/12/07
-			 jTextArea_ErrorMessage.setEnabled(false);
 			jTextArea_ErrorMessage.setName("jTextArea_ErrorMessage");
 			jTextArea_ErrorMessage.setText("");
 			jTextArea_ErrorMessage.setDisabledTextColor(Color.black);
-			// edit s.inoue 2009/12/07
-			// jTextArea_ErrorMessage.setEditable(false);
-			jTextArea_ErrorMessage.setFocusable(false);
+
+			// edit s.inoue 2010/10/26
+			jTextArea_ErrorMessage.setEditable(false);
+			// jTextArea_ErrorMessage.setEnabled(false);
+			// jTextArea_ErrorMessage.setFocusable(false);
+
 			// add s.inoue 2009/12/07
 			jTextArea_ErrorMessage.addMouseListener(this); // マウスリスナを登録
 			// edit s.inoue 2009/12/15

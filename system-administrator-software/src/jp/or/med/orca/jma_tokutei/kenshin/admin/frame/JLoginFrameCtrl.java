@@ -10,10 +10,20 @@ import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Properties;
+
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.apache.log4j.Logger;
+import org.openswing.swing.domains.java.Domain;
+import org.openswing.swing.internationalization.java.XMLResourcesFactory;
+import org.openswing.swing.lookup.client.LookupController;
+import org.openswing.swing.permissions.java.ButtonsAuthorizations;
+import org.openswing.swing.table.profiles.client.FileGridProfileManager;
+import org.openswing.swing.util.client.ClientSettings;
+import org.openswing.swing.util.java.Consts;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
@@ -23,6 +33,7 @@ import jp.or.med.orca.jma_tokutei.common.execlocker.JExecLockerConfig;
 import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.scene.JScene;
+import jp.or.med.orca.jma_tokutei.common.util.PropertyUtil;
 import jp.or.med.orca.jma_tokutei.kenshin.admin.JAdminSoftware;
 
 /**
@@ -103,18 +114,6 @@ public class JLoginFrameCtrl extends JLoginFrame {
 	}
 
 	/**
-	 * バージョンボタン
-	 */
-	// del y.okano 2010/05/24
-	//public void pushedVersionButton(ActionEvent e) {
-	//	if (jButton_Version.isSelected()) {
-	//		JAdminSoftware.getSplashFrame().showSplashWindow();
-	//	} else {
-	//		JAdminSoftware.getSplashFrame().hideSplashWindow();
-	//	}
-	//}
-
-	/**
 	 * ログインボタン
 	 */
 	public void pushedLoginButton() {
@@ -160,7 +159,9 @@ public class JLoginFrameCtrl extends JLoginFrame {
 			JErrorMessage.show("M7102", this);
 			return;
 		}
-
+		// add s.inoue 2011/04/11
+		setClientSetting();
+// del s.inoue 2011/04/11
 		try {
 			/* 二重起動防止 */
 			JExecLocker.getLockWithPattern(
@@ -199,12 +200,6 @@ public class JLoginFrameCtrl extends JLoginFrame {
 				jButton_Login.transferFocus();
 			}
 		}
-
-		// del y.okano 2010/05/24
-		//else if (source == jButton_Version) {
-		//	logger.info(jButton_Version.getText());
-		//	pushedVersionButton(e);
-		//}
 	}
 
 	// add s.inoue 2009/12/04
@@ -220,16 +215,97 @@ public class JLoginFrameCtrl extends JLoginFrame {
 				pushedLoginButton();
 			}
 			break;
-		// del y.okano 2010/05/24
-		//case KeyEvent.VK_F9:
-			// edit s.inoue 2009/12/05
-		//	logger.info(jButton_Version.getText());
-		//	if (jButton_Version.isSelected()){
-		//		jButton_Version.setSelected(false);
-		//	}else{
-		//		jButton_Version.setSelected(true);
-		//	}
-		//	pushedVersionButton(null);break;
+
+		// eidt s.inoue 2011/04/15
+		case KeyEvent.VK_ENTER:
+			if (keyEvent.getComponent()== jPasswordField_Password){
+				logger.info(jButton_Login.getText());
+				// ログインボタンが有効なときだけ処理を行う
+				if (jButton_Login.isEnabled()) {
+					pushedLoginButton();
+				} else {
+					jPasswordField_Password.transferFocus();
+				}
+			}
+		}
+	}
+
+	/*
+	 * ClientSetting設定
+	 */
+	private static void setClientSetting(){
+
+		Hashtable domains = new Hashtable();
+		Properties props = new Properties();
+
+		// ボタンの制御（初期表示）
+		ButtonsAuthorizations auth = new ButtonsAuthorizations();
+		auth.addButtonAuthorization("F1",true,true,true);
+
+		// add s.inoue 2011/04/15
+	    Domain sexDomain = new Domain("KENGEN");
+	    sexDomain.addDomainPair("1","Administrator");
+	    sexDomain.addDomainPair("2","User");
+	    domains.put(
+	      sexDomain.getDomainId(),
+	      sexDomain
+	    );
+
+		// 日本語を使用
+	    Hashtable xmlFiles = new Hashtable();
+	    xmlFiles.put("JP","resources_jp.xml");
+	    ClientSettings clientSettings = new ClientSettings(
+	        new XMLResourcesFactory(xmlFiles,true),
+	        domains,
+	        auth
+ 	    );
+
+	    // 必須マーク
+		ClientSettings.VIEW_MANDATORY_SYMBOL = true;
+		// 検索窓
+		ClientSettings.FILTER_PANEL_ON_GRID = true;
+		// 窓ロック(0:closeOnExit,1:useClose,2:pressed,3unPressed)
+		ClientSettings.FILTER_PANEL_ON_GRID_POLICY = Consts.FILTER_PANEL_ON_GRID_USE_PADLOCK_UNPRESSED;
+
+		// セル色
+		ClientSettings.VIEW_BACKGROUND_SEL_COLOR = true;
+		// buttonText
+		ClientSettings.BUTTON_BEHAVIOR = Consts.BUTTON_IMAGE_AND_TEXT;
+		// ソート表記
+		ClientSettings.SHOW_SORTING_ORDER = true;
+		ClientSettings.SHOW_FOCUS_BORDER_ON_FORM = true;
+		// コントロール群へフォーカス出来るかどうか
+		ClientSettings.DISABLED_INPUT_CONTROLS_FOCUSABLE = false;
+
+	    ClientSettings.ALLOW_OR_OPERATOR = false;
+	    ClientSettings.INCLUDE_IN_OPERATOR = false;
+
+		ClientSettings.GRID_PROFILE_MANAGER = new FileGridProfileManager();
+	    ClientSettings.SELECT_DATA_IN_EDITABLE_GRID = true;
+
+	    // filter機能
+	    ClientSettings.GRID_PROFILE_MANAGER = new FileGridProfileManager();
+	    ClientSettings.LOOKUP_FRAME_CONTENT = LookupController.GRID_AND_FILTER_FRAME;
+
+	    // ページ進み数
+	    ClientSettings.GRID_SCROLL_BLOCK_INCREMENT = Consts.GRID_SCROLL_BLOCK_INCREMENT_PAGE;
+
+		// 言語
+		ClientSettings.getInstance().setLanguage("JP");
+
+		ClientSettings.LOOK_AND_FEEL_CLASS_NAME =PropertyUtil.getProperty( "setting.lookAndFeel");
+
+		// eidt s.inoue 2013/03/12
+		try{
+//		  String osname = System.getProperty("os.name");
+//	      if(osname.indexOf("Windows")>=0){
+	    	  Class.forName(ClientSettings.LOOK_AND_FEEL_CLASS_NAME).getMethod(
+			      "setCurrentTheme", new Class[] {Properties.class}).invoke(null,
+			      new Object[] {props});
+	    	  UIManager.setLookAndFeel(ClientSettings.LOOK_AND_FEEL_CLASS_NAME);
+//	      }
+		} catch (Exception e) {
+			logger.error(e.getMessage());
 		}
 	}
 

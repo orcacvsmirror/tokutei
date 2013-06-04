@@ -9,6 +9,8 @@ import java.util.List;
 
 import javax.swing.text.JTextComponent;
 
+import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenTextControl;
+
 /**
  * フォーカス移動制御
  */
@@ -105,6 +107,11 @@ public class JFocusTraversalPolicy extends FocusTraversalPolicy {
 						ret = c;
 						break;
 					}
+				}else if (c.getClass() == jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenTextControl.class){
+					if (((ExtendedOpenTextControl)c).isEnabled()) {
+						ret = c;
+						break;
+					}
 				}
 				else {
 					ret = c;
@@ -132,31 +139,40 @@ public class JFocusTraversalPolicy extends FocusTraversalPolicy {
 		int count = this.componentList.size();
 
 		Component c = component;
-		for (int i = 0; i < count; i++) {
-			c = this.getTargetComponent(c, -1);
 
-			/* Modified 2008/05/01 若月  */
-			/* --------------------------------------------------- */
-//			if (c.isEnabled()) {
-//				ret = c;
-//				break;
-//			}
-			/* --------------------------------------------------- */
-			if (c.isEnabled()) {
-				if (c instanceof JTextComponent) {
-					if (((JTextComponent)c).isEditable()) {
+		try {
+				for (int i = 0; i < count; i++) {
+					c = this.getTargetComponent(c, -1);
+
+					/* Modified 2008/05/01 若月  */
+					/* --------------------------------------------------- */
+		//			if (c.isEnabled()) {
+		//				ret = c;
+		//				break;
+		//			}
+					/* --------------------------------------------------- */
+					if (c.isEnabled()) {
+						if (c instanceof JTextComponent) {
+						if (((JTextComponent)c).isEditable()) {
+							ret = c;
+							break;
+						}
+					}
+				}else if (c.getClass() == jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenTextControl.class){
+					if (((ExtendedOpenTextControl)c).isEnabled()) {
+						ret = c;
+						break;
+					}
+					else {
 						ret = c;
 						break;
 					}
 				}
-				else {
-					ret = c;
-					break;
-				}
+				/* --------------------------------------------------- */
 			}
-			/* --------------------------------------------------- */
+		}catch (Exception ex){
+			System.out.println(ex.getMessage());
 		}
-
 		return ret;
 
 //		int index = ( this.componentList.indexOf(component) - 1 + this.componentList.size() ) % this.componentList.size();

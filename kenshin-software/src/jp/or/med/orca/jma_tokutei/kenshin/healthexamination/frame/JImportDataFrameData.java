@@ -9,7 +9,7 @@ public class JImportDataFrameData {
 	String kensaCenterNumber = new String("");
 	String kensaJissidate = new String("");
 	String filePath = new String("");
-	boolean isValidateAsDataSet = false;
+	public boolean isValidateAsDataSet = false;
 
 	// edit s.inoue 2010/02/10
 	/* Ž¿–â•[ */

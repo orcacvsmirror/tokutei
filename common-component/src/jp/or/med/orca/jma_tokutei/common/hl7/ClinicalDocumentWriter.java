@@ -64,11 +64,11 @@ public class ClinicalDocumentWriter {
 		Element root = document.getDocumentElement();
 		root.setAttribute("xmlns:xsi",
 				"http://www.w3.org/2001/XMLSchema-instance");
+
+		// edit s.inoue 2010/07/05
 		// edit s.inoue 2009/12/09 XSD相対パス回避
-		// root.setAttribute("xsi:schemaLocation",
-		// 		"urn:hl7-org:v3 ../XSD/hc08_V08.xsd");
-		root.setAttribute("xsi:schemaLocation",
-				"urn:hl7-org:v3 ./XSD/hc08_V08.xsd");
+		// root.setAttribute("xsi:schemaLocation","urn:hl7-org:v3 ./XSD/hc08_V08.xsd");
+		root.setAttribute("xsi:schemaLocation","urn:hl7-org:v3 ../XSD/hc08_V08.xsd");
 
 		// 要素の追加
 		ClinicalDocument.appendChild(document, root);
@@ -117,7 +117,9 @@ public class ClinicalDocumentWriter {
 		stream.close();
 
 		// XMLスキーマの検証
-		Utility.checkXmlSchema(fileName, "./XSD/hc08_V08.xsd");
+		// edit s.inoue 2010/07/05
+		Utility.checkXmlSchema(fileName, "../XSD/hc08_V08.xsd");
+		// Utility.checkXmlSchema(fileName, "./XSD/hc08_V08.xsd");
 	}
 
 	public boolean check() {
@@ -140,6 +142,7 @@ public class ClinicalDocumentWriter {
 
 		for (int i = 0; i < otherObservationList.size(); i++) {
 			if (otherObservationList.get(i).check() == false) {
+				System.out.println(otherObservationList.get(i).getCodeDisplayName());
 				return false;
 			}
 		}
