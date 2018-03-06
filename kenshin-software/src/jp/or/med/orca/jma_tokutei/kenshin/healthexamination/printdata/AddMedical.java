@@ -11,7 +11,6 @@ import java.util.TreeMap;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.origine.JKenshinPatternMaintenanceEditFrameData;
-import jp.or.med.orca.jma_tokutei.common.util.FiscalYearUtil;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintDefine;
 
 import org.apache.log4j.Logger;
@@ -24,7 +23,7 @@ public class AddMedical {
 	// 過去３回分取得用
 	private static final String SELECT_KENSAKEKKA_ALL_SQL = getSelectKensaKekkaAllSql();
 	// 今回分取得用
-	private static final String SELECT_KENSAKEKKA_SQL = getSelectKensaKekkaSql();
+//	private static final String SELECT_KENSAKEKKA_SQL = getSelectKensaKekkaSql();	// edit n.ohkubo 2016/02/01　未使用なので削除
 
     private static org.apache.log4j.Logger logger = Logger
 	.getLogger(AddMedical.class);
@@ -167,19 +166,26 @@ public class AddMedical {
 //			/* 今回用  */
 //			}else{
 			
-			// 今年度かどうか
-			boolean blnYear = FiscalYearUtil.getJugeThisYear(kensaNenGappi);
-
-			// 今年度⇒過去3件分,それ以外⇒該当年度分
-			if (blnYear){
-				String[] params = {kojinData.get("UKETUKE_ID"), kojinData.get("HKNJANUM")};
-				result = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_KENSAKEKKA_ALL_SQL, params);
-			}
-			// edit ver2 s.inoue 2009/07/06
-			if (!blnYear || result.size() == 0){
-				String[] params = {kojinData.get("UKETUKE_ID"),kensaNenGappi,kojinData.get("HKNJANUM")};
-				result = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_KENSAKEKKA_SQL, params);
-			}
+			// edit n.ohkubo 2016/02/01　削除　start　常に3件分表示する
+//			// 今年度かどうか
+//			boolean blnYear = FiscalYearUtil.getJugeThisYear(kensaNenGappi);
+//
+//			// 今年度⇒過去3件分,それ以外⇒該当年度分
+//			if (blnYear){
+//				String[] params = {kojinData.get("UKETUKE_ID"), kojinData.get("HKNJANUM")};
+//				result = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_KENSAKEKKA_ALL_SQL, params);
+//			}
+//			// edit ver2 s.inoue 2009/07/06
+//			if (!blnYear || result.size() == 0){
+//				String[] params = {kojinData.get("UKETUKE_ID"),kensaNenGappi,kojinData.get("HKNJANUM")};
+//				result = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_KENSAKEKKA_SQL, params);
+//			}
+			// edit n.ohkubo 2016/02/01　削除　end　常に3件分表示する
+			
+			// edit n.ohkubo 2016/02/01　追加　start　常に3件分表示する
+			String[] params = {kojinData.get("UKETUKE_ID"), kojinData.get("HKNJANUM"), kensaNenGappi};
+			result = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_KENSAKEKKA_ALL_SQL, params);
+			// edit n.ohkubo 2016/02/01　追加　end　常に3件分表示する
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -235,81 +241,83 @@ public class AddMedical {
 		queryAll.append("AND HISU_FLG <> '1' ");
 		queryAll.append("AND TS.KOUMOKU_CD = TK.KOUMOKU_CD ");
 		queryAll.append("AND TK.HKNJANUM = ? ");
+		queryAll.append("AND TS.KENSA_NENGAPI <= ? ");	// edit n.ohkubo 2016/02/01　追加　過去分を選択した時に、選択した年度以下のみを表示させるため
 		queryAll.append("ORDER BY KENSA_NENGAPI DESC,XMLITEM_SEQNO ");
 
 		return queryAll.toString();
 	}
 
-
-	private static String getSelectKensaKekkaSql() {
-		StringBuilder queryFirst = new StringBuilder();
-
-		queryFirst.append("SELECT DISTINCT ");
-		// edit s.inoue 2009/10/28
-		queryFirst.append("TK.MAX_BYTE_LENGTH,TS.KENSA_NENGAPI,TK.KOUMOKU_CD,TK.KOUMOKU_NAME,TK.KENSA_HOUHOU, TK.TANI, TK.DS_JYOUGEN, TK.DS_KAGEN, ");
-		queryFirst.append("TK.JS_JYOUGEN, TK.JS_KAGEN, TS.JISI_KBN, TS.H_L, TK.HISU_FLG, TK.DATA_TYPE,TK.XMLITEM_SEQNO ");
-		queryFirst.append(",TS.KEKA_TI ");
-		// del s.inoue 2014/03/19 なぜ下のコードを追加したのか謎(エラーの原因)なので、削除
+	// edit n.ohkubo 2016/02/01　未使用なので削除　start
+//	private static String getSelectKensaKekkaSql() {
+//		StringBuilder queryFirst = new StringBuilder();
+//
+//		queryFirst.append("SELECT DISTINCT ");
+//		// edit s.inoue 2009/10/28
+//		queryFirst.append("TK.MAX_BYTE_LENGTH,TS.KENSA_NENGAPI,TK.KOUMOKU_CD,TK.KOUMOKU_NAME,TK.KENSA_HOUHOU, TK.TANI, TK.DS_JYOUGEN, TK.DS_KAGEN, ");
+//		queryFirst.append("TK.JS_JYOUGEN, TK.JS_KAGEN, TS.JISI_KBN, TS.H_L, TK.HISU_FLG, TK.DATA_TYPE,TK.XMLITEM_SEQNO ");
+//		queryFirst.append(",TS.KEKA_TI ");
+//		// del s.inoue 2014/03/19 なぜ下のコードを追加したのか謎(エラーの原因)なので、削除
+////		// add s.inoue 2009/09/15 TS.KEKA_TIの代わり
+////		queryFirst.append(" ,case when TK.KOUMOKU_CD = '9N401000000000011' then ");
+////		queryFirst.append(" (SELECT CODE_NAME FROM T_DATA_TYPE_CODE ");
+////		queryFirst.append(" WHERE KOUMOKU_CD = '9N401000000000011' AND CODE_NUM = TS.KEKA_TI) ");
+////		queryFirst.append(" else TS.KEKA_TI end KEKA_TI");
+//		queryFirst.append(" From T_KENSAKEKA_SONOTA TS LEFT JOIN T_KENSHINMASTER TK ");
+//		queryFirst.append(" ON TS.KOUMOKU_CD = TK.KOUMOKU_CD ");
+//
+//		queryFirst.append(" WHERE TS.UKETUKE_ID = ?");
+//		queryFirst.append(" AND TS.KENSA_NENGAPI = ?");
+//		queryFirst.append(" AND TK.HKNJANUM = ?");
+//		queryFirst.append(" AND TS.KEKA_TI <> '' ");
+//		queryFirst.append(" AND TK.HISU_FLG <> '1' ");
+//
+//		queryFirst.append(" ORDER BY KENSA_NENGAPI DESC,XMLITEM_SEQNO ");
+//
+//		String query = queryFirst.toString();
+//
+//		return query;
+//	}
+//
+//	private static String getZenGetuKensaKekkaSql(int cd,int nengappi) {
+//		StringBuffer buffer = new StringBuffer();
+//		buffer.append("SELECT");
+//		buffer.append(" T_KENSAKEKA_SONOTA.KOUMOKU_CD AS KOUMOKU_CD, ");
+//		buffer.append(" T_KENSAKEKA_SONOTA.JISI_KBN AS JISI_KBN,");
+//		buffer.append(" T_KENSAKEKA_SONOTA.H_L AS H_L,");
+//		// buffer.append(" T_KENSAKEKA_SONOTA.KEKA_TI AS KEKA_TI,");
+//
 //		// add s.inoue 2009/09/15 TS.KEKA_TIの代わり
-//		queryFirst.append(" ,case when TK.KOUMOKU_CD = '9N401000000000011' then ");
-//		queryFirst.append(" (SELECT CODE_NAME FROM T_DATA_TYPE_CODE ");
-//		queryFirst.append(" WHERE KOUMOKU_CD = '9N401000000000011' AND CODE_NUM = TS.KEKA_TI) ");
-//		queryFirst.append(" else TS.KEKA_TI end KEKA_TI");
-		queryFirst.append(" From T_KENSAKEKA_SONOTA TS LEFT JOIN T_KENSHINMASTER TK ");
-		queryFirst.append(" ON TS.KOUMOKU_CD = TK.KOUMOKU_CD ");
-
-		queryFirst.append(" WHERE TS.UKETUKE_ID = ?");
-		queryFirst.append(" AND TS.KENSA_NENGAPI = ?");
-		queryFirst.append(" AND TK.HKNJANUM = ?");
-		queryFirst.append(" AND TS.KEKA_TI <> '' ");
-		queryFirst.append(" AND TK.HISU_FLG <> '1' ");
-
-		queryFirst.append(" ORDER BY KENSA_NENGAPI DESC,XMLITEM_SEQNO ");
-
-		String query = queryFirst.toString();
-
-		return query;
-	}
-
-	private static String getZenGetuKensaKekkaSql(int cd,int nengappi) {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("SELECT");
-		buffer.append(" T_KENSAKEKA_SONOTA.KOUMOKU_CD AS KOUMOKU_CD, ");
-		buffer.append(" T_KENSAKEKA_SONOTA.JISI_KBN AS JISI_KBN,");
-		buffer.append(" T_KENSAKEKA_SONOTA.H_L AS H_L,");
-		// buffer.append(" T_KENSAKEKA_SONOTA.KEKA_TI AS KEKA_TI,");
-
-		// add s.inoue 2009/09/15 TS.KEKA_TIの代わり
-		buffer.append(" case when T_KENSHINMASTER.KOUMOKU_CD = '9N401000000000011' then ");
-		buffer.append(" (SELECT CODE_NAME FROM T_DATA_TYPE_CODE ");
-		buffer.append(" WHERE KOUMOKU_CD = '9N401000000000011' AND CODE_NUM = T_KENSAKEKA_SONOTA.KEKA_TI) ");
-		buffer.append(" else T_KENSAKEKA_SONOTA.KEKA_TI end KEKA_TI,");
-
-		buffer.append(" T_KENSHINMASTER.DATA_TYPE AS DATA_TYPE");
-		buffer.append(" From (T_KENSAKEKA_SONOTA INNER JOIN T_KENSHINMASTER ON T_KENSAKEKA_SONOTA.KOUMOKU_CD = T_KENSHINMASTER.KOUMOKU_CD)");
-		buffer.append(" WHERE T_KENSAKEKA_SONOTA.UKETUKE_ID = ?");
-		buffer.append(" AND T_KENSHINMASTER.HKNJANUM = ?");
-
-		// edit ver2 s.inoue 2009/06/08
-		buffer.append(" AND T_KENSAKEKA_SONOTA.KEKA_TI <> ''");
-
-		if(nengappi==2){
-			buffer.append(" AND T_KENSAKEKA_SONOTA.KENSA_NENGAPI IN (?,?)");
-		} else {
-			buffer.append(" AND T_KENSAKEKA_SONOTA.KENSA_NENGAPI IN (?)");
-		}
-
-		buffer.append(" AND T_KENSAKEKA_SONOTA.KOUMOKU_CD IN (");
-		buffer.append("?");
-		for(int i = 0; i<cd-1 ; i++ ){
-			buffer.append(",?");
-		}
-		buffer.append(")");
-		buffer.append(" ORDER BY T_KENSAKEKA_SONOTA.KOUMOKU_CD");
-
-		String query = buffer.toString();
-		return query;
-	}
+//		buffer.append(" case when T_KENSHINMASTER.KOUMOKU_CD = '9N401000000000011' then ");
+//		buffer.append(" (SELECT CODE_NAME FROM T_DATA_TYPE_CODE ");
+//		buffer.append(" WHERE KOUMOKU_CD = '9N401000000000011' AND CODE_NUM = T_KENSAKEKA_SONOTA.KEKA_TI) ");
+//		buffer.append(" else T_KENSAKEKA_SONOTA.KEKA_TI end KEKA_TI,");
+//
+//		buffer.append(" T_KENSHINMASTER.DATA_TYPE AS DATA_TYPE");
+//		buffer.append(" From (T_KENSAKEKA_SONOTA INNER JOIN T_KENSHINMASTER ON T_KENSAKEKA_SONOTA.KOUMOKU_CD = T_KENSHINMASTER.KOUMOKU_CD)");
+//		buffer.append(" WHERE T_KENSAKEKA_SONOTA.UKETUKE_ID = ?");
+//		buffer.append(" AND T_KENSHINMASTER.HKNJANUM = ?");
+//
+//		// edit ver2 s.inoue 2009/06/08
+//		buffer.append(" AND T_KENSAKEKA_SONOTA.KEKA_TI <> ''");
+//
+//		if(nengappi==2){
+//			buffer.append(" AND T_KENSAKEKA_SONOTA.KENSA_NENGAPI IN (?,?)");
+//		} else {
+//			buffer.append(" AND T_KENSAKEKA_SONOTA.KENSA_NENGAPI IN (?)");
+//		}
+//
+//		buffer.append(" AND T_KENSAKEKA_SONOTA.KOUMOKU_CD IN (");
+//		buffer.append("?");
+//		for(int i = 0; i<cd-1 ; i++ ){
+//			buffer.append(",?");
+//		}
+//		buffer.append(")");
+//		buffer.append(" ORDER BY T_KENSAKEKA_SONOTA.KOUMOKU_CD");
+//
+//		String query = buffer.toString();
+//		return query;
+//	}
+	// edit n.ohkubo 2016/02/01　未使用なので削除　end
 
 	/**
 	 * データタイプコード検索。
@@ -344,9 +352,9 @@ public class AddMedical {
 
 
 	private static final String SELECT_KIHON_CHK_SQL = getSelectKihonChkSql();
-	private static final String SELECT_ALL_KIHON_CHK_SQL = getAllSelectKihonChkSql();
+//	private static final String SELECT_ALL_KIHON_CHK_SQL = getAllSelectKihonChkSql();	// edit n.ohkubo 2016/02/01　未使用なので削除
 	private static final String SELECT_ALL_KIHON_CHK_KEYS_SQL = getKihonChkKeysSql();
-	private static final String SELECT_ALL_KIHON_CHK_SINGLEKEY_SQL = getKihonChkSingleKeySql();
+//	private static final String SELECT_ALL_KIHON_CHK_SINGLEKEY_SQL = getKihonChkSingleKeySql();	// edit n.ohkubo 2016/02/01　未使用なので削除
 
 	// add s.inoue 2013/01/21
 //	private static int paramLength = 0;
@@ -404,18 +412,21 @@ public class AddMedical {
 		buffer.append(" FROM T_NAYOSE TN,T_KENSAKEKA_TOKUTEI TK");
 		buffer.append(" WHERE TN.NAYOSE_NO = (SELECT NAYOSE_NO FROM T_NAYOSE TN WHERE TN.UKETUKE_ID = ? )");
 		buffer.append(" AND TN.UKETUKE_ID = TK.UKETUKE_ID");
+		buffer.append(" AND TK.KENSA_NENGAPI <= ?");	// edit n.ohkubo 2016/02/01　追加　過去分を選択した時に、選択した年度以下のみを表示させるため
 		buffer.append(" ORDER BY KENSA_NENGAPI DESC");
 		return buffer.toString();
 	}
 
-	// 基本チェックリストキー設定
-	private static String getKihonChkSingleKeySql(){
-		StringBuilder buffer = new StringBuilder();
-		buffer.append(" SELECT UKETUKE_ID,KENSA_NENGAPI");
-		buffer.append(" FROM T_KENSAKEKA_TOKUTEI");
-		buffer.append(" WHERE UKETUKE_ID = ? ");
-		return buffer.toString();
-	}
+	// edit n.ohkubo 2016/02/01　未使用なので削除　start
+//	// 基本チェックリストキー設定
+//	private static String getKihonChkSingleKeySql(){
+//		StringBuilder buffer = new StringBuilder();
+//		buffer.append(" SELECT UKETUKE_ID,KENSA_NENGAPI");
+//		buffer.append(" FROM T_KENSAKEKA_TOKUTEI");
+//		buffer.append(" WHERE UKETUKE_ID = ? ");
+//		return buffer.toString();
+//	}
+	// edit n.ohkubo 2016/02/01　未使用なので削除　end
 
 	// edit ver2 s.inoue 2009/06/22
 	private static String getSelectKihonChkSql() {
@@ -467,46 +478,54 @@ public class AddMedical {
 		return buffer.toString();
 	}
 
-	// edit ver2 s.inoue 2009/06/22
-	private static String getAllSelectKihonChkSql() {
-		StringBuilder buffer = new StringBuilder();
-
-		buffer.append("SELECT DISTINCT TS.KENSA_NENGAPI,TK.KOUMOKU_CD,");
-		buffer.append("TK.KOUMOKU_NAME, TK.TANI, TK.DS_JYOUGEN, TK.DS_KAGEN, TS.KEKA_TI, TK.DATA_TYPE");
-		buffer.append(" FROM T_KENSAKEKA_SONOTA TS,T_KENSHINMASTER TK,");
-		buffer.append(" (SELECT TN.UKETUKE_ID,TK.KENSA_NENGAPI");
-		buffer.append(" FROM T_NAYOSE TN,T_KENSAKEKA_TOKUTEI TK");
-		buffer.append(" WHERE TN.NAYOSE_NO = (SELECT NAYOSE_NO FROM T_NAYOSE TN WHERE TN.UKETUKE_ID = ? )");
-		buffer.append(" AND TN.UKETUKE_ID = TK.UKETUKE_ID) TN_KEY");
-		buffer.append(" WHERE TS.UKETUKE_ID = TN_KEY.UKETUKE_ID");
-		buffer.append(" AND TS.KENSA_NENGAPI = TN_KEY.KENSA_NENGAPI");
-		buffer.append(" AND TS.KEKA_TI <> ''");
-		buffer.append(" AND HISU_FLG <> '1'");
-		buffer.append(" AND TS.KOUMOKU_CD = TK.KOUMOKU_CD");
-		buffer.append(" AND TK.HKNJANUM = ? ");
-		buffer.append(" AND TS.KOUMOKU_CD IN");
-
-		// edit s.inoue 2014/07/04　25個から29個へ 通知表に影響します
-		// buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
-		buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
-
-		return buffer.toString();
-	}
+	// edit n.ohkubo 2016/02/01　未使用なので削除　start
+//	// edit ver2 s.inoue 2009/06/22
+//	private static String getAllSelectKihonChkSql() {
+//		StringBuilder buffer = new StringBuilder();
+//
+//		buffer.append("SELECT DISTINCT TS.KENSA_NENGAPI,TK.KOUMOKU_CD,");
+//		buffer.append("TK.KOUMOKU_NAME, TK.TANI, TK.DS_JYOUGEN, TK.DS_KAGEN, TS.KEKA_TI, TK.DATA_TYPE");
+//		buffer.append(" FROM T_KENSAKEKA_SONOTA TS,T_KENSHINMASTER TK,");
+//		buffer.append(" (SELECT TN.UKETUKE_ID,TK.KENSA_NENGAPI");
+//		buffer.append(" FROM T_NAYOSE TN,T_KENSAKEKA_TOKUTEI TK");
+//		buffer.append(" WHERE TN.NAYOSE_NO = (SELECT NAYOSE_NO FROM T_NAYOSE TN WHERE TN.UKETUKE_ID = ? )");
+//		buffer.append(" AND TN.UKETUKE_ID = TK.UKETUKE_ID) TN_KEY");
+//		buffer.append(" WHERE TS.UKETUKE_ID = TN_KEY.UKETUKE_ID");
+//		buffer.append(" AND TS.KENSA_NENGAPI = TN_KEY.KENSA_NENGAPI");
+//		buffer.append(" AND TS.KEKA_TI <> ''");
+//		buffer.append(" AND HISU_FLG <> '1'");
+//		buffer.append(" AND TS.KOUMOKU_CD = TK.KOUMOKU_CD");
+//		buffer.append(" AND TK.HKNJANUM = ? ");
+//		buffer.append(" AND TS.KOUMOKU_CD IN");
+//
+//		// edit s.inoue 2014/07/04　25個から29個へ 通知表に影響します
+//		// buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
+//		buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
+//
+//		return buffer.toString();
+//	}
+	// edit n.ohkubo 2016/02/01　未使用なので削除　end
 
 	// 生活基本チェックリスト
 	public List<TreeMap<String,String>> getKihonChkKeys(String[] params,String kensaNenGappi,List kensaNenList){
 		ArrayList<TreeMap<String, String>> rtnList = new ArrayList<TreeMap<String, String>>();
 
 		try {
-			// 今年度かどうか
-			boolean blnYear = FiscalYearUtil.getJugeThisYear(kensaNenGappi);
-			// edit ver2 s.inoue 2009/07/06
-			// 該当件数が1件かどうか
-			if(blnYear && kensaNenList.size() > 1){
-				rtnList = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_ALL_KIHON_CHK_KEYS_SQL, params);
-			}else{
-				rtnList = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_ALL_KIHON_CHK_SINGLEKEY_SQL, params);
-			}
+			// edit n.ohkubo 2016/02/01　削除　start　常に3件分表示する
+//			// 今年度かどうか
+//			boolean blnYear = FiscalYearUtil.getJugeThisYear(kensaNenGappi);
+//			// edit ver2 s.inoue 2009/07/06
+//			// 該当件数が1件かどうか
+//			if(blnYear && kensaNenList.size() > 1){
+//				rtnList = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_ALL_KIHON_CHK_KEYS_SQL, params);
+//			}else{
+//				rtnList = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_ALL_KIHON_CHK_SINGLEKEY_SQL, params);
+//			}
+			// edit n.ohkubo 2016/02/01　削除　end　常に3件分表示する
+			
+			// edit n.ohkubo 2016/02/01　追加　start　常に3件分表示する
+			rtnList = JApplication.kikanDatabase.sendExecuteSortedQuery(SELECT_ALL_KIHON_CHK_KEYS_SQL, params);
+			// edit n.ohkubo 2016/02/01　追加　end　常に3件分表示する
 
 		}catch(Exception ex){
 			ex.printStackTrace();
@@ -551,7 +570,7 @@ public class AddMedical {
 //				boolean blnYear = FiscalYearUtil.getJugeThisYear(kensaNenGappi);
 
 				String[] codes = strCoumokuCd.split(",");
-				String[] nengappis = kensaNenGappi.split(",");
+//				String[] nengappis = kensaNenGappi.split(",");	// edit n.ohkubo 2016/02/01　未使用なので削除　start
 
 				ArrayList<String> paramList = new ArrayList<String>();
 

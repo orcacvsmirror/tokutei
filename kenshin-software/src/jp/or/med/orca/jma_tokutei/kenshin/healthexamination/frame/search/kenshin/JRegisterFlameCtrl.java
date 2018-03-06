@@ -1835,7 +1835,8 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 		JLabel jLabelZenkai = new JLabel();
 		jLabelZenkai.setPreferredSize(new Dimension(zenkai_Width, controlTextHeight));
 		jLabelZenkai.setText(hisTi);
-		jLabelZenkai.setToolTipText("前回値:" + hisTi);
+//		jLabelZenkai.setToolTipText("前回値:" + hisTi);	// edit n.ohkubo 2016/02/01　削除
+		jLabelZenkai.setToolTipText("前年値:" + hisTi);	// edit n.ohkubo 2016/02/01　追加
 		jLabelZenkai.setFocusable(false);
 
 		JLabel jLabelHL = new JLabel();
@@ -2310,60 +2311,131 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 		/* 健診分野別のタブ */
 //		sql.append(" SELECT * FROM ( ");
 		sql.append(getCellDataSeikatuSql() + strsubSQL.toString());
-		sql.append(" FROM ( T_KENSHINMASTER master LEFT JOIN T_KENSACENTER_MASTER kensa ON kensa.KOUMOKU_CD = master.KOUMOKU_CD  AND kensa.KENSA_CENTER_CD = null )");
-		sql.append(" LEFT JOIN T_KENSAKEKA_SONOTA sonota ON sonota.KOUMOKU_CD = master.KOUMOKU_CD");
-		// add s.inoue 2012/04/24
-		if (!validatedData.getKensaJissiDate().equals(""))
-			sql.append(" AND sonota.KENSA_NENGAPI = '" + validatedData.getKensaJissiDate() + "'");
-
-		sql.append(" AND sonota.UKETUKE_ID = ");
-
-		// eidt s.inoue 2011/12/07
-		// sql.append(validatedData.getUketuke_id());
-		if (isCopy && !isPrev){
-			sql.append(JQueryConvert.queryConvert(validatedData.getUketukePre_id()));
-		}else{
-			sql.append(JQueryConvert.queryConvert(validatedData.getUketuke_id()));
-		}
-
-		sql.append(" LEFT JOIN T_KENSHIN_P_S ps  ON ps.KOUMOKU_CD = master.KOUMOKU_CD    AND ps.K_P_NO = '" + kenshinPatternNumber  + "'");
-
-		// add s.inoue 2011/11/08
-		sql.append(" LEFT JOIN (select KOUMOKU_CD,KEKA_TI from T_KENSAKEKA_SONOTA where UKETUKE_ID = ");
-		sql.append(" (select MAX(UKETUKE_ID) FROM T_NAYOSE ns,");
-		sql.append(" (select NAYOSE_NO FROM T_NAYOSE WHERE UKETUKE_ID = '" + validatedData.getUketuke_id()  + "') nst ");
-		sql.append(" where ns.NAYOSE_NO = nst.NAYOSE_NO and ns.UKETUKE_ID <> '" + validatedData.getUketuke_id()  + "')) his ON ps.KOUMOKU_CD = his.KOUMOKU_CD ");
-
-		// pattern 5 → pattern 1
-		sql.append(" WHERE master.KOUMOKU_CD IN ( SELECT KOUMOKU_CD FROM T_KENSHIN_P_S WHERE K_P_NO = '" + kenshinPatternNumber  + "' )");
-		// 処理に含める
-		// AND KOUMOKU_CD NOT IN ( '9N501000000000011','9N506000000000011' ) )");
-		sql.append(" AND master.HKNJANUM = '" + validatedData.getHokenjyaNumber() + "'");
-
-		// 複数方法が存在する場合、固定で1つにするメソッド
-		// →廃止
-//		sql.append(getCellDataWhereSql());
-
-//		sql.append(" UNION ");
-//		/* マイタブ用の UNION SQL */
-//		sql.append(strSeikatu.toString() + " '9999' AS HISU_FLG ");
+		
+		// edit n.ohkubo 2016/02/01　削除　start　前年度の結果値を取得する（＋T_KENSACENTER_MASTERは廃止）
 //		sql.append(" FROM ( T_KENSHINMASTER master LEFT JOIN T_KENSACENTER_MASTER kensa ON kensa.KOUMOKU_CD = master.KOUMOKU_CD  AND kensa.KENSA_CENTER_CD = null )");
-//		sql.append(" LEFT JOIN T_KENSAKEKA_SONOTA sonota ON sonota.KOUMOKU_CD = master.KOUMOKU_CD  AND sonota.KENSA_NENGAPI = '20110913'  AND sonota.UKETUKE_ID = '201108250001'");
-//		sql.append(" LEFT JOIN T_KENSHIN_P_S ps  ON ps.KOUMOKU_CD = master.KOUMOKU_CD    AND ps.K_P_NO = '" + patternNo  + "'");
-//		sql.append(" WHERE master.KOUMOKU_CD IN ( SELECT KOUMOKU_CD FROM T_KENSHIN_P_S WHERE K_P_NO = '9999'  AND KOUMOKU_CD NOT IN ( '9N501000000000011','9N506000000000011' ) )");
-//		sql.append(" AND master.HKNJANUM = '11111111'  ");
-//		sql.append(strWhere);
-//		sql.append("  ) ");
-
-		// no eidt s.inoue 2013/04/10
-		// ここを変えると表示文字の重複のバグとなる
-		// eidt s.inoue 2013/11/07
-		// 再度修正、パターン順にしたい
-		// sql.append(" ORDER BY HISU_FLG,XMLITEM_SEQNO ");
-		sql.append(" ORDER BY HISU_FLG,LOW_ID ");
-
-		System.out.println(sql.toString());
-
+//		sql.append(" LEFT JOIN T_KENSAKEKA_SONOTA sonota ON sonota.KOUMOKU_CD = master.KOUMOKU_CD");
+//		// add s.inoue 2012/04/24
+//		if (!validatedData.getKensaJissiDate().equals(""))
+//			sql.append(" AND sonota.KENSA_NENGAPI = '" + validatedData.getKensaJissiDate() + "'");
+//
+//		sql.append(" AND sonota.UKETUKE_ID = ");
+//
+//		// eidt s.inoue 2011/12/07
+//		// sql.append(validatedData.getUketuke_id());
+//		if (isCopy && !isPrev){
+//			sql.append(JQueryConvert.queryConvert(validatedData.getUketukePre_id()));
+//		}else{
+//			sql.append(JQueryConvert.queryConvert(validatedData.getUketuke_id()));
+//		}
+//
+//		sql.append(" LEFT JOIN T_KENSHIN_P_S ps  ON ps.KOUMOKU_CD = master.KOUMOKU_CD    AND ps.K_P_NO = '" + kenshinPatternNumber  + "'");
+//
+//		// add s.inoue 2011/11/08
+//		sql.append(" LEFT JOIN (select KOUMOKU_CD,KEKA_TI from T_KENSAKEKA_SONOTA where UKETUKE_ID = ");
+//		sql.append(" (select MAX(UKETUKE_ID) FROM T_NAYOSE ns,");
+//		sql.append(" (select NAYOSE_NO FROM T_NAYOSE WHERE UKETUKE_ID = '" + validatedData.getUketuke_id()  + "') nst ");
+//		sql.append(" where ns.NAYOSE_NO = nst.NAYOSE_NO and ns.UKETUKE_ID <> '" + validatedData.getUketuke_id()  + "')) his ON ps.KOUMOKU_CD = his.KOUMOKU_CD ");
+//
+//		// pattern 5 → pattern 1
+//		sql.append(" WHERE master.KOUMOKU_CD IN ( SELECT KOUMOKU_CD FROM T_KENSHIN_P_S WHERE K_P_NO = '" + kenshinPatternNumber  + "' )");
+//		// 処理に含める
+//		// AND KOUMOKU_CD NOT IN ( '9N501000000000011','9N506000000000011' ) )");
+//		sql.append(" AND master.HKNJANUM = '" + validatedData.getHokenjyaNumber() + "'");
+//
+//		// 複数方法が存在する場合、固定で1つにするメソッド
+//		// →廃止
+////		sql.append(getCellDataWhereSql());
+//
+////		sql.append(" UNION ");
+////		/* マイタブ用の UNION SQL */
+////		sql.append(strSeikatu.toString() + " '9999' AS HISU_FLG ");
+////		sql.append(" FROM ( T_KENSHINMASTER master LEFT JOIN T_KENSACENTER_MASTER kensa ON kensa.KOUMOKU_CD = master.KOUMOKU_CD  AND kensa.KENSA_CENTER_CD = null )");
+////		sql.append(" LEFT JOIN T_KENSAKEKA_SONOTA sonota ON sonota.KOUMOKU_CD = master.KOUMOKU_CD  AND sonota.KENSA_NENGAPI = '20110913'  AND sonota.UKETUKE_ID = '201108250001'");
+////		sql.append(" LEFT JOIN T_KENSHIN_P_S ps  ON ps.KOUMOKU_CD = master.KOUMOKU_CD    AND ps.K_P_NO = '" + patternNo  + "'");
+////		sql.append(" WHERE master.KOUMOKU_CD IN ( SELECT KOUMOKU_CD FROM T_KENSHIN_P_S WHERE K_P_NO = '9999'  AND KOUMOKU_CD NOT IN ( '9N501000000000011','9N506000000000011' ) )");
+////		sql.append(" AND master.HKNJANUM = '11111111'  ");
+////		sql.append(strWhere);
+////		sql.append("  ) ");
+//
+//		// no eidt s.inoue 2013/04/10
+//		// ここを変えると表示文字の重複のバグとなる
+//		// eidt s.inoue 2013/11/07
+//		// 再度修正、パターン順にしたい
+//		// sql.append(" ORDER BY HISU_FLG,XMLITEM_SEQNO ");
+//		sql.append(" ORDER BY HISU_FLG,LOW_ID ");
+//
+//		System.out.println(sql.toString());
+		// edit n.ohkubo 2016/02/01　削除　end　前年度の結果値を取得する（＋T_KENSACENTER_MASTERは廃止）
+		
+		// edit n.ohkubo 2016/02/01　追加　start　前年度の結果値を取得する
+		String nengapi = validatedData.getKensaJissiDate();	//実施年月日
+		String uketuke_id;	//受付ID
+		if (isCopy && !isPrev) {
+			uketuke_id = JQueryConvert.queryConvert(validatedData.getUketukePre_id());
+		} else {
+			uketuke_id = JQueryConvert.queryConvert(validatedData.getUketuke_id());
+		}
+		sql.append(" FROM");
+		sql.append(" T_KENSHINMASTER AS master INNER JOIN T_KENSHIN_P_S AS ps");
+		sql.append(" ON master.KOUMOKU_CD = ps.KOUMOKU_CD");
+		sql.append(" LEFT OUTER JOIN T_KENSAKEKA_SONOTA AS sonota");
+		sql.append(" ON sonota.KOUMOKU_CD = master.KOUMOKU_CD");
+		if (!nengapi.equals("")) {
+			sql.append(" AND sonota.KENSA_NENGAPI = '" + nengapi + "'");
+		}
+		sql.append(" AND sonota.UKETUKE_ID = ");
+		sql.append(uketuke_id);
+		sql.append(" LEFT OUTER JOIN T_KENSAKEKA_SONOTA AS his");
+		sql.append(" ON master.KOUMOKU_CD = his.KOUMOKU_CD");
+		sql.append(" AND his.KENSA_NENGAPI = (");
+		sql.append(" SELECT");
+		sql.append(" MAX(INNER_SONOTA.KENSA_NENGAPI)");
+		sql.append(" FROM");
+		sql.append(" T_NAYOSE AS NYS_ID INNER JOIN T_NAYOSE AS NYS_NO");
+		sql.append(" ON NYS_ID.NAYOSE_NO = NYS_NO.NAYOSE_NO");
+		sql.append(" INNER JOIN T_KENSAKEKA_SONOTA AS INNER_SONOTA");
+		sql.append(" ON INNER_SONOTA.UKETUKE_ID = NYS_ID.UKETUKE_ID");
+		sql.append(" WHERE");
+		sql.append(" NYS_NO.UKETUKE_ID = ");
+		sql.append(uketuke_id);
+		if (!nengapi.equals("")) {
+			sql.append(" AND INNER_SONOTA.KENSA_NENGAPI < '" + nengapi + "'");
+		}
+		sql.append(" )");
+		sql.append(" AND his.UKETUKE_ID = (");
+		sql.append(" SELECT");
+		sql.append(" FIRST 1");
+		sql.append(" UKETUKE_ID");
+		sql.append(" FROM");
+		sql.append(" (");
+		sql.append(" SELECT");
+		sql.append(" DISTINCT");
+		sql.append(" INNER_SONOTA.KENSA_NENGAPI,");
+		sql.append(" NYS_ID.UKETUKE_ID");
+		sql.append(" FROM");
+		sql.append(" T_NAYOSE AS NYS_ID INNER JOIN T_NAYOSE AS NYS_NO");
+		sql.append(" ON NYS_ID.NAYOSE_NO = NYS_NO.NAYOSE_NO");
+		sql.append(" INNER JOIN T_KENSAKEKA_SONOTA AS INNER_SONOTA");
+		sql.append(" ON INNER_SONOTA.UKETUKE_ID = NYS_ID.UKETUKE_ID");
+		sql.append(" WHERE");
+		sql.append(" NYS_NO.UKETUKE_ID = ");
+		sql.append(uketuke_id);
+		if (!nengapi.equals("")) {
+			sql.append(" AND INNER_SONOTA.KENSA_NENGAPI < '" + nengapi + "'");
+		}
+		sql.append(" ORDER BY");
+		sql.append(" INNER_SONOTA.KENSA_NENGAPI DESC");
+		sql.append(" )");
+		sql.append(" )");
+		sql.append(" WHERE");
+		sql.append(" ps.K_P_NO = '" + kenshinPatternNumber  + "'");
+		sql.append(" AND master.HKNJANUM = '" + validatedData.getHokenjyaNumber() + "'");
+		sql.append(" ORDER BY");
+		sql.append(" HISU_FLG,");
+		sql.append(" LOW_ID");
+		// edit n.ohkubo 2016/02/01　追加　end　前年度の結果値を取得する
+		
 		return sql.toString();
 	}
 
@@ -2376,45 +2448,120 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 		/* マイタブ用の UNION SQL */
 		// eidt s.inoue 2012/05/30
 		sql.append(getCellDataSeikatuSql() + " '9999'  || HISU_FLG AS HISU_FLG ");
-		sql.append(" FROM ( T_KENSHINMASTER master LEFT JOIN T_KENSACENTER_MASTER kensa ON kensa.KOUMOKU_CD = master.KOUMOKU_CD  AND kensa.KENSA_CENTER_CD = null )");
-		sql.append(" LEFT JOIN T_KENSAKEKA_SONOTA sonota ON sonota.KOUMOKU_CD = master.KOUMOKU_CD ");
+		
+		// edit n.ohkubo 2016/02/01　削除　start　前年度の結果値を取得する（＋T_KENSACENTER_MASTERは廃止）
+//		sql.append(" FROM ( T_KENSHINMASTER master LEFT JOIN T_KENSACENTER_MASTER kensa ON kensa.KOUMOKU_CD = master.KOUMOKU_CD  AND kensa.KENSA_CENTER_CD = null )");
+//		sql.append(" LEFT JOIN T_KENSAKEKA_SONOTA sonota ON sonota.KOUMOKU_CD = master.KOUMOKU_CD ");
+//
+//		// add s.inoue 2012/04/24
+//		if (!validatedData.getKensaJissiDate().equals(""))
+//			sql.append(" AND sonota.KENSA_NENGAPI = '" + validatedData.getKensaJissiDate() + "'");
+//
+//		sql.append(" AND sonota.UKETUKE_ID = ");
+//
+//		// eidt s.inoue 2011/12/07
+//		// sql.append(validatedData.getUketuke_id());
+//		if (isCopy && !isPrev){
+//			sql.append(JQueryConvert.queryConvert(validatedData.getUketukePre_id()));
+//		}else{
+//			sql.append(JQueryConvert.queryConvert(validatedData.getUketuke_id()));
+//		}
+//
+//		// eidt s.inoue 2013/04/10
+//		// sql.append(" LEFT JOIN T_KENSHIN_P_S ps  ON ps.KOUMOKU_CD = master.KOUMOKU_CD    AND ps.K_P_NO = '" + kenshinPatternNumber  + "'");
+//		sql.append(" LEFT JOIN T_KENSHIN_P_S ps  ON ps.KOUMOKU_CD = master.KOUMOKU_CD    AND ps.K_P_NO = '9999'");
+//
+//		// add s.inoue 2011/11/08
+//		sql.append(" LEFT JOIN (select KOUMOKU_CD,KEKA_TI from T_KENSAKEKA_SONOTA where UKETUKE_ID = ");
+//		sql.append(" (select MAX(UKETUKE_ID) FROM T_NAYOSE ns,");
+//		sql.append(" (select NAYOSE_NO FROM T_NAYOSE WHERE UKETUKE_ID = '" + validatedData.getUketuke_id()  + "') nst ");
+//		sql.append(" where ns.NAYOSE_NO = nst.NAYOSE_NO and ns.UKETUKE_ID <> '" + validatedData.getUketuke_id()  + "')) his ON ps.KOUMOKU_CD = his.KOUMOKU_CD ");
+//
+//		sql.append(" WHERE master.KOUMOKU_CD IN ( SELECT KOUMOKU_CD FROM T_KENSHIN_P_S WHERE K_P_NO = '9999' AND KOUMOKU_CD NOT IN ( '9N501000000000011','9N506000000000011' ) )");
+//		sql.append(" AND master.HKNJANUM = '" + validatedData.getHokenjyaNumber() + "'");
+//
+//		// 複数方法が存在する場合、固定で1つにするメソッド
+//		// →廃止
+////		sql.append(getCellDataWhereSql());
+//
+//		// eidt s.inoue 2013/04/10
+////		sql.append(" ORDER BY HISU_FLG,XMLITEM_SEQNO ");
+//		sql.append(" ORDER BY ps.LOW_ID ");
+//
+//		System.out.println(sql.toString());
+		// edit n.ohkubo 2016/02/01　削除　end　前年度の結果値を取得する（＋T_KENSACENTER_MASTERは廃止）
 
-		// add s.inoue 2012/04/24
-		if (!validatedData.getKensaJissiDate().equals(""))
-			sql.append(" AND sonota.KENSA_NENGAPI = '" + validatedData.getKensaJissiDate() + "'");
-
-		sql.append(" AND sonota.UKETUKE_ID = ");
-
-		// eidt s.inoue 2011/12/07
-		// sql.append(validatedData.getUketuke_id());
-		if (isCopy && !isPrev){
-			sql.append(JQueryConvert.queryConvert(validatedData.getUketukePre_id()));
-		}else{
-			sql.append(JQueryConvert.queryConvert(validatedData.getUketuke_id()));
+		// edit n.ohkubo 2016/02/01　追加　start　前年度の結果値を取得する
+		String nengapi = validatedData.getKensaJissiDate();	//実施年月日
+		String uketuke_id;	//受付ID
+		if (isCopy && !isPrev) {
+			uketuke_id = JQueryConvert.queryConvert(validatedData.getUketukePre_id());
+		} else {
+			uketuke_id = JQueryConvert.queryConvert(validatedData.getUketuke_id());
 		}
-
-		// eidt s.inoue 2013/04/10
-		// sql.append(" LEFT JOIN T_KENSHIN_P_S ps  ON ps.KOUMOKU_CD = master.KOUMOKU_CD    AND ps.K_P_NO = '" + kenshinPatternNumber  + "'");
-		sql.append(" LEFT JOIN T_KENSHIN_P_S ps  ON ps.KOUMOKU_CD = master.KOUMOKU_CD    AND ps.K_P_NO = '9999'");
-
-		// add s.inoue 2011/11/08
-		sql.append(" LEFT JOIN (select KOUMOKU_CD,KEKA_TI from T_KENSAKEKA_SONOTA where UKETUKE_ID = ");
-		sql.append(" (select MAX(UKETUKE_ID) FROM T_NAYOSE ns,");
-		sql.append(" (select NAYOSE_NO FROM T_NAYOSE WHERE UKETUKE_ID = '" + validatedData.getUketuke_id()  + "') nst ");
-		sql.append(" where ns.NAYOSE_NO = nst.NAYOSE_NO and ns.UKETUKE_ID <> '" + validatedData.getUketuke_id()  + "')) his ON ps.KOUMOKU_CD = his.KOUMOKU_CD ");
-
-		sql.append(" WHERE master.KOUMOKU_CD IN ( SELECT KOUMOKU_CD FROM T_KENSHIN_P_S WHERE K_P_NO = '9999' AND KOUMOKU_CD NOT IN ( '9N501000000000011','9N506000000000011' ) )");
+		sql.append(" FROM");
+		sql.append(" T_KENSHINMASTER master INNER JOIN T_KENSHIN_P_S ps");
+		sql.append(" ON master.KOUMOKU_CD = ps.KOUMOKU_CD");
+		sql.append(" LEFT OUTER JOIN T_KENSAKEKA_SONOTA sonota");
+		sql.append(" ON master.KOUMOKU_CD = sonota.KOUMOKU_CD");
+		if (!nengapi.equals("")) {
+			sql.append(" AND sonota.KENSA_NENGAPI = '" + nengapi + "'");
+		}
+		sql.append(" AND sonota.UKETUKE_ID = ");
+		sql.append(uketuke_id);
+		sql.append(" LEFT OUTER JOIN T_KENSAKEKA_SONOTA AS his");
+		sql.append(" ON master.KOUMOKU_CD = his.KOUMOKU_CD");
+		sql.append(" AND his.KENSA_NENGAPI = (");
+		sql.append(" SELECT");
+		sql.append(" MAX(INNER_SONOTA.KENSA_NENGAPI)");
+		sql.append(" FROM");
+		sql.append(" T_NAYOSE AS NYS_ID INNER JOIN T_NAYOSE AS NYS_NO");
+		sql.append(" ON NYS_ID.NAYOSE_NO = NYS_NO.NAYOSE_NO");
+		sql.append(" INNER JOIN T_KENSAKEKA_SONOTA AS INNER_SONOTA");
+		sql.append(" ON INNER_SONOTA.UKETUKE_ID = NYS_ID.UKETUKE_ID");
+		sql.append(" WHERE");
+		sql.append(" NYS_NO.UKETUKE_ID = ");
+		sql.append(uketuke_id);
+		if (!nengapi.equals("")) {
+			sql.append(" AND INNER_SONOTA.KENSA_NENGAPI < '" + nengapi + "'");
+		}
+		sql.append(" )");
+		sql.append(" AND his.UKETUKE_ID = (");
+		sql.append(" SELECT");
+		sql.append(" FIRST 1");
+		sql.append(" UKETUKE_ID");
+		sql.append(" FROM");
+		sql.append(" (");
+		sql.append(" SELECT");
+		sql.append(" DISTINCT");
+		sql.append(" INNER_SONOTA.KENSA_NENGAPI,");
+		sql.append(" NYS_ID.UKETUKE_ID");
+		sql.append(" FROM");
+		sql.append(" T_NAYOSE AS NYS_ID INNER JOIN T_NAYOSE AS NYS_NO");
+		sql.append(" ON NYS_ID.NAYOSE_NO = NYS_NO.NAYOSE_NO");
+		sql.append(" INNER JOIN T_KENSAKEKA_SONOTA AS INNER_SONOTA");
+		sql.append(" ON INNER_SONOTA.UKETUKE_ID = NYS_ID.UKETUKE_ID");
+		sql.append(" WHERE");
+		sql.append(" NYS_NO.UKETUKE_ID = ");
+		sql.append(uketuke_id);
+		if (!nengapi.equals("")) {
+			sql.append(" AND INNER_SONOTA.KENSA_NENGAPI < '" + nengapi + "'");
+		}
+		sql.append(" ORDER BY");
+		sql.append(" INNER_SONOTA.KENSA_NENGAPI DESC");
+		sql.append(" )");
+		sql.append(" )");
+		sql.append(" WHERE");
+		sql.append(" ps.K_P_NO = '9999'");
+		sql.append(" AND ps.KOUMOKU_CD NOT IN (");
+		sql.append(" '9N501000000000011',");
+		sql.append(" '9N506000000000011'");
+		sql.append(" )");
 		sql.append(" AND master.HKNJANUM = '" + validatedData.getHokenjyaNumber() + "'");
-
-		// 複数方法が存在する場合、固定で1つにするメソッド
-		// →廃止
-//		sql.append(getCellDataWhereSql());
-
-		// eidt s.inoue 2013/04/10
-//		sql.append(" ORDER BY HISU_FLG,XMLITEM_SEQNO ");
-		sql.append(" ORDER BY ps.LOW_ID ");
-
-		System.out.println(sql.toString());
+		sql.append(" ORDER BY");
+		sql.append(" ps.LOW_ID");
+		// edit n.ohkubo 2016/02/01　追加　end　前年度の結果値を取得する
+		
 		return sql.toString();
 	}
 
