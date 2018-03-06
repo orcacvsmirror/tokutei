@@ -2334,6 +2334,12 @@ public class JValidate {
 
 		if( isNumber(str) ){
 			retValue = str;
+			
+			// edit n.ohkubo 2015/08/01　追加　start　患者IDの桁数は、最大20桁（日レセのDBのカラムの制限）
+			if (!str.isEmpty() && Integer.parseInt(str) > 20) {
+				retValue = null;
+			}
+			// edit n.ohkubo 2015/08/01　追加　end　患者IDの桁数は、最大20桁（日レセのDBのカラムの制限）
 		}
 
 		return retValue;

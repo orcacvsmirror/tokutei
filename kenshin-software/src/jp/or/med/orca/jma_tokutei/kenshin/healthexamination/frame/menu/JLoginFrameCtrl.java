@@ -28,8 +28,10 @@ import jp.or.med.orca.jma_tokutei.common.app.JApplication.FlagEnum_Serche;
 import jp.or.med.orca.jma_tokutei.common.convert.JInteger;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
+import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
 import jp.or.med.orca.jma_tokutei.common.execlocker.JExecLocker;
 import jp.or.med.orca.jma_tokutei.common.execlocker.JExecLockerConfig;
+import jp.or.med.orca.jma_tokutei.common.execlocker.JExecUnlocker;
 import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
@@ -172,6 +174,13 @@ public class JLoginFrameCtrl extends JLoginFrame {
 			items = JApplication.systemDatabase
 					.sendExecuteQuery("SELECT * FROM T_F_KIKAN");
 			retValue = true;
+			
+			// edit n.ohkubo 2015/08/01　追加　start　JSoftware.javaのinitializeメソッド内でチェックしているので、通常0件にはならないが、他PCのFDBを使用している場合0件になる可能性があるのでチェックする
+			if (items.size() == 0) {
+				JErrorMessage.show("M1001", null);
+				System.exit(1);
+			}
+			// edit n.ohkubo 2015/08/01　追加　end　JSoftware.javaのinitializeメソッド内でチェックしているので、通常0件にはならないが、他PCのFDBを使用している場合0件になる可能性があるのでチェックする
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -416,7 +425,24 @@ public class JLoginFrameCtrl extends JLoginFrame {
 					+ kikanNumber;
 			JExecLocker.getLockWithName(lockfileName);
 		} catch (Exception e) {
-			JErrorMessage.show("M1002", null);
+			// edit n.ohkubo 2015/08/01　削除　メッセージを変更して、実行ロック解除を行えるようにする
+//			JErrorMessage.show("M1002", null);
+			
+			// edit n.ohkubo 2015/08/01　追加　実行ロック解除の起動　start
+			//※LookAndFeelの設定を行わないと、メッセージのダイアログが白（描画が中途半端）で表示されたり、メッセージを"いいえ"で戻ったときに健診機関のプルダウンでヌルポが発生する（Goodiesのみ発生する現象）
+			String lookAndFeel = PropertyUtil.getProperty( "setting.lookAndFeel");
+			if (!lookAndFeel.equals("")) {
+				SettingDialog sd = new SettingDialog();
+				sd.changeTheLookAndFeel(lookAndFeel, true);
+			}
+			
+			//メッセージの表示
+			RETURN_VALUE val = JErrorMessage.show("M1004", this);
+			if (val == RETURN_VALUE.YES) {
+				JExecUnlocker.main(null);
+			}
+			// edit n.ohkubo 2015/08/01　追加　実行ロック解除の起動　end
+			
 			return;
 		}
 
@@ -739,6 +765,8 @@ public class JLoginFrameCtrl extends JLoginFrame {
 	    logPlaceDomain.addDomainPair("JLoginFrameCtrl","ログイン/管理");
 	    logPlaceDomain.addDomainPair("JMenuFrameCtrl","メインメニュー/管理");
 	    logPlaceDomain.addDomainPair("JRegisterUserFrameCtrl","健診結果データ取り込み/管理");
+	    logPlaceDomain.addDomainPair("JNetworkDBConnectionFrame","DB接続情報メンテナンス（編集）");		// edit n.ohkubo 2015/08/01　追加
+	    logPlaceDomain.addDomainPair("JNetworkDBConnectionFrameCtrl","DB接続情報メンテナンス（編集）");	// edit n.ohkubo 2015/08/01　追加
 	    
 	    JApplication.domains.put(
     		logPlaceDomain.getDomainId(),

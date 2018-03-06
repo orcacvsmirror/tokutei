@@ -291,35 +291,59 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 				resultItem = result.get(i);
 
 				String koumokuCD = resultItem.get("KOUMOKU_CD");
-				if(!dokujiKoumokuCD.contains(koumokuCD)){
+				// edit n.ohkubo 2015/08/01　削除　start　下で設定
+//				if(!dokujiKoumokuCD.contains(koumokuCD)){
+//					row[0] = koumokuCD;
+//					row[1] = resultItem.get("KOUMOKU_NAME");
+//					row[2] = resultItem.get("KENSA_HOUHOU");
+//					row[3] = resultItem.get("HISU_FLG");
+//					row[4] = resultItem.get("XMLITEM_SEQNO");
+//					leftTable.addData(row);
+//				}
+				// edit n.ohkubo 2015/08/01　削除　end　下で設定
+				
+				// edit n.ohkubo 2015/08/01　追加　start　独自追加項目を最後に追加はやめて、登録順通りに表示する
+				if (dokujiFlg) {
 					row[0] = koumokuCD;
 					row[1] = resultItem.get("KOUMOKU_NAME");
 					row[2] = resultItem.get("KENSA_HOUHOU");
 					row[3] = resultItem.get("HISU_FLG");
 					row[4] = resultItem.get("XMLITEM_SEQNO");
 					leftTable.addData(row);
-				}
-			}
-
-			// 独自追加健診
-			if (dokujiFlg){
-				for( int i = 0;i < result.size();i++ )
-				{
-					resultItem = result.get(i);
-					String koumokuCD = resultItem.get("KOUMOKU_CD");
-					if(dokujiKoumokuCD.contains(koumokuCD)){
-//						System.out.println(koumokuCD + resultItem.get("KOUMOKU_NAME"));
+				} else {
+					if (!dokujiKoumokuCD.contains(koumokuCD)) {
 						row[0] = koumokuCD;
 						row[1] = resultItem.get("KOUMOKU_NAME");
 						row[2] = resultItem.get("KENSA_HOUHOU");
-						// add s.inoue 2011/09/02
 						row[3] = resultItem.get("HISU_FLG");
 						row[4] = resultItem.get("XMLITEM_SEQNO");
-
 						leftTable.addData(row);
 					}
 				}
+				// edit n.ohkubo 2015/08/01　追加　end　独自追加項目を最後に追加はやめて、登録順通りに表示する
 			}
+
+			// edit n.ohkubo 2015/08/01　削除　start　独自追加項目を最後に追加はやめて、登録順通りに表示する
+			// 独自追加健診
+//			if (dokujiFlg){
+//				for( int i = 0;i < result.size();i++ )
+//				{
+//					resultItem = result.get(i);
+//					String koumokuCD = resultItem.get("KOUMOKU_CD");
+//					if(dokujiKoumokuCD.contains(koumokuCD)){
+////						System.out.println(koumokuCD + resultItem.get("KOUMOKU_NAME"));
+//						row[0] = koumokuCD;
+//						row[1] = resultItem.get("KOUMOKU_NAME");
+//						row[2] = resultItem.get("KENSA_HOUHOU");
+//						// add s.inoue 2011/09/02
+//						row[3] = resultItem.get("HISU_FLG");
+//						row[4] = resultItem.get("XMLITEM_SEQNO");
+//
+//						leftTable.addData(row);
+//					}
+//				}
+//			}
+			// edit n.ohkubo 2015/08/01　削除　end　独自追加項目を最後に追加はやめて、登録順通りに表示する
 
 			// eidt s.inoue 2012/05/09
 			queryDokuji.append("SELECT distinct case HISU_FLG when 1 then '基本' when 2 then '詳細' else '追加' end as HISU_FLG,");

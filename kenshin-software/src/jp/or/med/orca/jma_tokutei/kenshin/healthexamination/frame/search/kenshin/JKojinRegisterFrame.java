@@ -264,6 +264,20 @@ public class JKojinRegisterFrame extends JFrame
 	protected ExtendedOpenTextControl jTextField_SindenzuTanka = null;
 	protected ExtendedOpenTextControl jTextField_GanteiTanka = null;
 	protected ExtendedOpenTextControl jTextField_NingenDocTanka = null;
+	
+	// edit n.ohkubo 2015/08/01　追加　start
+	protected ExtendedButton jButton_Print_tsuikakenshin = null;
+	private ExtendedButton getJButton_Print_tsuikakenshin() {
+		if (jButton_Print_tsuikakenshin == null) {
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Common_Print1);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
+			jButton_Print_tsuikakenshin= new ExtendedButton(
+					"IraiPrint","追加健診(O)","追加健診(ALT+O)",KeyEvent.VK_O,icon);
+			jButton_Print_tsuikakenshin.addActionListener(this);
+		}
+		return jButton_Print_tsuikakenshin;
+	}
+	// edit n.ohkubo 2015/08/01　追加　end
 
 	/**
 	 * This is the default constructor
@@ -3560,6 +3574,14 @@ public class JKojinRegisterFrame extends JFrame
 			jPanel_buttons.add(getJButton_Clear(), gridBagConstraints128);
 			jPanel_buttons.add(getJButton_End(), gridBagConstraints130);
 			jPanel_buttons.add(getJButton_CallHokenjya(), gridBagConstraints125);
+			
+			// edit n.ohkubo 2015/08/01　追加　start
+			GridBagConstraints gridBagConstraints131 = new GridBagConstraints();
+			gridBagConstraints131.insets = new Insets(0, 5, 0, 0);
+			gridBagConstraints131.gridy = 1;
+			gridBagConstraints131.gridx = 6;
+			jPanel_buttons.add(getJButton_Print_tsuikakenshin(), gridBagConstraints131);
+			// edit n.ohkubo 2015/08/01　追加　end
 
 			// add s.inoue 2012/11/12
 			// add s.inoue 2012/11/12

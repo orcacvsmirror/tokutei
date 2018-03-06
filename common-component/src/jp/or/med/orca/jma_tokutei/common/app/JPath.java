@@ -116,6 +116,9 @@ public class JPath {
 	final public static String Ico_System_Usability =IcoPath + "7-4.png";
 	// add s.inoue 2013/11/07
 	final public static String Ico_System_Log =IcoPath + "7-5.png";
+	
+	// edit n.ohkubo 2015/08/01　追加
+	final public static String Ico_System_NetworkDB = IcoPath + "7-6.png";	//システム管理ソフトの4番（DB接続情報メンテナンス）のボタン
 
 	/* 結果入力 */
 	final public static String Ico_Kekka_Delete =IcoPath + "kekkaInput_DelKekka.png";

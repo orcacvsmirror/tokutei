@@ -36,7 +36,6 @@ import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenTextControl;
 import jp.or.med.orca.jma_tokutei.common.orca.JOrcaInfoSearchCtl;
-import jp.or.med.orca.jma_tokutei.common.qr.JQRReader;
 import jp.or.med.orca.jma_tokutei.common.scene.JScene;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.DaoFactory;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.TKojinDao;
@@ -50,6 +49,7 @@ import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.kenshin
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.select.JSelectKojinFrameCtrl;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.select.JSelectKojinFrameData;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.shiharai.JShiharaiMasterMaintenanceEditFrameCtrl;
+import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintTsuikaKenshin;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintNyuryoku;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Kojin;
 
@@ -674,7 +674,8 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 			if (!beforeRegister())return false;
 
 			if(nyuryokuCode_flg){
-				pushedPrintButton(null);
+//				pushedPrintButton(null);	// edit n.ohkubo 2015/08/01　削除
+				pushedPrintButton(true);	// edit n.ohkubo 2015/08/01　追加
 			}
 
 			String query = this.createRegisterSql();
@@ -2056,12 +2057,13 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 		}
 	}
 
-	/**
-	 * QRボタン
-	 */
-	public void pushedQRButton(ActionEvent e) {
-		new JQRReader();
-	}
+	// edit n.ohkubo 2015/08/01　未使用なので削除
+//	/**
+//	 * QRボタン
+//	 */
+//	public void pushedQRButton(ActionEvent e) {
+//		new JQRReader();
+//	}
 
 	/**
 	 * 印刷機能
@@ -2071,8 +2073,21 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 	 *
 	 * 2ページ 健診項目入力シート（問診） 必須データ：受診券整理番号、氏名、受診日（自動生成）、保険者番号、被保険者証等記号、被保険者証等番号
 	 * import Print.KenshinKoumoku_Monshin class KenshinKoumoku_Monshin
+	 * 
+	 * @param isAll	「入力票印刷」ボタン押下時：true、追加健診項目表のみ出力する場合：false
 	 */
-	public void pushedPrintButton(ActionEvent e) {
+//	public void pushedPrintButton(ActionEvent e) {	// edit n.ohkubo 2015/08/01　削除
+	public void pushedPrintButton(boolean isAll) {	// edit n.ohkubo 2015/08/01　追加
+		
+		// edit n.ohkubo 2015/08/01　追加　start
+		String birthday = jTextField_Birthday.getText();
+		if ((birthday != null) && (!birthday.isEmpty())) {
+			if (!JValidate.validateCDate(birthday)) {
+				JErrorMessage.show("M4317", this);
+				return;
+			}
+		}
+		// edit n.ohkubo 2015/08/01　追加　end
 
 		// add s.inoue 2009/10/19
 		try {
@@ -2191,26 +2206,45 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 			}
 
 			/*
-			 * 印刷データ生成 個人データを格y納する
+			 * 印刷データ生成 個人データを格納する
 			 */
 			Hashtable<String, Object> PrintData = new Hashtable<String, Object>();
 			PrintData.put("Kojin", KojinData);
 
-			/*
-			 * 印刷 1ページ目を印刷すると、自動的に最終ページまで出力される
-			 */
-			// KenshinKoumoku_Kensa Kensa = new KenshinKoumoku_Kensa();
-			PrintNyuryoku Kensa = new PrintNyuryoku();
-			Kensa.setQueryResult(PrintData);
-			progressWindow.setVisible(false);
+			if (isAll) {	// edit n.ohkubo 2015/08/01　追加
+				
+				/*
+				 * 印刷 1ページ目を印刷すると、自動的に最終ページまで出力される
+				 */
+				// KenshinKoumoku_Kensa Kensa = new KenshinKoumoku_Kensa();
+				PrintNyuryoku Kensa = new PrintNyuryoku();
+				Kensa.setQueryResult(PrintData);
+				progressWindow.setVisible(false);
 
-			try {
-				Kensa.beginPrint();
+				try {
+					Kensa.beginPrint();
 
-			} catch (PrinterException ex) {
-				logger.error(ex.getMessage());
-				JErrorMessage.show("M4393", this);
+				} catch (PrinterException ex) {
+					logger.error(ex.getMessage());
+					JErrorMessage.show("M4393", this);
+				}
+				
+			// edit n.ohkubo 2015/08/01　追加　start
+			//追加健診項目表のみ出力
+			} else {
+				PrintTsuikaKenshin tsuikaKenshin = new PrintTsuikaKenshin(PrintData);
+				progressWindow.setVisible(false);
+
+				try {
+					tsuikaKenshin.beginPrint();
+
+				} catch (PrinterException ex) {
+					logger.error(ex.getMessage());
+					JErrorMessage.show("M4393", this);
+				}
 			}
+			// edit n.ohkubo 2015/08/01　追加　end
+			
 		} finally {
 			progressWindow.setVisible(false);
 		}
@@ -2376,7 +2410,8 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 		/* 入力票印刷ボタン */
 		else if (source == jButton_Print) {
 			logger.info(jButton_Print.getText());
-			pushedPrintButton(e);
+//			pushedPrintButton(e);	// edit n.ohkubo 2015/08/01　削除
+			pushedPrintButton(true);	// edit n.ohkubo 2015/08/01　追加
 		}
 
 		/*
@@ -2419,8 +2454,16 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 
 			JScene.CreateDialog(this, ctrl, new HokenjyaWindowEvent());
 		}
+		
+		// edit n.ohkubo 2015/08/01　追加　start
+		/* 追加健診ボタン */
+		else if (source == jButton_Print_tsuikakenshin) {
+			logger.info(jButton_Print_tsuikakenshin.getText());
+			pushedPrintButton(false);
+		}
+		// edit n.ohkubo 2015/08/01　追加　end
 	}
-
+	
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 
@@ -3058,7 +3101,8 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 				pushedClearButton();break;
 			case KeyEvent.VK_F5:
 				logger.info(jButton_Print.getText());
-				pushedPrintButton(null);break;
+//				pushedPrintButton(null);break;			// edit n.ohkubo 2015/08/01　削除
+				pushedPrintButton(true);break;	// edit n.ohkubo 2015/08/01　追加
 			case KeyEvent.VK_F6:
 				logger.info(jButton_Call.getText());
 				pushedCallButton(null);break;

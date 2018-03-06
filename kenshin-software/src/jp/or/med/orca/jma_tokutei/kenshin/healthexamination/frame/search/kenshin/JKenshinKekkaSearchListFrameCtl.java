@@ -583,24 +583,47 @@ public class JKenshinKekkaSearchListFrameCtl
 		
 		try {
 			Map<String, String> attribute2dbField = new HashMap<String, String>();
+			// edit n.ohkubo 2015/08/01　削除　start　Firebird2.5でも正常に動くように修正（年度の表示対応）
+//			attribute2dbField.put("CHECKBOX_COLUMN","CHECKBOX_COLUMN");
+//			attribute2dbField.put("UKETUKE_ID","UKETUKE_ID");
+//			attribute2dbField.put("NAME","NAME");
+//			attribute2dbField.put("HIHOKENJYASYO_KIGOU","TK.HIHOKENJYASYO_KIGOU");
+//			attribute2dbField.put("HIHOKENJYASYO_NO","TK.HIHOKENJYASYO_NO");
+//			attribute2dbField.put("KENSA_NENGAPI","TT.KENSA_NENGAPI");
+//			attribute2dbField.put("KENSA_NENGAPI2","TT.KENSA_NENGAPI");
+//			attribute2dbField.put("SEX","SEX");
+//			attribute2dbField.put("KEKA_INPUT_FLG","GET_INPUT.INPUT_FLG");
+//			attribute2dbField.put("BIRTHDAY","BIRTHDAY");
+//			attribute2dbField.put("BIRTHDAY2","BIRTHDAY");
+//			attribute2dbField.put("JYUSHIN_SEIRI_NO","JYUSHIN_SEIRI_NO");
+//			attribute2dbField.put("HKNJANUM","HKNJANUM");
+//			attribute2dbField.put("SIHARAI_DAIKOU_BANGO","SIHARAI_DAIKOU_BANGO");
+//			attribute2dbField.put("KANANAME","KANANAME");
+//			attribute2dbField.put("HANTEI_NENGAPI","TT.HANTEI_NENGAPI");
+//			attribute2dbField.put("TUTI_NENGAPI","TT.TUTI_NENGAPI");
+//			attribute2dbField.put("NENDO","GET_NENDO.NENDOS");
+			// edit n.ohkubo 2015/08/01　削除　end　Firebird2.5でも正常に動くように修正（年度の表示対応）
+			
+			// edit n.ohkubo 2015/08/01　追加　start　Firebird2.5でも正常に動くように修正（年度の表示対応）
 			attribute2dbField.put("CHECKBOX_COLUMN","CHECKBOX_COLUMN");
 			attribute2dbField.put("UKETUKE_ID","UKETUKE_ID");
 			attribute2dbField.put("NAME","NAME");
-			attribute2dbField.put("HIHOKENJYASYO_KIGOU","TK.HIHOKENJYASYO_KIGOU");
-			attribute2dbField.put("HIHOKENJYASYO_NO","TK.HIHOKENJYASYO_NO");
-			attribute2dbField.put("KENSA_NENGAPI","TT.KENSA_NENGAPI");
-			attribute2dbField.put("KENSA_NENGAPI2","TT.KENSA_NENGAPI");
+			attribute2dbField.put("HIHOKENJYASYO_KIGOU","HIHOKENJYASYO_KIGOU");
+			attribute2dbField.put("HIHOKENJYASYO_NO","HIHOKENJYASYO_NO");
+			attribute2dbField.put("KENSA_NENGAPI","KENSA_NENGAPI");
+			attribute2dbField.put("KENSA_NENGAPI2","KENSA_NENGAPI");
 			attribute2dbField.put("SEX","SEX");
-			attribute2dbField.put("KEKA_INPUT_FLG","GET_INPUT.INPUT_FLG");
+			attribute2dbField.put("KEKA_INPUT_FLG","INPUT_FLG");
 			attribute2dbField.put("BIRTHDAY","BIRTHDAY");
 			attribute2dbField.put("BIRTHDAY2","BIRTHDAY");
 			attribute2dbField.put("JYUSHIN_SEIRI_NO","JYUSHIN_SEIRI_NO");
 			attribute2dbField.put("HKNJANUM","HKNJANUM");
 			attribute2dbField.put("SIHARAI_DAIKOU_BANGO","SIHARAI_DAIKOU_BANGO");
 			attribute2dbField.put("KANANAME","KANANAME");
-			attribute2dbField.put("HANTEI_NENGAPI","TT.HANTEI_NENGAPI");
-			attribute2dbField.put("TUTI_NENGAPI","TT.TUTI_NENGAPI");
-			attribute2dbField.put("NENDO","GET_NENDO.NENDOS");
+			attribute2dbField.put("HANTEI_NENGAPI","HANTEI_NENGAPI");
+			attribute2dbField.put("TUTI_NENGAPI","TUTI_NENGAPI");
+			attribute2dbField.put("NENDO","NENDOS");
+			// edit n.ohkubo 2015/08/01　追加　end　Firebird2.5でも正常に動くように修正（年度の表示対応）
 
 			GridParams gridParams = new GridParams(action, startIndex, filteredColumns, currentSortedColumns, currentSortedVersusColumns, otherGridParams);
 			
@@ -619,37 +642,108 @@ public class JKenshinKekkaSearchListFrameCtl
 			grid.currentPage = curpage;
 			// System.out.println("現在ページ:" + grid.currentPage);
 
+			
 			//一覧取得SQL作成
 			StringBuilder sb = new StringBuilder();
-			sb.append("SELECT '' as CHECKBOX_COLUMN, GET_NENDO.NENDOS,TK.UKETUKE_ID UKETUKE_ID,TK.NAME NAME,TK.HIHOKENJYASYO_KIGOU,TK.HIHOKENJYASYO_NO,");
-			sb.append("TK.SEX SEX,TK.BIRTHDAY BIRTHDAY,");
-			sb.append("TK.JYUSHIN_SEIRI_NO JYUSHIN_SEIRI_NO,TK.HKNJANUM HKNJANUM,TK.SIHARAI_DAIKOU_BANGO SIHARAI_DAIKOU_BANGO,");
-			sb.append("TK.KANANAME KANANAME,TT.HANTEI_NENGAPI,TT.TUTI_NENGAPI,");
-			sb.append("TT.KENSA_NENGAPI,");
-			sb.append("GET_INPUT.INPUT_FLG");
-			sb.append(" FROM T_KOJIN TK");
-			sb.append(" LEFT JOIN T_KENSAKEKA_TOKUTEI TT");
-			sb.append(" ON TK.UKETUKE_ID = TT.UKETUKE_ID");
-
-			// 年度がヌルの場合に年度を当て込む
-			String cYear = String.valueOf(FiscalYearUtil.getThisYear());
-			sb.append(" LEFT JOIN (select UKETUKE_ID,KENSA_NENGAPI,");
-			sb.append(" case when TT.KENSA_NENGAPI is null then '"+ cYear+ "' ");
-			sb.append(" when substring(TT.KENSA_NENGAPI FROM 5 FOR 2) ='01' OR ");
-			sb.append(" substring(TT.KENSA_NENGAPI FROM 5 FOR 2) ='02' OR ");
-			sb.append(" substring(TT.KENSA_NENGAPI FROM 5 FOR 2) ='03' ");
-			sb.append(" then CAST(substring(TT.KENSA_NENGAPI FROM 1 FOR 4) AS INTEGER) - 1  else substring(TT.KENSA_NENGAPI FROM 1 FOR 4) end as NENDOS ");
-			sb.append(" from T_KENSAKEKA_TOKUTEI TT) as GET_NENDO  ON GET_NENDO.UKETUKE_ID = TT.UKETUKE_ID ");
-			sb.append(" AND GET_NENDO.KENSA_NENGAPI = TT.KENSA_NENGAPI ");
-			sb.append(" LEFT JOIN (select UKETUKE_ID,KENSA_NENGAPI,");
-			sb.append(" case TT.KEKA_INPUT_FLG when 1 then '1' when 2 then '2' else '1' end as INPUT_FLG ");
-			sb.append(" from T_KENSAKEKA_TOKUTEI TT) as GET_INPUT ");
-			sb.append(" ON GET_INPUT.UKETUKE_ID = TT.UKETUKE_ID  AND GET_INPUT.KENSA_NENGAPI = TT.KENSA_NENGAPI ");
-
-			if (currentSortedColumns.size()==0  &&
-					currentSortedVersusColumns.size()==0){
-				sb.append(" ORDER BY GET_NENDO.NENDOS DESC,KANANAME,BIRTHDAY,TT.KENSA_NENGAPI DESC");
+			// edit n.ohkubo 2015/08/01　削除　start　Firebird2.5でも正常に動くように修正（年度の表示対応）
+//			sb.append("SELECT '' as CHECKBOX_COLUMN, GET_NENDO.NENDOS,TK.UKETUKE_ID UKETUKE_ID,TK.NAME NAME,TK.HIHOKENJYASYO_KIGOU,TK.HIHOKENJYASYO_NO,");
+//			sb.append("TK.SEX SEX,TK.BIRTHDAY BIRTHDAY,");
+//			sb.append("TK.JYUSHIN_SEIRI_NO JYUSHIN_SEIRI_NO,TK.HKNJANUM HKNJANUM,TK.SIHARAI_DAIKOU_BANGO SIHARAI_DAIKOU_BANGO,");
+//			sb.append("TK.KANANAME KANANAME,TT.HANTEI_NENGAPI,TT.TUTI_NENGAPI,");
+//			sb.append("TT.KENSA_NENGAPI,");
+//			sb.append("GET_INPUT.INPUT_FLG");
+//			sb.append(" FROM T_KOJIN TK");
+//			sb.append(" LEFT JOIN T_KENSAKEKA_TOKUTEI TT");
+//			sb.append(" ON TK.UKETUKE_ID = TT.UKETUKE_ID");
+//
+//			// 年度がヌルの場合に年度を当て込む
+//			String cYear = String.valueOf(FiscalYearUtil.getThisYear());
+//			sb.append(" LEFT JOIN (select UKETUKE_ID,KENSA_NENGAPI,");
+//			sb.append(" case when TT.KENSA_NENGAPI is null then '"+ cYear+ "' ");
+//			sb.append(" when substring(TT.KENSA_NENGAPI FROM 5 FOR 2) ='01' OR ");
+//			sb.append(" substring(TT.KENSA_NENGAPI FROM 5 FOR 2) ='02' OR ");
+//			sb.append(" substring(TT.KENSA_NENGAPI FROM 5 FOR 2) ='03' ");
+//			sb.append(" then CAST(substring(TT.KENSA_NENGAPI FROM 1 FOR 4) AS INTEGER) - 1  else substring(TT.KENSA_NENGAPI FROM 1 FOR 4) end as NENDOS ");
+//			sb.append(" from T_KENSAKEKA_TOKUTEI TT) as GET_NENDO  ON GET_NENDO.UKETUKE_ID = TT.UKETUKE_ID ");
+//			sb.append(" AND GET_NENDO.KENSA_NENGAPI = TT.KENSA_NENGAPI ");
+//			sb.append(" LEFT JOIN (select UKETUKE_ID,KENSA_NENGAPI,");
+//			sb.append(" case TT.KEKA_INPUT_FLG when 1 then '1' when 2 then '2' else '1' end as INPUT_FLG ");
+//			sb.append(" from T_KENSAKEKA_TOKUTEI TT) as GET_INPUT ");
+//			sb.append(" ON GET_INPUT.UKETUKE_ID = TT.UKETUKE_ID  AND GET_INPUT.KENSA_NENGAPI = TT.KENSA_NENGAPI ");
+//
+//			if (currentSortedColumns.size()==0  &&
+//					currentSortedVersusColumns.size()==0){
+//				sb.append(" ORDER BY GET_NENDO.NENDOS DESC,KANANAME,BIRTHDAY,TT.KENSA_NENGAPI DESC");
+//			}
+			// edit n.ohkubo 2015/08/01　削除　end　Firebird2.5でも正常に動くように修正（年度の表示対応）
+			
+			// edit n.ohkubo 2015/08/01　追加　start　Firebird2.5でも正常に動くように修正（年度の表示対応）
+			//※FROM句の後に副問い合わせにしているのは、パフォーマンス対応と、WHERER句で"年度と入力"を使用するため
+			String cYear = String.valueOf(FiscalYearUtil.getThisYear());	// 年度がヌルの場合に年度を当て込む
+			sb.append("SELECT ");
+			sb.append("'' AS CHECKBOX_COLUMN, ");
+			sb.append("NENDOS, ");
+			sb.append("UKETUKE_ID, ");
+			sb.append("NAME, ");
+			sb.append("HIHOKENJYASYO_KIGOU, ");
+			sb.append("HIHOKENJYASYO_NO, ");
+			sb.append("SEX, ");
+			sb.append("BIRTHDAY, ");
+			sb.append("JYUSHIN_SEIRI_NO, ");
+			sb.append("HKNJANUM, ");
+			sb.append("SIHARAI_DAIKOU_BANGO, ");
+			sb.append("KANANAME, ");
+			sb.append("HANTEI_NENGAPI, ");
+			sb.append("TUTI_NENGAPI, ");
+			sb.append("KENSA_NENGAPI, ");
+			sb.append("INPUT_FLG ");
+			sb.append("FROM ( ");
+			sb.append("SELECT ");
+			sb.append("CASE ");
+			sb.append("WHEN ");
+			sb.append("TT.KENSA_NENGAPI IS NULL ");
+			sb.append("THEN  ");
+			sb.append("'"+ cYear+ "' ");
+			sb.append("WHEN ");
+			sb.append("SUBSTRING(TT.KENSA_NENGAPI FROM 5 FOR 2) = '01' OR SUBSTRING(TT.KENSA_NENGAPI FROM 5 FOR 2) = '02' OR SUBSTRING(TT.KENSA_NENGAPI FROM 5 FOR 2) = '03' ");
+			sb.append("THEN ");
+			sb.append("CAST(SUBSTRING(TT.KENSA_NENGAPI FROM 1 FOR 4) AS INTEGER) - 1 ");
+			sb.append("ELSE ");
+			sb.append("SUBSTRING(TT.KENSA_NENGAPI FROM 1 FOR 4) ");
+			sb.append("END AS NENDOS, ");
+			sb.append("TK.UKETUKE_ID, ");
+			sb.append("TK.NAME, ");
+			sb.append("TK.HIHOKENJYASYO_KIGOU, ");
+			sb.append("TK.HIHOKENJYASYO_NO, ");
+			sb.append("TK.SEX, ");
+			sb.append("TK.BIRTHDAY, ");
+			sb.append("TK.JYUSHIN_SEIRI_NO, ");
+			sb.append("TK.HKNJANUM, ");
+			sb.append("TK.SIHARAI_DAIKOU_BANGO, ");
+			sb.append("TK.KANANAME, ");
+			sb.append("TT.HANTEI_NENGAPI, ");
+			sb.append("TT.TUTI_NENGAPI, ");
+			sb.append("TT.KENSA_NENGAPI, ");
+			sb.append("CASE TT.KEKA_INPUT_FLG ");
+			sb.append("WHEN ");
+			sb.append("2 ");
+			sb.append("THEN ");
+			sb.append("'2' ");
+			sb.append("ELSE ");
+			sb.append("'1' ");
+			sb.append("END AS INPUT_FLG ");
+			sb.append("FROM ");
+			sb.append("T_KOJIN AS TK LEFT OUTER JOIN T_KENSAKEKA_TOKUTEI AS TT ");
+			sb.append("ON TK.UKETUKE_ID = TT.UKETUKE_ID ");
+			sb.append(") ");
+			if ((currentSortedColumns.size() == 0) && (currentSortedVersusColumns.size() == 0)) {
+				sb.append("ORDER BY ");
+				sb.append("NENDOS DESC, ");
+				sb.append("KANANAME ASC, ");
+				sb.append("BIRTHDAY ASC, ");
+				sb.append("KENSA_NENGAPI DESC ");
 			}
+			// edit n.ohkubo 2015/08/01　追加　end　Firebird2.5でも正常に動くように修正（年度の表示対応）
 
 			cnterrflg = false;
 			

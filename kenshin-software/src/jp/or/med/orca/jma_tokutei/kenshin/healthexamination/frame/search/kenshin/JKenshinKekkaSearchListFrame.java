@@ -1999,6 +1999,9 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 
 	/* ボタンアクション */
 	public void closeButtton_actionPerformed(ActionEvent e) {
+		
+		grid = null;	// edit n.ohkubo 2015/08/01　追加　メニューから「ログインへ戻る」でエラーが表示される対応
+		
 		dispose();
 
 		// add s.inoue 2013/04/05

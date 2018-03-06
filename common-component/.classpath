@@ -18,6 +18,5 @@
 	<classpathentry kind="lib" path="/work-directory/Lib/commonos.jar"/>
 	<classpathentry kind="lib" path="/work-directory/Lib/jcommon-1.0.17.jar"/>
 	<classpathentry kind="lib" path="/work-directory/Lib/iText-2.0.8.jar"/>
-	<classpathentry kind="var" path="TOMCAT_HOME"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
