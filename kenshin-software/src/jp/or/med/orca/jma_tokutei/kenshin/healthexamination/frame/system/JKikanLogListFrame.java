@@ -13,7 +13,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -36,20 +35,19 @@ import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
 import jp.or.med.orca.jma_tokutei.common.csv.JCSVWriterStream;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
+import jp.or.med.orca.jma_tokutei.common.filter.SpecialFilterPanel;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedDelButton;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenExportButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenFilterButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenGenericButton;
 //import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenSaveButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedReloadButton;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.dataimport.JImportMasterErrorTeikeiResultFrameData;
 
 import org.apache.log4j.Logger;
 import org.openswing.swing.client.GenericButton;
 import org.openswing.swing.client.GridControl;
+import org.openswing.swing.client.GridControl.ColumnContainer;
 import org.openswing.swing.client.NavigatorBar;
 import org.openswing.swing.table.columns.client.ComboColumn;
 import org.openswing.swing.table.columns.client.TextColumn;
@@ -61,8 +59,10 @@ import org.openswing.swing.table.columns.client.TextColumn;
  */
 public class JKikanLogListFrame extends JFrame implements KeyListener,ActionListener {
 
+	private static final long serialVersionUID = -5541152768937027572L;	// edit n.ohkubo 2014/10/01　追加
+
 	/* 接続 */
-	protected Connection conn = null;
+//	protected Connection conn = null;	// edit n.ohkubo 2014/10/01　未使用なので削除
 
 	protected GridControl grid = new GridControl();
 	protected FlowLayout flowLayoutOriginePanel = new FlowLayout();
@@ -74,13 +74,13 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 //	protected ExtendedOpenReloadButton reloadButton = new ExtendedOpenReloadButton();
 //	protected ExtendedOpenDeleteButton deleteButton = new ExtendedOpenDeleteButton();
 	protected ExtendedReloadButton reloadButton = new ExtendedReloadButton(this,JPath.Ico_Common_Reload);
-	protected ExtendedDelButton deleteButton = new ExtendedDelButton(this,JPath.Ico_Common_Delete);
+//	protected ExtendedDelButton deleteButton = new ExtendedDelButton(this,JPath.Ico_Common_Delete);	// edit n.ohkubo 2014/10/01　未使用なので削除
 
 //	protected ExtendedOpenInsertButton insertButton = new ExtendedOpenInsertButton();
 //	protected ExtendedOpenEditButton editButton = new ExtendedOpenEditButton();
 //	protected ExtendedOpenSaveButton saveButton = new ExtendedOpenSaveButton();
 	protected ExtendedOpenFilterButton filterButton = new ExtendedOpenFilterButton();
-	protected ExtendedOpenExportButton exportButton = new ExtendedOpenExportButton();
+//	protected ExtendedOpenExportButton exportButton = new ExtendedOpenExportButton();	// edit n.ohkubo 2014/10/01　未使用なので削除
 	protected NavigatorBar navigatorBar = new NavigatorBar();
 	protected GenericButton buttonExport = null;
 	protected GenericButton buttonImport = null;
@@ -92,13 +92,14 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 	protected ComboColumn textColumn_ErrorPlace = new ComboColumn();
 //	protected TextColumn textColumn_LogDate = new TextColumn();
 	protected TextColumn textColumn_TimeStamp = new TextColumn();
+	protected TextColumn textColumn_TimeStamp2 = new TextColumn();	// edit n.ohkubo 2014/10/01　追加
 
-	private JKikanLogListFrameData validatedData = new JKikanLogListFrameData();
+//	private JKikanLogListFrameData validatedData = new JKikanLogListFrameData();	// edit n.ohkubo 2014/10/01　未使用なので削除
 	private IDialog filePathDialog;
-	private static jp.or.med.orca.jma_tokutei.common.csv.JCSVReaderStream reader = null;
+//	private static jp.or.med.orca.jma_tokutei.common.csv.JCSVReaderStream reader = null;	// edit n.ohkubo 2014/10/01　未使用なので削除
 	private static jp.or.med.orca.jma_tokutei.common.csv.JCSVWriterStream writer = null;
 
-	private static Vector<Vector<String>> CSVItems = null;
+//	private static Vector<Vector<String>> CSVItems = null;	// edit n.ohkubo 2014/10/01　未使用なので削除
 	private static String saveTitle= "csvファイル保存先選択";
 	private static String selectTitle= "csvファイル選択";
 	private static String savaDialogTitle= "csvファイルの保存先を選択、ファイル名を指定してください";
@@ -109,6 +110,13 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 		"SYOKEN_TYPE","SYOKEN_TYPE_NAME","SYOKEN_NO","SYOKEN_NAME","UPDATE_TIMESTAMP" };
 
 	private static Logger logger = Logger.getLogger(JKikanLogListFrame.class);
+
+	// edit n.ohkubo 2014/10/01　追加 start
+	private ColumnContainer columnContainer;
+	public ColumnContainer getColumnContainer() {
+		return this.columnContainer;
+	}
+	// edit n.ohkubo 2014/10/01　追加 end
 
 	/* コンストラクタ */
 	public JKikanLogListFrame(
@@ -129,7 +137,7 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 	/* 制御メソッド */
 	public void setControl(
 			JKikanLogListFrameCtl controller){
-		this.conn = conn;
+//		this.conn = conn;	// edit n.ohkubo 2014/10/01　未使用なので削除
 		try {
 			jbInit();
 
@@ -140,11 +148,20 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 			setVisible(true);
 
 			grid.addKeyListener(new KeyAdapter() {
-			      public void keyPressed(KeyEvent e) {
+			      @Override
+				public void keyPressed(KeyEvent e) {
 			        if (e.getKeyCode()==e.VK_CANCEL || e.getKeyCode()==e.VK_BACK_SPACE || e.getKeyCode()==e.VK_DELETE)
 			          System.out.println("成功");
 			      }
 			    });
+			
+			// edit n.ohkubo 2014/10/01　追加 start　検索画面のボタンの大きさを変更
+			//フィルターパネル用のWindowListener
+			SpecialFilterPanel specialFilterPanel = new SpecialFilterPanel(null, grid.getParent().getComponents());
+			
+			//このフレーム（一覧画面）がアクティブ化（画面右の検索ウィンドウ）　or　非アクティブ化（検索ウィンドウがポップアップで開かれ場合）されたときに動作するように、Listenerを設定
+			this.addWindowListener(specialFilterPanel);
+			// edit n.ohkubo 2014/10/01　追加 end　検索画面のボタンの大きさを変更
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -176,6 +193,7 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 		textColumn_Message.setColumnVisible(true);
 		textColumn_Message.setColumnFilterable(true);
 		textColumn_Message.setColumnSortable(true);
+		textColumn_Message.setMaxCharacters(256);	// edit n.ohkubo 2014/10/01　追加
 
 		/* control ※ClientApplicationと一致*/
 //		textColumn_LogDate.setColumnFilterable(true);
@@ -188,15 +206,25 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 //		textColumn_TimeStamp.setColumnSortable(true);
 		textColumn_TimeStamp.setPreferredWidth(200);
 		textColumn_TimeStamp.setColumnVisible(true);
-		textColumn_TimeStamp.setColumnFilterable(false);
+//		textColumn_TimeStamp.setColumnFilterable(false);	// edit n.ohkubo 2014/10/01　削除
+		textColumn_TimeStamp.setColumnFilterable(true);	// edit n.ohkubo 2014/10/01　追加
 		textColumn_TimeStamp.setColumnSortable(true);
+		textColumn_TimeStamp.setMaxCharacters(23);	// edit n.ohkubo 2014/10/01　追加
+		
+		// edit n.ohkubo 2014/10/01　追加 start
+		textColumn_TimeStamp2.setColumnName("UPDATE_TIMESTAMP2");
+		textColumn_TimeStamp2.setColumnVisible(false);
+		textColumn_TimeStamp2.setColumnFilterable(true);
+		textColumn_TimeStamp2.setColumnSortable(false);
+		textColumn_TimeStamp2.setMaxCharacters(23);
+		// edit n.ohkubo 2014/10/01　追加 end
 
 		/* button */
 		buttonOriginePanel.setLayout(flowLayoutOriginePanel);
 		flowLayoutOriginePanel.setAlignment(FlowLayout.LEFT);
 //		buttonOriginePanel.add(insertButton, null);
 //		buttonOriginePanel.add(editButton, null);
-//		buttonOriginePanel.add(filterButton, null);
+		buttonOriginePanel.add(filterButton, null);	// edit n.ohkubo 2014/10/01　追加
 		buttonOriginePanel.add(reloadButton, null);
 //		buttonOriginePanel.add(deleteButton, null);
 //		buttonOriginePanel.add(exportButton, null);
@@ -254,6 +282,9 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 		grid.getColumnContainer().add(textColumn_ErrorPlace, null);
 //		grid.getColumnContainer().add(textColumn_LogDate, null);
 		grid.getColumnContainer().add(textColumn_TimeStamp, null);
+		grid.getColumnContainer().add(textColumn_TimeStamp2, null);	// edit n.ohkubo 2014/10/01　追加
+
+		columnContainer = grid.getColumnContainer();// edit n.ohkubo 2014/10/01　追加
 
 		// add s.inoue 2012/11/12
 		jLabel_Title = new TitleLabel("tokutei.logfile-mastermaintenance.frame.title","tokutei.logfile-mastermaintenance.frame.guidance");
@@ -549,7 +580,7 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 
 	/* export処理 */
 	private void exportCsvData(String filePath){
-		JImportMasterErrorTeikeiResultFrameData data = new JImportMasterErrorTeikeiResultFrameData();
+//		JImportMasterErrorTeikeiResultFrameData data = new JImportMasterErrorTeikeiResultFrameData();	// edit n.ohkubo 2014/10/01　未使用なので削除
 
 		// CSV読込処理
 		writer = new JCSVWriterStream();
@@ -619,7 +650,8 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 		  ListFrame_button_actionAdapter(JKikanLogListFrame adaptee) {
 		    this.adaptee = adaptee;
 		  }
-		  public void actionPerformed(ActionEvent e) {
+		  @Override
+		public void actionPerformed(ActionEvent e) {
 			  Object source = e.getSource();
 			  if (source == buttonClose){
 				  logger.info(buttonClose.getText());
@@ -639,12 +671,10 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 		}
 		@Override
 		public void keyReleased(KeyEvent e) {
-			// TODO 自動生成されたメソッド・スタブ
 
 		}
 		@Override
 		public void keyTyped(KeyEvent e) {
-			// TODO 自動生成されたメソッド・スタブ
 
 		}
 	}
@@ -659,6 +689,7 @@ public class JKikanLogListFrame extends JFrame implements KeyListener,ActionList
 	}
 
 	// イベント処理
+	@Override
 	public void actionPerformed(ActionEvent ae) {
 	}
 	@Override

@@ -42,11 +42,8 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.log4j.Logger;
-import org.openswing.swing.client.CheckBoxControl;
-import org.openswing.swing.domains.java.DomainPair;
-import org.openswing.swing.util.client.ClientSettings;
-
+import jp.or.med.orca.jma_tokutei.common.app.JApplication;
+import jp.or.med.orca.jma_tokutei.common.app.JConstantString;
 import jp.or.med.orca.jma_tokutei.common.component.DialogFactory;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedButton;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedCheckBox;
@@ -58,11 +55,9 @@ import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.convert.JYearAge;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
-import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.IKekkaRegisterInputDialog;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.JKekkaRegisterInputDialogFactory;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenComboboxControl;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenFormattedFloatControl;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.DaoFactory;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.TKensakekaSonotaDao;
@@ -78,16 +73,18 @@ import jp.or.med.orca.jma_tokutei.common.util.PropertyUtil;
 import jp.or.med.orca.jma_tokutei.common.validate.JValidate;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.JSoftware;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintDefine;
-//import jp.or.med.orca.jma_tokutei.common.app.ClientSettings;
-import jp.or.med.orca.jma_tokutei.common.app.JApplication;
-import jp.or.med.orca.jma_tokutei.common.app.JConstantString;
+
+import org.apache.log4j.Logger;
+import org.openswing.swing.domains.java.DomainPair;
 
 /**
  * 特定健診ソフトウエアのログイン画面のフレームのコントロール
  */
 public class JRegisterFlameCtrl extends JRegisterFlame {
 
-//	private JFocusTraversalPolicy focusTraversalPolicy = null;
+	private static final long serialVersionUID = -8339956502621232911L;	// edit n.ohkubo 2014/10/01　追加
+	
+	//	private JFocusTraversalPolicy focusTraversalPolicy = null;
 //	private JKekkaRegisterFrameData validatedData = new JKekkaRegisterFrameData();
 	private static org.apache.log4j.Logger logger = Logger.getLogger(JRegisterFlameCtrl.class);
 	private ArrayList<Hashtable<String, String>> tableResult = null;
@@ -99,9 +96,9 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 	private int controlRight = 2;
 	private int controlTextHeight = 20;
 	private int controlLabelHeight = 20;
-	private int controlButtonHeight = 20;
+//	private int controlButtonHeight = 20;	// edit n.ohkubo 2014/10/01　未使用なので削除
 	private int koumoku_nm_Width = 200;
-	private int kensahouhou_Width = 50;
+//	private int kensahouhou_Width = 50;	// edit n.ohkubo 2014/10/01　未使用なので削除
 	private int kekka_Width = 70;
 	private int tani_Width = 64;
 	private int zenkai_Width = 50;
@@ -184,7 +181,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 //	private static final String CODE_HBA1C_1_JDS = "3D045000001906202";
 
 	/* フォーカス移動制御 */
-	private JFocusTraversalPolicy focusTraversalPolicy = null;
+//	private JFocusTraversalPolicy focusTraversalPolicy = null;	// edit n.ohkubo 2014/10/01　未使用なので削除
 
 	public JRegisterFlameCtrl(String patternNo){
 		JRegisterFrameTabSetting(null,true);
@@ -441,8 +438,10 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 
 			// add s.inoue 2013/05/10
 			jTextArea_SougouComment.addFocusListener(new FocusAdapter(){
+				@Override
 				public void focusGained(FocusEvent e) {
 				}
+				@Override
 				public void focusLost(FocusEvent e) {
 					Object source = e.getSource();
 
@@ -966,7 +965,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 		// 1:数字 2:コード 3:文字列
 		String dataType = dbItem.get(JConstantString.COLUMN_NAME_DATA_TYPE);
 		String koumokuCD = dbItem.get(JConstantString.COLUMN_NAME_KOUMOKUCD);
-		String koumokuNM = dbItem.get(JConstantString.COLUMN_NAME_KOUMOKUNAME);
+//		String koumokuNM = dbItem.get(JConstantString.COLUMN_NAME_KOUMOKUNAME);	// edit n.ohkubo 2014/10/01　未使用なので削除
 		String kensaHouhou = dbItem.get(JConstantString.COLUMN_NAME_KENSA_HOUHOU);
 		String kekaTi = dbItem.get(JConstantString.COLUMN_NAME_KEKA_TI);
 		String hisTi = dbItem.get(JConstantString.COLUMN_NAME_HIS_TI);
@@ -1061,6 +1060,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 					}
 				});
 				jTextField_2[irowAll].addFocusListener(new FocusAdapter(){
+					@Override
 					public void focusGained(FocusEvent e) {
 						JTextField txt = (JTextField)e.getSource();
 
@@ -1077,6 +1077,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 							}
 						}
 					}
+					@Override
 					public void focusLost(FocusEvent e) {
 						Object source = e.getSource();
 
@@ -1232,6 +1233,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 
 				// ステータス表示処理
 				jComboBox_2[irowAll].addFocusListener(new FocusAdapter(){
+					@Override
 					public void focusGained(FocusEvent e) {
 						JComboBox cmb = (JComboBox)e.getSource();
 							for (int i = 0; i < jComboBox_2.length; i++) {
@@ -1245,6 +1247,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 								}
 							}
 					}
+					@Override
 					public void focusLost(FocusEvent e) {
 						Object source = e.getSource();
 
@@ -1398,6 +1401,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				});
 
 				jTextField_1[irowAll].addFocusListener(new FocusAdapter(){
+					@Override
 					public void focusGained(FocusEvent e) {
 						JTextField txt = (JTextField)e.getSource();
 
@@ -1414,6 +1418,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 							}
 						}
 					}
+					@Override
 					public void focusLost(FocusEvent e) {
 						// eidt s.inoue 2012/02/14
 						JFormattedTextField txt = (JFormattedTextField)e.getSource();
@@ -1434,7 +1439,8 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 							if ( jTextField_1[i]!= null){
 
 								if (eTxt.getName().equals(jTextField_1[i].getName())){
-									editingStopped(i,eTxt.getText());
+//									editingStopped(i,eTxt.getText());	// edit n.ohkubo 2014/10/01　削除
+									editingStopped(i, eTxt.getText(), eTxt.getName());	// edit n.ohkubo 2014/10/01　追加
 								}
 								// BMI 自動計算
 								if (eTxt.getName().equals(CODE_HIGHT)){
@@ -1577,6 +1583,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 
 				// ステータス表示処理
 				jComboBox_1[irowAll].addFocusListener(new FocusAdapter(){
+					@Override
 					public void focusGained(FocusEvent e) {
 						JComboBox cmb = (JComboBox)e.getSource();
 							for (int i = 0; i < jComboBox_1.length; i++) {
@@ -1589,6 +1596,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 								}
 							}
 					}
+					@Override
 					public void focusLost(FocusEvent e) {
 					}
 				});
@@ -1835,26 +1843,42 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 	/*
 	 * 編集完了イベントコールバック
 	 */
-	public void editingStopped(int irow,String txt) {
+//	public void editingStopped(int irow,String txt) {	// edit n.ohkubo 2014/10/01　削除
+	private void editingStopped(int irow, String txt, String name) {	// edit n.ohkubo 2014/10/01　追加
 
-		// 注意）ロジック都合、位置調整用
-		// eidt s.inoue 2013/07/10
-		int choseiRow = irow;
-		if (irow > posHokensido){
-			choseiRow += 1;
+		// edit n.ohkubo 2014/10/01　削除　start　位置調整に不具合がある
+//		// 注意）ロジック都合、位置調整用
+//		// eidt s.inoue 2013/07/10
+//		int choseiRow = irow;
+//		if (irow > posHokensido){
+//			choseiRow += 1;
+//		}
+//		if (irow > posMetabo){
+//			choseiRow += 1;
+//		}
+////		if ((irow > posHokensido) &&
+////			(irow > posMetabo))
+////				choseiRow += 2;
+//
+//		// フォーマット文字列を取得する
+//		Map<String, String> recordMap = tableResult.get(choseiRow);
+		// edit n.ohkubo 2014/10/01　削除　end　位置調整に不具合がある
+		
+		// edit n.ohkubo 2014/10/01　追加　start　対象のマップはname（項目コード）で判定する
+		Map<String, String> recordMap = null;
+		for (int i = 0; i < tableResult.size(); i++) {
+			Map<String, String> hashtable = tableResult.get(i);
+			if (name.equals(hashtable.get(JConstantString.COLUMN_NAME_KOUMOKUCD))) {
+				recordMap = hashtable;
+				break;
+			}
 		}
-		if (irow > posMetabo){
-			choseiRow += 1;
-		}
-//		if ((irow > posHokensido) &&
-//			(irow > posMetabo))
-//				choseiRow += 2;
-
-		// フォーマット文字列を取得する
-		Map<String, String> recordMap = tableResult.get(choseiRow);
+		// edit n.ohkubo 2014/10/01　追加　end　対象のマップはname（項目コード）で判定する
+		
 		String format = recordMap.get(JConstantString.COLUMN_NAME_MAX_BYTE_LENGTH);
 		// add s.inoue 2013/02/12
 		String roundUpValue = textTabFormat(recordMap,irow,format,txt);
+		
 		// 四捨五入値をセルにセット
 		jTextField_1[irow].setText(roundUpValue);
 	}
@@ -2415,6 +2439,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 	/*
 	 * ActionListner
 	 */
+	@Override
 	public void actionPerformed(ActionEvent e) {
 
 		Object source = e.getSource();

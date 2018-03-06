@@ -26,6 +26,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
@@ -39,6 +40,7 @@ import jp.or.med.orca.jma_tokutei.common.component.ExtendedLabel;
 import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
+import jp.or.med.orca.jma_tokutei.common.filter.SpecialFilterPanel;
 import jp.or.med.orca.jma_tokutei.common.frame.ProgressWindow;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
@@ -58,6 +60,7 @@ import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Nikeihyo;
 import org.apache.log4j.Logger;
 import org.openswing.swing.client.EditButton;
 import org.openswing.swing.client.GridControl;
+import org.openswing.swing.client.GridControl.ColumnContainer;
 import org.openswing.swing.client.InsertButton;
 import org.openswing.swing.client.NavigatorBar;
 import org.openswing.swing.client.TextControl;
@@ -72,6 +75,8 @@ import org.openswing.swing.table.columns.client.TextColumn;
  */
 public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,ActionListener {
 
+	private static final long serialVersionUID = 9182606025994796235L;	// edit n.ohkubo 2014/10/01　追加
+	
 	protected Connection conn = null;
 	protected GridControl grid = new GridControl();
 	protected JPanel buttonOriginePanel = new JPanel();
@@ -134,7 +139,7 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 	protected int currentTotalRows = 0;
 
     /** 保険者番号、支払代行機関選択欄の、番号と名称の区切り文字列 */
-	private static final String COMBOBOX_NUMBER_NAME_SEPARATOR = " ";
+//	private static final String COMBOBOX_NUMBER_NAME_SEPARATOR = " ";	// edit n.ohkubo 2014/10/01　未使用なので削除
 	private static final String JISSIKUBUN_TOKUTEIKENSHIN = "1";
 	private static final String SYUBETSU_CODE_6_DISPLAY_NAME = "特定健診機関又は特定保健指導機関から保険者";
 	private static final String SYUBETSU_CODE_1_DISPLAY_NAME = "特定健診機関又は特定保健指導機関から代行機関";
@@ -146,9 +151,20 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 	private JOutputHL7FrameState state = JOutputHL7FrameState.STATUS_INITIALIZED;
 	private IDialog messageDialog;
 	private JOutputNitijiSearchListFrameData vo = null;
-	private ArrayList<Integer> selectedData = new ArrayList<Integer>();
+//	private ArrayList<Integer> selectedData = new ArrayList<Integer>();	// edit n.ohkubo 2014/10/01　未使用なので削除
 	private boolean chkFlg = false;
 
+	// edit n.ohkubo 2014/10/01　追加 start
+	private ColumnContainer columnContainer;
+	public ColumnContainer getColumnContainer() {
+		return this.columnContainer;
+	}
+	private JCheckBox savedJCheckBox = new JCheckBox();
+	public JCheckBox getSavedJCheckBox() {
+		return this.savedJCheckBox;
+	}
+	// edit n.ohkubo 2014/10/01　追加 end
+	
 	// フレームの状態を管理する
 	public enum JOutputHL7FrameState {
 		/* 初期状態 */
@@ -189,6 +205,15 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 			grid.setController(controller);
 			grid.setGridDataLocator(controller);
 			setVisible(true);
+			
+			// edit n.ohkubo 2014/10/01　追加 start　検索画面にチェックボックスを追加
+			//フィルターパネル用のWindowListener
+			SpecialFilterPanel specialFilterPanel = new SpecialFilterPanel(savedJCheckBox, grid.getParent().getComponents());
+			
+			//このフレーム（一覧画面）がアクティブ化（画面右の検索ウィンドウ）　or　非アクティブ化（検索ウィンドウがポップアップで開かれ場合）されたときに動作するように、Listenerを設定（FilterPanelへのチェックボックス追加はListener内で行う）
+			this.addWindowListener(specialFilterPanel);
+			// edit n.ohkubo 2014/10/01　追加 end　検索画面にチェックボックスを追加
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -233,13 +258,15 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		textColumn_HokensyoNumber.setColumnVisible(true);
 		textColumn_HokensyoNumber.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.HIHOKENJYASYO_NO));
 
-		dateColumn_KenshinDateFrom.setColumnName("KENSA_NENGAPI");
+//		dateColumn_KenshinDateFrom.setColumnName("KENSA_NENGAPI");	// edit n.ohkubo 2014/10/01　削除
+		dateColumn_KenshinDateFrom.setColumnName("KENSA_NENGAPI2");	// edit n.ohkubo 2014/10/01　追加
 		dateColumn_KenshinDateFrom.setPreferredWidth(80);
 		// edit s.inoue 2013/11/12
 		dateColumn_KenshinDateFrom.setColumnFilterable(true);
 		dateColumn_KenshinDateFrom.setColumnSortable(false);
 		dateColumn_KenshinDateFrom.setColumnSelectable(false);
 		dateColumn_KenshinDateFrom.setColumnVisible(false);
+		dateColumn_KenshinDateFrom.setMaxCharacters(8);	// edit n.ohkubo 2014/10/01　追加
 
 		// add s.inoue 2012/10/23
 		dateColumn_KenshinDateTo.setColumnName("KENSA_NENGAPI");
@@ -248,6 +275,7 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		dateColumn_KenshinDateTo.setColumnSelectable(true);
 		
 		dateColumn_KenshinDateTo.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.KENSA_NENGAPI));
+		dateColumn_KenshinDateTo.setMaxCharacters(8);	// edit n.ohkubo 2014/10/01　追加
 
 		textColumn_sex.setColumnFilterable(true);
 		textColumn_sex.setColumnName("SEX");
@@ -280,6 +308,7 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		//add tanaka 2013/11/07
 		textColumn_jyushinSeiriNo.setColumnVisible(true);
 		textColumn_jyushinSeiriNo.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.JYUSHIN_SEIRI_NO));
+		textColumn_jyushinSeiriNo.setMaxCharacters(11);	// edit n.ohkubo 2014/10/01　追加
 
 		textColumn_hokenjaNo.setColumnFilterable(true);
 		textColumn_hokenjaNo.setColumnName("HKNJANUM");
@@ -306,6 +335,7 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		//add tanaka 2013/11/07
 		textColumn_kanaName.setColumnVisible(true);
 		textColumn_kanaName.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.KANANAME));
+		textColumn_kanaName.setMaxCharacters(50);	// edit n.ohkubo 2014/10/01　追加
 
 //		textColumn_hanteiNengapi.setColumnFilterable(true);
 //		textColumn_hanteiNengapi.setColumnName("HANTEI_NENGAPI");
@@ -324,6 +354,7 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		//add tanaka 2013/11/07
 		textColumn_nendo.setColumnVisible(true);
 		textColumn_nendo.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.NENDO));
+		textColumn_nendo.setMaxCharacters(4);	// edit n.ohkubo 2014/10/01　追加
 
 		textColumn_tankaGoukei.setColumnFilterable(true);
 		textColumn_tankaGoukei.setColumnName("TANKA_GOUKEI");
@@ -434,7 +465,8 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 
 		// add s.inoue 2012/11/21
 		navigatorBar.addAfterActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
+	        @Override
+			public void actionPerformed(ActionEvent e) {
 	        	if (JApplication.selectedHistoryRows == null)return;
 	    		for (int i = 0; i < JApplication.selectedHistoryRows.size(); i++) {
 	    			grid.getVOListTableModel().setValueAt("N", JApplication.selectedHistoryRows.get(i), 0);
@@ -494,6 +526,8 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		grid.getColumnContainer().add(textColumn_madoGoukei, null);
 		grid.getColumnContainer().add(textColumn_seikyuGoukei, null);
 		grid.getColumnContainer().add(textColumn_updateTimeStamp, null);
+		
+		columnContainer = grid.getColumnContainer();// edit n.ohkubo 2014/10/01　追加
 
 		// add s.inoue 2012/11/12
 		jLabel_Title = new TitleLabel("tokutei.nitiji.frame.title","tokutei.nitiji.frame.guidance");
@@ -620,12 +654,13 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		  ListFrame_button_actionAdapter(JOutputNitijiSearchListFrame adaptee) {
 		    this.adaptee = adaptee;
 		  }
-		  public void actionPerformed(ActionEvent e) {
+		  @Override
+		public void actionPerformed(ActionEvent e) {
 
 		   	Object btn = e.getSource();
 
 		   	// eidt s.inoue 2011/05/09
-		   	selectedData = new ArrayList<Integer>();
+//		   	selectedData = new ArrayList<Integer>();	// edit n.ohkubo 2014/10/01　未使用なので削除
 
 		   	// eidt s.inoue 2011/04/21
 		   	if (btn == buttonCheck){
@@ -638,7 +673,8 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 				adaptee.closeButtton_actionPerformed(e);
 			/* 請求 */
 			}else if (btn == buttonSeikyu){
-				logger.info(buttonSeikyu);
+//				logger.info(buttonSeikyu);// edit n.ohkubo 2014/10/01　削除
+				logger.info(buttonSeikyu.getText());// edit n.ohkubo 2014/10/01　追加
 				pushedSeikyuButton();
 
 				// eidt s.inoue 2012/11/21
@@ -800,6 +836,12 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.CHECKBOX_COLUMN))
 					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.CHECKBOX_COLUMN));
 			}
+			
+			// edit n.ohkubo 2014/10/01　追加 start
+			//「表示 or 非表示」をDBへ登録する
+			((JOutputNitijiSearchListFrameCtl)grid.getController()).preserveColumnStatus();
+			// edit n.ohkubo 2014/10/01　追加 end
+			
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -815,20 +857,20 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		}
 	}
 
-	// add s.inoue 2012/11/28
-	// チェックボックス設定
-	private void setSelectedRow(ArrayList<Integer> selectedRows){
-		if (selectedRows == null)return;
-		int ival = selectedRows.size();
-		for (int i = 0; i < ival; i++) {
-			grid.getVOListTableModel().setValueAt("N", selectedRows.get(i), 0);
-			grid.getVOListTableModel().setValueAt("Y", selectedRows.get(i), 0);
-		}
-	}
+//	// add s.inoue 2012/11/28	// edit n.ohkubo 2014/10/01　未使用なので削除
+//	// チェックボックス設定
+//	private void setSelectedRow(ArrayList<Integer> selectedRows){
+//		if (selectedRows == null)return;
+//		int ival = selectedRows.size();
+//		for (int i = 0; i < ival; i++) {
+//			grid.getVOListTableModel().setValueAt("N", selectedRows.get(i), 0);
+//			grid.getVOListTableModel().setValueAt("Y", selectedRows.get(i), 0);
+//		}
+//	}
 
 	// eidt s.inoue 2011/04/21
 	private void setCheckBoxValue(){
-		JOutputNitijiSearchListFrameData chk = null;
+//		JOutputNitijiSearchListFrameData chk = null;	// edit n.ohkubo 2014/10/01　未使用なので削除
 		// eidt s.inoue 2011/04/27
 //		for (int i = 0; i < grid.getVOListTableModel().getRowCount(); i++) {
 //			chk = (JKenshinKekkaSearchListFrameData)grid.getVOListTableModel().getObjectForRow(i);
@@ -933,6 +975,14 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 					logger.error(ex.getMessage());
 				}
 			}
+			// edit n.ohkubo 2014/10/01　追加　start
+			//1件も選択されていない場合、メッセージを表示して、ボタンの制御は行わない
+			else{
+				JErrorMessage.show("M3548", this);
+				return;
+			}
+			// edit n.ohkubo 2014/10/01　追加　end
+			
 		buttonCtrl();
 	}
 
@@ -1380,6 +1430,7 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 	 * 遷移先の画面から戻ってきた場合
 	 */
 	public class WindowRefreshEvent extends WindowAdapter {
+		@Override
 		public void windowClosed(WindowEvent e) {
 			// eidt s.inoue 2011/05/09
 			// selectedData = getSelectedRow();
@@ -1442,6 +1493,7 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 	}
 
 	// イベント処理
+	@Override
 	public void actionPerformed(ActionEvent ae) {
 	}
 

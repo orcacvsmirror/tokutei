@@ -5,12 +5,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ListSelectionModel;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
@@ -53,6 +55,8 @@ import org.apache.log4j.Logger;
 public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMaintenanceEditFrame
 {
 
+	private static final long serialVersionUID = -5261660570076737239L;	// edit n.ohkubo 2014/10/01　追加
+	
 	// add h.yoshitama 2009/11/19
 	private static final String CODE_METABO_HANTEI = "9N501000000000011";
 	private static final String CODE_HOKEN_SHIDOU = "9N506000000000011";
@@ -73,38 +77,43 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 
 	// add s.inoue 2011/09/01
 	private IDialog patternSelectDialog;
-	private static Integer kenshinPatternNumver = null;
-
-	// add s.inoue 2010/01/15
-	/* 一覧用データ取得 */
-	private Object[][] resultRefresh(String PatternNum)
-	{
-		ArrayList<Hashtable<String, String>> result = null;
-		try {
-			String sb = new String("SELECT K_P_NAME FROM T_KENSHIN_P_M WHERE K_P_NO = " +
-					JQueryConvert.queryConvert(this.patternNumber));
-
-			result = JApplication.kikanDatabase.sendExecuteQuery(sb);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-		Object[][] rowcolumn = new Object[result.size()][16];
-		int counti = 0;
-		List<String> fields = new ArrayList<String>();
-
-		for (Hashtable<String, String> record : result) {
-
-//			model.addData(fields.toArray(new String[0]));
+//	private static Integer kenshinPatternNumver = null;	// edit n.ohkubo 2014/10/01　未使用なので削除
+	
+	// edit n.ohkubo 2014/10/01　追加
+	TableRowSorter<TableModel> tableRowSorterLeft;
+	TableRowSorter<TableModel> tableRowSorterRight;
+	
+	// edit n.ohkubo 2014/10/01　未使用なので削除
+//	// add s.inoue 2010/01/15
+//	/* 一覧用データ取得 */
+//	private Object[][] resultRefresh(String PatternNum)
+//	{
+//		ArrayList<Hashtable<String, String>> result = null;
+//		try {
+//			String sb = new String("SELECT K_P_NAME FROM T_KENSHIN_P_M WHERE K_P_NO = " +
+//					JQueryConvert.queryConvert(this.patternNumber));
 //
-//			String[] col = fields.toArray(new String[0]);
-//			for (int i = 0; i < col.length; i++) {
+//			result = JApplication.kikanDatabase.sendExecuteQuery(sb);
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			return null;
+//		}
 //
-//			}
-		}
-		return rowcolumn;
-	}
+//		Object[][] rowcolumn = new Object[result.size()][16];
+//		int counti = 0;
+//		List<String> fields = new ArrayList<String>();
+//
+//		for (Hashtable<String, String> record : result) {
+//
+////			model.addData(fields.toArray(new String[0]));
+////
+////			String[] col = fields.toArray(new String[0]);
+////			for (int i = 0; i < col.length; i++) {
+////
+////			}
+//		}
+//		return rowcolumn;
+//	}
 
 	/**
 	 * @param PatternNum 編集する健診パターンの番号
@@ -132,6 +141,7 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 		}
 
 		jTextField_PatternName.setText(ResultItem.get("K_P_NAME"));
+		jTextField_PatternName.setToolTipText(ResultItem.get("K_P_NAME"));	// edit n.ohkubo 2014/10/01　追加
 		jTextField_PatternName.setEditable(false);
 
 		//テーブルの初期化
@@ -397,6 +407,26 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 			dispose();
 			return;
 		}
+		
+		// edit n.ohkubo 2014/10/01　追加 start　絞り込み処理のTableRowSorterを設定
+		tableRowSorterLeft = new TableRowSorter<TableModel>(leftTable.getModel());
+		tableRowSorterRight = new TableRowSorter<TableModel>(rightTable.getModel());
+		
+		//列名押下でのソートは行わない
+		for (int i = 0; i < leftTable.getColumnCount(); i++) {
+			tableRowSorterLeft.setSortable(i, false);
+			tableRowSorterRight.setSortable(i, false);
+		}
+		
+		//Sorterを設定
+		leftTable.setRowSorter(tableRowSorterLeft);
+		rightTable.setRowSorter(tableRowSorterRight);
+		
+		//初期化（「操作取消」押下時にボタンのグレーアウトを解除する為）
+		jText_filter.setText("");
+		pushedfilterButton();
+		
+		// edit n.ohkubo 2014/10/01　追加 end
 
 		// add ver2 s.inoue 2009/05/08
 		TableColumnModel lcolumns = leftTable.getColumnModel();
@@ -428,6 +458,9 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 	 */
 	public void register()
 	{
+		// edit n.ohkubo 2014/10/01　追加　非表示分も登録対象なので、絞込みを解除（全件表示）する
+		tableRowSorterLeft.setRowFilter(null);
+		tableRowSorterRight.setRowFilter(null);
 
 // del s.inoue 2012/06/26
 //		// eidt s.inoue 2011/12/06 登録時にも追加
@@ -624,8 +657,10 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 		if(rightTable.getSelectedRowCount() >= 1 )
 		{
 			String[] row = new String[5];
-			int[] rightselectedRows = rightTable.getSelectedRows();
-			int[] leftselectedRows = leftTable.getSelectedRows();
+//			int[] rightselectedRows = rightTable.getSelectedRows();		// edit n.ohkubo 2014/10/01　削除
+//			int[] leftselectedRows = leftTable.getSelectedRows();		// edit n.ohkubo 2014/10/01　削除
+			int[] leftselectedRows = leftTable.getSelectedRowsConvertRowIndexToModel();		// edit n.ohkubo 2014/10/01　追加
+			int[] rightselectedRows = rightTable.getSelectedRowsConvertRowIndexToModel();	// edit n.ohkubo 2014/10/01　追加
 			int rowCount = rightTable.getSelectedRowCount();
 
 // del s.inoue 2012/06/26 重複チェック廃止
@@ -683,7 +718,8 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 			}
 
 			// 選択処理
-			if (rightTable.getRowCount() > 0){
+//			if (rightTable.getRowCount() > 0){	// edit n.ohkubo 2014/10/01　削除
+			if (rightTable.getModel().getRowCount() > 0){	// edit n.ohkubo 2014/10/01　追加
 				if(rightselectedRows.length == 0){
 					leftTable.setRowSelectionInterval(0,0);
 				}else if (rightselectedRows[0] > 0){
@@ -694,7 +730,8 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 				}
 			}
 
-			if (leftTable.getRowCount() > 0){
+//			if (leftTable.getRowCount() > 0){	// edit n.ohkubo 2014/10/01　削除
+			if (leftTable.getModel().getRowCount() > 0){	// edit n.ohkubo 2014/10/01　追加
 				if(leftselectedRows.length == 0){
 					leftTable.setRowSelectionInterval(0,0);
 				}else if (leftselectedRows[0] >= 0){
@@ -721,8 +758,10 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 		if(leftTable.getSelectedRowCount() >= 1 )
 		{
 			String[] row = new String[5];
-			int[] rightselectedRows = rightTable.getSelectedRows();
-			int[] leftselectedRows = leftTable.getSelectedRows();
+//			int[] rightselectedRows = rightTable.getSelectedRows();		// edit n.ohkubo 2014/10/01　削除
+//			int[] leftselectedRows = leftTable.getSelectedRows();		// edit n.ohkubo 2014/10/01　削除
+			int[] leftselectedRows = leftTable.getSelectedRowsConvertRowIndexToModel();		// edit n.ohkubo 2014/10/01　追加
+			int[] rightselectedRows = rightTable.getSelectedRowsConvertRowIndexToModel();	// edit n.ohkubo 2014/10/01　追加
 			int rowCount = leftTable.getSelectedRowCount();
 			String retMessage = "";
 			String kekkaMessage="";
@@ -769,7 +808,8 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 			}
 
 			// 選択処理
-			if (rightTable.getRowCount() > 0){
+//			if (rightTable.getRowCount() > 0){	// edit n.ohkubo 2014/10/01　削除
+			if (rightTable.getModel().getRowCount() > 0){	// edit n.ohkubo 2014/10/01　追加
 				if(rightselectedRows.length == 0){
 					rightTable.setRowSelectionInterval(0,0);
 				}else if (rightselectedRows[0] >= 0){
@@ -786,7 +826,8 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 			}
 
 			// edit s.inoue 2009/09/14
-			if (leftTable.getRowCount() > 0){
+//			if (leftTable.getRowCount() > 0){	// edit n.ohkubo 2014/10/01　削除
+			if (leftTable.getModel().getRowCount() > 0){	// edit n.ohkubo 2014/10/01　追加
 				if(leftselectedRows.length == 0){
 					leftTable.setRowSelectionInterval(0,0);
 				}else if (leftselectedRows[0] > 0){
@@ -887,6 +928,11 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 
     // add s.inoue 2011/09/01
     public void combinationPattern(){
+    	
+		// edit n.ohkubo 2014/10/01　追加　clearAllRow時にArrayIndexOutOfBoundsExceptionで落ちる対応
+		leftTable.setRowSorter(null);
+		rightTable.setRowSorter(null);
+    	
     	// 健診パターン kenshinPatternNumver
     	System.out.println("パターン結合:" + patternNumber + "と"+ cmbPatternNumber);
     	refreshTable(true);
@@ -930,6 +976,10 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 	 */
 	public void pushedClearButton( ActionEvent e )
 	{
+		// edit n.ohkubo 2014/10/01　追加　clearAllRow時にArrayIndexOutOfBoundsExceptionで落ちる対応
+		leftTable.setRowSorter(null);
+		rightTable.setRowSorter(null);
+				
 		refreshTable(false);
 	}
 
@@ -968,6 +1018,7 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 		}
 	}
 
+	@Override
 	public void actionPerformed( ActionEvent e )
 	{
 		Object source = e.getSource();
@@ -1023,7 +1074,49 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 			logger.info(jButton_Combination.getText());
 			pushedCombinationButton( e );
 		}
+		// edit n.ohkubo 2014/10/01　追加 start
+		else if( source == jButton_filter)
+		{
+			logger.info(jButton_filter.getText());
+			pushedfilterButton();
+		}
+		// edit n.ohkubo 2014/10/01　追加 end
 	}
+	
+	// edit n.ohkubo 2014/10/01　追加 start
+	/**
+	 * 絞込み処理
+	 * （左右両方のテーブルを絞り込む）
+	 */
+	private void pushedfilterButton() {
+
+		//選択を全解除
+		rightTable.clearSelection();
+		leftTable.clearSelection();
+		
+		//初期化として全件表示
+		tableRowSorterRight.setRowFilter(null);
+		tableRowSorterLeft.setRowFilter(null);
+		
+		String text = jText_filter.getText();
+		if (text.length() == 0) {
+			
+			//フィルター解除（全件表示）の場合、使用不可にしたボタンを戻す
+			jButton_Sort.setEnabled(true);
+			jButton_ToTop.setEnabled(true);
+			jButton_ToDown.setEnabled(true);
+			
+		} else {
+			tableRowSorterRight.setRowFilter(RowFilter.regexFilter(text));
+			tableRowSorterLeft.setRowFilter(RowFilter.regexFilter(text));
+			
+			//フィルターをかけた場合、「整列」と上下移動のボタンは使用不可にする
+			jButton_Sort.setEnabled(false);
+			jButton_ToTop.setEnabled(false);
+			jButton_ToDown.setEnabled(false);
+		}
+	}
+	// edit n.ohkubo 2014/10/01　追加 end
 
 // del s.inoue 2012/07/10
 //	@Override

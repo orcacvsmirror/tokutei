@@ -25,6 +25,7 @@ import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
@@ -40,6 +41,7 @@ import jp.or.med.orca.jma_tokutei.common.csv.JCSVReaderStream;
 import jp.or.med.orca.jma_tokutei.common.csv.JCSVWriterStream;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
+import jp.or.med.orca.jma_tokutei.common.filter.SpecialFilterPanel;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
@@ -56,6 +58,7 @@ import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.dataimport.JImportMa
 import org.apache.log4j.Logger;
 import org.openswing.swing.client.GenericButton;
 import org.openswing.swing.client.GridControl;
+import org.openswing.swing.client.GridControl.ColumnContainer;
 import org.openswing.swing.client.NavigatorBar;
 import org.openswing.swing.domains.java.Domain;
 import org.openswing.swing.message.receive.java.Response;
@@ -72,7 +75,9 @@ import org.openswing.swing.util.client.ClientUtils;
  */
 public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyListener,ActionListener {
 
-	private Connection conn = null;
+	private static final long serialVersionUID = -8615537027525763087L;	// edit n.ohkubo 2014/10/01　追加
+
+//	private Connection conn = null;	// edit n.ohkubo 2014/10/01　未使用なので削除
 
 	protected GridControl grid = new GridControl();
 	protected JPanel buttonOriginePanel = new JPanel();
@@ -151,6 +156,17 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 	protected ExtendedOpenGenericButton buttonImport = null;
 
 	private static org.apache.log4j.Logger logger = Logger.getLogger(JKenshinMasterMaintenanceListFrame.class);
+	
+	// edit n.ohkubo 2014/10/01　追加 start
+	private ColumnContainer columnContainer;
+	public ColumnContainer getColumnContainer() {
+		return this.columnContainer;
+	}
+	private JCheckBox savedJCheckBox = new JCheckBox();
+	public JCheckBox getSavedJCheckBox() {
+		return this.savedJCheckBox;
+	}
+	// edit n.ohkubo 2014/10/01　追加 end
 
 	/* コンストラクタ */
 	public JKenshinMasterMaintenanceListFrame(Connection conn,
@@ -171,7 +187,7 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 	/* 制御メソッド */
 	public void setControl(Connection conn,
 			JKenshinMasterMaintenanceListFrameCtrl controller){
-		this.conn = conn;
+//		this.conn = conn;	// edit n.ohkubo 2014/10/01　未使用なので削除
 		try {
 			jbInit();
 
@@ -182,11 +198,20 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 			setVisible(true);
 
 			grid.addKeyListener(new KeyAdapter() {
-			      public void keyPressed(KeyEvent e) {
+			      @Override
+				public void keyPressed(KeyEvent e) {
 			        if (e.getKeyCode()==e.VK_CANCEL || e.getKeyCode()==e.VK_BACK_SPACE || e.getKeyCode()==e.VK_DELETE)
 			          System.out.println("成功");
 			      }
 			    });
+			
+			// edit n.ohkubo 2014/10/01　追加 start　検索画面にチェックボックスを追加
+			//フィルターパネル用のWindowListener
+			SpecialFilterPanel specialFilterPanel = new SpecialFilterPanel(savedJCheckBox, grid.getParent().getComponents());
+			
+			//このフレーム（一覧画面）がアクティブ化（画面右の検索ウィンドウ）　or　非アクティブ化（検索ウィンドウがポップアップで開かれ場合）されたときに動作するように、Listenerを設定（FilterPanelへのチェックボックス追加はListener内で行う）
+			this.addWindowListener(specialFilterPanel);
+			// edit n.ohkubo 2014/10/01　追加 end　検索画面にチェックボックスを追加
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -246,6 +271,7 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		/*add tanaka 2013/11/15*/
 //		textColumn_KoumokuCd.setColumnVisible(true);
 		textColumn_KoumokuCd.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.KOUMOKU_CD));
+		textColumn_KoumokuCd.setMaxCharacters(17);	// edit n.ohkubo 2014/10/01　追加
 
 		// eidt s.inoue 2011/06/02
 		// 項目名
@@ -257,6 +283,7 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		/*add tanaka 2013/11/15*/
 //		textColumn_KoumokuNm.setColumnVisible(true);
 		textColumn_KoumokuNm.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.KOUMOKU_NAME));
+		textColumn_KoumokuNm.setMaxCharacters(200);	// edit n.ohkubo 2014/10/01　追加
 		
 		// 検査方法
 		textColumn_KensaHouhou.setColumnFilterable(true);
@@ -267,6 +294,7 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		/*add tanaka 2013/11/15*/
 //		textColumn_KensaHouhou.setColumnVisible(true);
 		textColumn_KensaHouhou.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.KENSA_HOUHOU));
+		textColumn_KensaHouhou.setMaxCharacters(200);	// edit n.ohkubo 2014/10/01　追加
 		
 		// 必須フラグ(編集可)
 		textColumn_HisuFlg.setColumnFilterable(true);
@@ -541,6 +569,8 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		grid.getColumnContainer().add(textColumn_TankaKenshin, null);
 		grid.getColumnContainer().add(textColumn_Bikou, null);
 
+		columnContainer = grid.getColumnContainer();// edit n.ohkubo 2014/10/01　追加
+		
 		// add s.inoue 2012/11/12
 		jLabel_Title = new TitleLabel("tokutei.kenshin-item-mastermaintenance.frame.title","tokutei.kenshin-item-mastermaintenance.frame.guidance");
 		jLabel_Title.setFont(new Font("ＭＳ ゴシック", Font.PLAIN, 14));
@@ -593,7 +623,8 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		  ListFrame_button_actionAdapter(JKenshinMasterMaintenanceListFrame adaptee) {
 		    this.adaptee = adaptee;
 		  }
-		  public void actionPerformed(ActionEvent e) {
+		  @Override
+		public void actionPerformed(ActionEvent e) {
 			  Object source = e.getSource();
 			  if (source == buttonClose){
 				  logger.info(buttonClose.getText());
@@ -712,6 +743,11 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 			} else {
 				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.BIKOU));
 			}
+			
+			// edit n.ohkubo 2014/10/01　追加 start
+			//「表示 or 非表示」をDBへ登録する
+			((JKenshinMasterMaintenanceListFrameCtrl)grid.getController()).preserveColumnStatus();
+			// edit n.ohkubo 2014/10/01　追加 end
 		}
 		@Override
 		public void keyPressed(KeyEvent e) {
@@ -720,12 +756,10 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		}
 		@Override
 		public void keyReleased(KeyEvent e) {
-			// TODO 自動生成されたメソッド・スタブ
 
 		}
 		@Override
 		public void keyTyped(KeyEvent e) {
-			// TODO 自動生成されたメソッド・スタブ
 
 		}
 	}
@@ -1234,23 +1268,21 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 	}
 
 	// イベント処理
+	@Override
 	public void actionPerformed(ActionEvent ae) {
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO 自動生成されたメソッド・スタブ
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO 自動生成されたメソッド・スタブ
 
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO 自動生成されたメソッド・スタブ
 
 	}
 
@@ -1266,10 +1298,8 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 //			adaptee.closeButtton_keyPerformed(e);
 //		}
 //		public void keyReleased(KeyEvent e) {
-//			// TODO 自動生成されたメソッド・スタブ
 //		}
 //		public void keyTyped(KeyEvent e) {
-//			// TODO 自動生成されたメソッド・スタブ
 //
 //		}
 //	}

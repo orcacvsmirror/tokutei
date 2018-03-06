@@ -18,7 +18,6 @@ import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-//import jp.or.med.orca.jma_tokutei.common.app.ClientSettings;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication.FlagEnum_Getuji;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication.FlagEnum_Hantei;
@@ -34,7 +33,6 @@ import jp.or.med.orca.jma_tokutei.common.execlocker.JExecLockerConfig;
 import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
-import jp.or.med.orca.jma_tokutei.common.frame.dialog.DngPreviewHtml;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.SettingDialog;
 import jp.or.med.orca.jma_tokutei.common.scene.JScene;
@@ -62,10 +60,13 @@ import org.openswing.swing.util.java.Consts;
  * Modified 2008/05/14 メニュー画面から戻る機能への対応
  */
 public class JLoginFrameCtrl extends JLoginFrame {
+	
+	private static final long serialVersionUID = -6098106062110461819L;	// edit n.ohkubo 2014/10/01　追加
+
 	private static final String TEXT_NO_NAME = "（名称が設定されていません）";
 
 	/** 健診機関番号の正規表現 */
-	private static final String REGEX_KENSHINKIKAN_NO = "^\\d{10}.(fdb|FDB)";
+//	private static final String REGEX_KENSHINKIKAN_NO = "^\\d{10}.(fdb|FDB)";	// edit n.ohkubo 2014/10/01　未使用なので削除
 	private static int lastSelectedKikanInfomationIndex = 0;
 	private static Pattern kikanInfomationPattern = Pattern.compile("^.* - (\\d{10})$");
 	/* フォーカス移動制御 */
@@ -433,6 +434,7 @@ public class JLoginFrameCtrl extends JLoginFrame {
 		JScene.ChangeScene(new JMenuFrameCtrl());
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if (source == jButton_Login) {
@@ -474,6 +476,7 @@ public class JLoginFrameCtrl extends JLoginFrame {
 		}
 	}
 
+	@Override
 	public void keyTyped(KeyEvent e) {
 		Object source = e.getSource();
 		char keyChar = e.getKeyChar();
@@ -495,7 +498,7 @@ public class JLoginFrameCtrl extends JLoginFrame {
 		// edit s.inoue 2010/08/02
 		case KeyEvent.VK_F7:
 			logger.info(jButton_UpdateInfo.getText());
-    		DngPreviewHtml dng = new DngPreviewHtml(this);
+//    		DngPreviewHtml dng = new DngPreviewHtml(this);	// edit n.ohkubo 2014/10/01　未使用なので削除
     		// dng.setLayout("http://www.orca.med.or.jp/ikensyo/info/");
 
 		case KeyEvent.VK_F8:
@@ -523,13 +526,16 @@ public class JLoginFrameCtrl extends JLoginFrame {
 	 * ログインボタンのステータスをテキストフィールドの内容によって 変更するためのイベントリスナ
 	 */
 	public class LoginButtonStatus implements DocumentListener {
+		@Override
 		public void changedUpdate(DocumentEvent arg0) {
 		}
 
+		@Override
 		public void insertUpdate(DocumentEvent e) {
 			setLoginButtonStatus(e);
 		}
 
+		@Override
 		public void removeUpdate(DocumentEvent e) {
 			setLoginButtonStatus(e);
 		}
@@ -708,6 +714,7 @@ public class JLoginFrameCtrl extends JLoginFrame {
 	    logPlaceDomain.addDomainPair("JShokenMasterMaintenanceListFrame","所見マスタメンテナンス");
 	    logPlaceDomain.addDomainPair("JKikanDBBackupFrameCtrl","機関DBバックアップ＆復元");
 	    logPlaceDomain.addDomainPair("JKikanLogListFrame","ログファイル管理");
+	    logPlaceDomain.addDomainPair("JKikanLogListFrameCtl","ログファイル管理");	// edit n.ohkubo 2014/10/01　追加
 	    logPlaceDomain.addDomainPair("JUsabilityFrameCtrl","ユーザビリティメンテナンス");
 	    logPlaceDomain.addDomainPair("JKekkaTeikeiMaintenanceEditFrameCtrl","所見マスタメンテナンス（編集）");
 	    logPlaceDomain.addDomainPair("JKekkaTeikeiMaintenanceListFrameCtrl","所見マスタメンテナンス");

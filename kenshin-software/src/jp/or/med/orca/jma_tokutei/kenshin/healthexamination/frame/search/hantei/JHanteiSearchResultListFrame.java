@@ -29,6 +29,7 @@ import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
@@ -42,6 +43,7 @@ import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
+import jp.or.med.orca.jma_tokutei.common.filter.SpecialFilterPanel;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
@@ -65,6 +67,7 @@ import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintKekka;
 
 import org.apache.log4j.Logger;
 import org.openswing.swing.client.GridControl;
+import org.openswing.swing.client.GridControl.ColumnContainer;
 import org.openswing.swing.client.NavigatorBar;
 import org.openswing.swing.client.TextControl;
 import org.openswing.swing.table.columns.client.CheckBoxColumn;
@@ -80,6 +83,8 @@ import com.lowagie.tools.Executable;
  */
 public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,ActionListener {
 
+	private static final long serialVersionUID = 6083322188989368360L;	// edit n.ohkubo 2014/10/01　追加
+	
 	protected Connection conn = null;
 	protected GridControl grid = new GridControl();
 
@@ -143,25 +148,28 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 	protected CheckBoxColumn checkColumn_checkBox = new CheckBoxColumn();
 
 	private static final String CODE_BMI = "9N011000000000001";
-	private static final int COLUMN_INDEX_CHECK = 0;
-	private static final int COLUMN_INDEX_NENDO = 1;
-	private static final int COLUMN_INDEX_JYUSHIN_SEIRI_NO = 2;
-	private static final int COLUMN_INDEX_KANANAME = 3;
-	private static final int COLUMN_INDEX_NAME = 4;
-	private static final int COLUMN_INDEX_BIRTHDAY = 5;
-	private static final int COLUMN_INDEX_SEX = 6;
-	private static final int COLUMN_INDEX_INPUT_FLAG = 7;
-	private static final int COLUMN_INDEX_METBO_HANTEI = 8;
-	private static final int COLUMN_INDEX_HOKENSHIDOU_LEVEL = 9;
-	private static final int COLUMN_INDEX_KENSA_NENGAPI = 10;
-	private static final int COLUMN_INDEX_HANTEI_NENGAPI = 11;
-	private static final int COLUMN_INDEX_TUTI_NENGAPI = 12;
-	private static final int COLUMN_INDEX_HIHOKENSHA_KIGO = 13;
-	private static final int COLUMN_INDEX_HIHOKENSHA_NO = 14;
-	private static final int COLUMN_INDEX_HKNJANUM = 15;
-	private static final int COLUMN_INDEX_DAIKOU = 16;
-	private static final int COLUMN_INDEX_KOMENTO = 17;
-	private static final int COLUMN_INDEX_UKETUKE_ID = 18;
+	
+	// edit n.ohkubo 2014/10/01　未使用なので削除 start
+//	private static final int COLUMN_INDEX_CHECK = 0;
+//	private static final int COLUMN_INDEX_NENDO = 1;
+//	private static final int COLUMN_INDEX_JYUSHIN_SEIRI_NO = 2;
+//	private static final int COLUMN_INDEX_KANANAME = 3;
+//	private static final int COLUMN_INDEX_NAME = 4;
+//	private static final int COLUMN_INDEX_BIRTHDAY = 5;
+//	private static final int COLUMN_INDEX_SEX = 6;
+//	private static final int COLUMN_INDEX_INPUT_FLAG = 7;
+//	private static final int COLUMN_INDEX_METBO_HANTEI = 8;
+//	private static final int COLUMN_INDEX_HOKENSHIDOU_LEVEL = 9;
+//	private static final int COLUMN_INDEX_KENSA_NENGAPI = 10;
+//	private static final int COLUMN_INDEX_HANTEI_NENGAPI = 11;
+//	private static final int COLUMN_INDEX_TUTI_NENGAPI = 12;
+//	private static final int COLUMN_INDEX_HIHOKENSHA_KIGO = 13;
+//	private static final int COLUMN_INDEX_HIHOKENSHA_NO = 14;
+//	private static final int COLUMN_INDEX_HKNJANUM = 15;
+//	private static final int COLUMN_INDEX_DAIKOU = 16;
+//	private static final int COLUMN_INDEX_KOMENTO = 17;
+//	private static final int COLUMN_INDEX_UKETUKE_ID = 18;
+	// edit n.ohkubo 2014/10/01　未使用なので削除 end
 
 	private static final String CODE_METABO_HANTEI = "9N501000000000011";  //  @jve:decl-index=0:
 	private static final String CODE_HOKENSHIDOU_LEVEL = "9N506000000000011";
@@ -215,7 +223,18 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 
 	private IDialog pageSelectDialog;
 	private static Logger logger = Logger.getLogger(JHanteiSearchResultListFrame.class);
-	private ArrayList<Integer> selectedData = new ArrayList<Integer>();
+//	private ArrayList<Integer> selectedData = new ArrayList<Integer>();	// edit n.ohkubo 2014/10/01　未使用なので削除
+	
+	// edit n.ohkubo 2014/10/01　追加 start
+	private ColumnContainer columnContainer;
+	public ColumnContainer getColumnContainer() {
+		return this.columnContainer;
+	}
+	private JCheckBox savedJCheckBox = new JCheckBox();
+	public JCheckBox getSavedJCheckBox() {
+		return this.savedJCheckBox;
+	}
+	// edit n.ohkubo 2014/10/01　追加 end
 
 	/* コンストラクタ */
 	public JHanteiSearchResultListFrame(Connection conn,
@@ -245,6 +264,15 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 			grid.setController(controller);
 			grid.setGridDataLocator(controller);
 			setVisible(true);
+			
+			// edit n.ohkubo 2014/10/01　追加 start　検索画面にチェックボックスを追加
+			//フィルターパネル用のWindowListener
+			SpecialFilterPanel specialFilterPanel = new SpecialFilterPanel(savedJCheckBox, grid.getParent().getComponents());
+			
+			//このフレーム（一覧画面）がアクティブ化（画面右の検索ウィンドウ）　or　非アクティブ化（検索ウィンドウがポップアップで開かれ場合）されたときに動作するように、Listenerを設定（FilterPanelへのチェックボックス追加はListener内で行う）
+			this.addWindowListener(specialFilterPanel);
+			// edit n.ohkubo 2014/10/01　追加 end　検索画面にチェックボックスを追加
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -285,7 +313,8 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 		//add tanaka 2013/11/07
 		textColumn_HokensyoNumber.setColumnVisible(!JApplication.flag_Hantei.contains(FlagEnum_Hantei.HIHOKENJYASYO_NO));
 
-		dateColumn_KenshinDateFrom.setColumnName("KENSA_NENGAPI");
+//		dateColumn_KenshinDateFrom.setColumnName("KENSA_NENGAPI");	// edit n.ohkubo 2014/10/01　削除
+		dateColumn_KenshinDateFrom.setColumnName("KENSA_NENGAPI2");	// edit n.ohkubo 2014/10/01　追加
 		dateColumn_KenshinDateFrom.setPreferredWidth(80);
 
 		// edit s.inoue 2013/11/12
@@ -293,6 +322,7 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 		dateColumn_KenshinDateFrom.setColumnSortable(false);
 		dateColumn_KenshinDateFrom.setColumnSelectable(false);
 		dateColumn_KenshinDateFrom.setColumnVisible(false);
+		dateColumn_KenshinDateFrom.setMaxCharacters(8);	// edit n.ohkubo 2014/10/01　追加
 
 		// add s.inoue 2012/10/23
 		dateColumn_KenshinDateTo.setColumnName("KENSA_NENGAPI");
@@ -302,6 +332,7 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 		
 		//add tanaka 2013/11/07
 		dateColumn_KenshinDateTo.setColumnVisible(!JApplication.flag_Hantei.contains(FlagEnum_Hantei.KENSA_NENGAPI));
+		dateColumn_KenshinDateTo.setMaxCharacters(8);	// edit n.ohkubo 2014/10/01　追加
 
 		textColumn_sex.setColumnName("SEX");
 		textColumn_sex.setColumnSortable(true);
@@ -356,6 +387,7 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 		textColumn_jyushinSeiriNo.setPreferredWidth(100);
 		//add tanaka 2013/11/07
 		textColumn_jyushinSeiriNo.setColumnVisible(!JApplication.flag_Hantei.contains(FlagEnum_Hantei.JYUSHIN_SEIRI_NO));
+		textColumn_jyushinSeiriNo.setMaxCharacters(11);	// edit n.ohkubo 2014/10/01　追加
 
 		textColumn_hokenjaNo.setColumnFilterable(true);
 		textColumn_hokenjaNo.setColumnName("HKNJANUM");
@@ -392,6 +424,7 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 		textColumn_kanaName.setPreferredWidth(175);
 		//add tanaka 2013/11/07
 		textColumn_kanaName.setColumnVisible(!JApplication.flag_Hantei.contains(FlagEnum_Hantei.KANANAME));
+		textColumn_kanaName.setMaxCharacters(50);	// edit n.ohkubo 2014/10/01　追加
 
 		textColumn_hanteiNengapi.setColumnFilterable(true);
 		textColumn_hanteiNengapi.setColumnName("HANTEI_NENGAPI");
@@ -419,6 +452,7 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 		textColumn_nendo.setPreferredWidth(40);
 		//add tanaka 2013/11/07
 		textColumn_nendo.setColumnVisible(!JApplication.flag_Hantei.contains(FlagEnum_Hantei.NENDO));
+		textColumn_nendo.setMaxCharacters(4);// edit n.ohkubo 2014/10/01　追加
 
 		// eidt s.inoue 2011/04/20
 		checkColumn_checkBox.setColumnFilterable(false);
@@ -479,7 +513,8 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 
 		// add s.inoue 2012/11/21
 		navigatorBar.addAfterActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
+	        @Override
+			public void actionPerformed(ActionEvent e) {
 	        	if (JApplication.selectedHistoryRows == null)return;
 	    		for (int i = 0; i < JApplication.selectedHistoryRows.size(); i++) {
 	    			grid.getVOListTableModel().setValueAt("N", JApplication.selectedHistoryRows.get(i), 0);
@@ -546,6 +581,8 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 		grid.getColumnContainer().add(textColumn_hokenjaNo, null);
 		grid.getColumnContainer().add(textColumn_shiharaiDaikouNo, null);
 		grid.getColumnContainer().add(textColumn_comment, null);
+		
+		columnContainer = grid.getColumnContainer();// edit n.ohkubo 2014/10/01　追加
 
 //		// openswing s.inoue 2011/01/26
 //		grid.addMouseListener(new JSingleDoubleClickEvent(this, button,modelfixed));
@@ -607,11 +644,12 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 		    this.adaptee = adaptee;
 		  }
 		  // buttonアクション
-		  public void actionPerformed(ActionEvent e) {
+		  @Override
+		public void actionPerformed(ActionEvent e) {
 
 			Object source = e.getSource();
 			// eidt s.inoue 2011/05/09
-			selectedData = new ArrayList<Integer>();
+//			selectedData = new ArrayList<Integer>();	// edit n.ohkubo 2014/10/01　未使用なので削除
 		   	/* 閉じる */
 		   	// eidt s.inoue 2011/04/21
 		   	if (source == buttonCheck){
@@ -789,6 +827,11 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 				if (!JApplication.flag_Hantei.contains(FlagEnum_Hantei.KOMENTO))
 					JApplication.flag_Hantei.addAll(EnumSet.of(FlagEnum_Hantei.KOMENTO));
 			}
+			
+			// edit n.ohkubo 2014/10/01　追加 start
+			//「表示 or 非表示」をDBへ登録する
+			((JHanteiSearchResultListFrameCtl)grid.getController()).preserveColumnStatus();
+			// edit n.ohkubo 2014/10/01　追加 end
 		}
 		@Override
 		public void keyPressed(KeyEvent e) {
@@ -801,16 +844,17 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 		}
 	}
 
-	// add s.inoue 2012/11/28
-	// チェックボックス設定
-	private void setSelectedRow(ArrayList<Integer> selectedRows){
-		if (selectedRows == null)return;
-		int ival = selectedRows.size();
-		for (int i = 0; i < ival; i++) {
-			grid.getVOListTableModel().setValueAt("N", selectedRows.get(i), 0);
-			grid.getVOListTableModel().setValueAt("Y", selectedRows.get(i), 0);
-		}
-	}
+	// edit n.ohkubo 2014/10/01　未使用なので削除
+//	// add s.inoue 2012/11/28
+//	// チェックボックス設定
+//	private void setSelectedRow(ArrayList<Integer> selectedRows){
+//		if (selectedRows == null)return;
+//		int ival = selectedRows.size();
+//		for (int i = 0; i < ival; i++) {
+//			grid.getVOListTableModel().setValueAt("N", selectedRows.get(i), 0);
+//			grid.getVOListTableModel().setValueAt("Y", selectedRows.get(i), 0);
+//		}
+//	}
 
 	// チェック状態を取得
 	private boolean getCheckBoxCount(){
@@ -920,7 +964,7 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 
 	// eidt s.inoue 2011/04/21
 	private void setCheckBoxValue(){
-		JHanteiSearchResultListFrameData chk = null;
+//		JHanteiSearchResultListFrameData chk = null;	// edit n.ohkubo 2014/10/01　未使用なので削除
 		// eidt s.inoue 2011/04/27
 //		for (int i = 0; i < grid.getVOListTableModel().getRowCount(); i++) {
 //			chk = (JKenshinKekkaSearchListFrameData)grid.getVOListTableModel().getObjectForRow(i);
@@ -1764,7 +1808,7 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 				String itemKanaName = vo.getKANANAME();
 				String itemHokenjaNumber = vo.getHKNJANUM();
 				String itemHihokenjyasyoKigou = vo.getHIHOKENJYASYO_KIGOU();
-				String itemHihokenjyasyoNumber = vo.getHIHOKENJYASYO_NO();
+//				String itemHihokenjyasyoNumber = vo.getHIHOKENJYASYO_NO();	// edit n.ohkubo 2014/10/01　未使用なので削除
 				String itemUketukeId = vo.getUKETUKE_ID();
 
 				/* 各値を検証する */
@@ -1816,14 +1860,14 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 
 		// eidt s.inoue 2011/03/30
 //		int selectedRowCount = table.getSelectedRowCount();
-		int selectedRowCount = 0;
+//		int selectedRowCount = 0;	// edit n.ohkubo 2014/10/01　未使用なので削除
 		ArrayList<Integer> selectedRows = new ArrayList<Integer>();
 		JHanteiSearchResultListFrameData vo = null;
 		for (int i = 0; i < grid.getVOListTableModel().getRowCount(); i++) {
 			vo = (JHanteiSearchResultListFrameData)grid.getVOListTableModel().getObjectForRow(i);
 			if (vo.getCHECKBOX_COLUMN().equals("Y")){
 				selectedRows.add(i);
-				selectedRowCount++;
+//				selectedRowCount++;	// edit n.ohkubo 2014/10/01　未使用なので削除
 			}
 		}
 
@@ -1855,6 +1899,7 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 	 * 遷移先の画面から戻ってきた場合
 	 */
 	public class WindowRefreshEvent extends WindowAdapter {
+		@Override
 		public void windowClosed(WindowEvent e) {
 			// eidt s.inoue 2011/04/12
 			// selectedData = getSelectedRow();
@@ -1913,6 +1958,7 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 	}
 
 	// イベント処理
+	@Override
 	public void actionPerformed(ActionEvent ae) {
 	}
 

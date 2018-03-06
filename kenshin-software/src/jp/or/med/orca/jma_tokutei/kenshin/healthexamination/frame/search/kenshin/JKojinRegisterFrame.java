@@ -1,19 +1,30 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.kenshin;
 
-import javax.swing.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.BorderLayout;
-import javax.swing.BorderFactory;
-
-
-import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import jp.or.med.orca.jma_tokutei.common.app.JPath;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedButton;
@@ -23,29 +34,11 @@ import jp.or.med.orca.jma_tokutei.common.component.ExtendedImageIcon;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedLabel;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedRadioButton;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedTextField;
-import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
 import jp.or.med.orca.jma_tokutei.common.component.ImeController.ImeMode;
-import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
+import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenFormattedControl;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenFormattedFloatControl;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenTextControl;
-
-import javax.swing.JTextField;
-import java.awt.Color;
-
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
-
-import com.toedter.calendar.JDateChooser;
-
-import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * 受診券入力画面
@@ -539,6 +532,7 @@ public class JKojinRegisterFrame extends JFrame
 			jLabel10.setText("氏名（漢字）");
 			jLabel9 = new ExtendedLabel();
 			jLabel9.setText("氏名（カナ）");
+			jLabel9.setForeground(ViewSettings.getRequiedItemFrColor());	// edit n.ohkubo 2014/10/01　追加
 			jLabel8 = new ExtendedLabel();
 			jLabel8.setText("被保険者証等番号");
 			jLabel7 = new ExtendedLabel();
@@ -579,16 +573,21 @@ public class JKojinRegisterFrame extends JFrame
 		return jPanel_DrawArea;
 	}
 
+	@Override
 	public void actionPerformed( ActionEvent e )
 	{
 	}
+	@Override
 	public void itemStateChanged(ItemEvent e)
 	{
 	}
+	@Override
 	public void keyPressed(KeyEvent arg0) {
 	}
+	@Override
 	public void keyReleased(KeyEvent arg0) {
 	}
+	@Override
 	public void keyTyped(KeyEvent arg0) {
 	}
 
@@ -2077,95 +2076,100 @@ public class JKojinRegisterFrame extends JFrame
 		return jTextField_NingenDocTanka;
 	}
 
-	// add s.inoue 2009/10/01
-	/**
-	 * This method initializes jPanel
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanelKihon() {
-		if (jPanelKihon == null) {
-			jPanelKihon = new JPanel();
-			jPanelKihon.setLayout(new BoxLayout(getJPanelKihon(), BoxLayout.X_AXIS));
-			jPanelKihon.add(getJRadioButton_Kihon(), null);
-		}
-		return jPanelKihon;
-	}
+	// edit n.ohkubo 2014/10/01　未使用なので削除
+//	// add s.inoue 2009/10/01
+//	/**
+//	 * This method initializes jPanel
+//	 *
+//	 * @return javax.swing.JPanel
+//	 */
+//	private JPanel getJPanelKihon() {
+//		if (jPanelKihon == null) {
+//			jPanelKihon = new JPanel();
+//			jPanelKihon.setLayout(new BoxLayout(getJPanelKihon(), BoxLayout.X_AXIS));
+//			jPanelKihon.add(getJRadioButton_Kihon(), null);
+//		}
+//		return jPanelKihon;
+//	}
 
-	// add s.inoue 2009/10/01
-	/**
-	 * This method initializes jPanel1
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanelDoc() {
-		if (jPanelDoc == null) {
-			jPanelDoc = new JPanel();
-			jPanelDoc.setLayout(new BoxLayout(getJPanelDoc(), BoxLayout.X_AXIS));
-			jPanelDoc.add(getJRadioButton_Doc(), null);
-		}
-		return jPanelDoc;
-	}
+	// edit n.ohkubo 2014/10/01　未使用なので削除
+//	// add s.inoue 2009/10/01
+//	/**
+//	 * This method initializes jPanel1
+//	 *
+//	 * @return javax.swing.JPanel
+//	 */
+//	private JPanel getJPanelDoc() {
+//		if (jPanelDoc == null) {
+//			jPanelDoc = new JPanel();
+//			jPanelDoc.setLayout(new BoxLayout(getJPanelDoc(), BoxLayout.X_AXIS));
+//			jPanelDoc.add(getJRadioButton_Doc(), null);
+//		}
+//		return jPanelDoc;
+//	}
 
-	// add s.inoue 2009/10/01
-	/**
-	 * This method initializes jRadioButton_Male
-	 *
-	 * @return javax.swing.JRadioButton
-	 */
-	private ExtendedRadioButton getJRadioButton_Kihon() {
-		if (jRadioButton_Kihon == null) {
-			jRadioButton_Kihon = new ExtendedRadioButton();
-			jRadioButton_Kihon.setText("1：基本健診");
-			jRadioButton_Kihon.setPreferredSize(new Dimension(105, 20));
-			// del s.inoue 2010/05/10
-//			jRadioButton_Kihon.addKeyListener(this);
-			jRadioButton_Kihon.addItemListener(this);
-			groupHantei.add(jRadioButton_Kihon);
-		}
-		return jRadioButton_Kihon;
-	}
+	// edit n.ohkubo 2014/10/01　未使用なので削除
+//	// add s.inoue 2009/10/01
+//	/**
+//	 * This method initializes jRadioButton_Male
+//	 *
+//	 * @return javax.swing.JRadioButton
+//	 */
+//	private ExtendedRadioButton getJRadioButton_Kihon() {
+//		if (jRadioButton_Kihon == null) {
+//			jRadioButton_Kihon = new ExtendedRadioButton();
+//			jRadioButton_Kihon.setText("1：基本健診");
+//			jRadioButton_Kihon.setPreferredSize(new Dimension(105, 20));
+//			// del s.inoue 2010/05/10
+////			jRadioButton_Kihon.addKeyListener(this);
+//			jRadioButton_Kihon.addItemListener(this);
+//			groupHantei.add(jRadioButton_Kihon);
+//		}
+//		return jRadioButton_Kihon;
+//	}
 
-	// add s.inoue 2009/10/01
-	/**
-	 * This method initializes jRadioButton_Female
-	 *
-	 * @return javax.swing.EventHandleRadioButton
-	 */
-	private ExtendedRadioButton getJRadioButton_Doc() {
-		if (jRadioButton_Doc == null) {
-			jRadioButton_Doc = new ExtendedRadioButton();
-			jRadioButton_Doc.setText("2：人間ドック");
-			jRadioButton_Doc.setPreferredSize(new Dimension(105, 20));
-			jRadioButton_Doc.addItemListener(this);
-			// del s.inoue 2010/05/10
-//			jRadioButton_Doc.addKeyListener(this);
-			groupHantei.add(jRadioButton_Doc);
-		}
-		return jRadioButton_Doc;
-	}
+	// edit n.ohkubo 2014/10/01　未使用なので削除
+//	// add s.inoue 2009/10/01
+//	/**
+//	 * This method initializes jRadioButton_Female
+//	 *
+//	 * @return javax.swing.EventHandleRadioButton
+//	 */
+//	private ExtendedRadioButton getJRadioButton_Doc() {
+//		if (jRadioButton_Doc == null) {
+//			jRadioButton_Doc = new ExtendedRadioButton();
+//			jRadioButton_Doc.setText("2：人間ドック");
+//			jRadioButton_Doc.setPreferredSize(new Dimension(105, 20));
+//			jRadioButton_Doc.addItemListener(this);
+//			// del s.inoue 2010/05/10
+////			jRadioButton_Doc.addKeyListener(this);
+//			groupHantei.add(jRadioButton_Doc);
+//		}
+//		return jRadioButton_Doc;
+//	}
 
-	// add s.inoue 2009/10/01
-	/**
-	 * This method initializes jTextField_KihonTanka
-	 *
-	 * @return javax.swing.ExtendedOpenTextControl
-	 */
-	private ExtendedOpenTextControl getJTextField_TankaHantei() {
-		if (jTextField_TankaHantei == null) {
-			jTextField_TankaHantei = new ExtendedOpenTextControl("", 1, ImeMode.IME_OFF);
-			// eidt s.inoue 2011/12/13
-			// jTextField_TankaHantei.setHorizontalAlignment(JTextField.RIGHT);
-			jTextField_TankaHantei.setAlignmentX(ExtendedOpenTextControl.RIGHT_ALIGNMENT);
-
-			jTextField_TankaHantei.setPreferredSize(new Dimension(20, 20));
-			jTextField_TankaHantei.addActionListener(this);
-			// del s.inoue 2010/05/10
-//			jTextField_TankaHantei.addKeyListener(this);
-			jTextField_TankaHantei.setColumns(1);
-		}
-		return jTextField_TankaHantei;
-	}
+	// edit n.ohkubo 2014/10/01　未使用なので削除
+//	// add s.inoue 2009/10/01
+//	/**
+//	 * This method initializes jTextField_KihonTanka
+//	 *
+//	 * @return javax.swing.ExtendedOpenTextControl
+//	 */
+//	private ExtendedOpenTextControl getJTextField_TankaHantei() {
+//		if (jTextField_TankaHantei == null) {
+//			jTextField_TankaHantei = new ExtendedOpenTextControl("", 1, ImeMode.IME_OFF);
+//			// eidt s.inoue 2011/12/13
+//			// jTextField_TankaHantei.setHorizontalAlignment(JTextField.RIGHT);
+//			jTextField_TankaHantei.setAlignmentX(ExtendedOpenTextControl.RIGHT_ALIGNMENT);
+//
+//			jTextField_TankaHantei.setPreferredSize(new Dimension(20, 20));
+//			jTextField_TankaHantei.addActionListener(this);
+//			// del s.inoue 2010/05/10
+////			jTextField_TankaHantei.addKeyListener(this);
+//			jTextField_TankaHantei.setColumns(1);
+//		}
+//		return jTextField_TankaHantei;
+//	}
 	// add s.inoue 2009/10/11
 //	/**
 //	 * This method initializes jPanel12
@@ -3599,16 +3603,21 @@ public class JKojinRegisterFrame extends JFrame
 		return jTextField_sonotaHutangaku;
 	}
 
+	@Override
 	public void popupMenuCanceled(PopupMenuEvent arg0) {
 	}
 
+	@Override
 	public void popupMenuWillBecomeInvisible(PopupMenuEvent arg0) {
 	}
 
+	@Override
 	public void popupMenuWillBecomeVisible(PopupMenuEvent arg0) {
 	}
+	@Override
 	public void focusGained(FocusEvent arg0) {
 	}
+	@Override
 	public void focusLost(FocusEvent arg0) {
 	}
 

@@ -227,6 +227,11 @@ public class JApplication {
 	public static final String SCREEN_MASTER_SYSTEM_CODE = "107"; // システム利用者メンテナンス
 	public static final String SCREEN_MASTER_KEINEN_CODE = "108"; // 経年マスタメンテナンス
 	public static final String SCREEN_MASTER_USEBILITY_CODE = "109"; // ユーザビリティメンテナンス
+	
+	// edit n.ohkubo 2014/10/01　追加
+	public static final String SCREEN_MASTER_SHOKEN_CODE = "110"; // 所見マスタメンテナンス
+	public static final String SCREEN_MASTER_LOG_CODE = "111"; // ログファイル管理
+	
 
 	// add s.inoue 2011/05/10
 	// 検索系一覧カウント

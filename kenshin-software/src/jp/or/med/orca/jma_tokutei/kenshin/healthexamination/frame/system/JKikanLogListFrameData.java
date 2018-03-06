@@ -3,11 +3,15 @@ package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.system;
 import org.openswing.swing.message.receive.java.ValueObjectImpl;
 
 public class JKikanLogListFrameData extends ValueObjectImpl {
+	
+	private static final long serialVersionUID = 9115451489913651093L;	// edit n.ohkubo 2014/10/01　追加
+	
 //	private String LOG_DATE;
 	private String LOG_MESSAGE_LEVEL;
 	private String LOG_MESSAGE;
 	private String LOG_ERROR_PLACE;
 	private String UPDATE_TIMESTAMP;
+	private String UPDATE_TIMESTAMP2;	// edit n.ohkubo 2014/10/01　追加
 
 //	/**
 //	 * @return the LOG_DATE
@@ -101,4 +105,16 @@ public class JKikanLogListFrameData extends ValueObjectImpl {
 
 	}
 
+	// edit n.ohkubo 2014/10/01　追加 start
+	public String getUPDATE_TIMESTAMP2() {
+		if (UPDATE_TIMESTAMP2 == null ) {
+			UPDATE_TIMESTAMP2 = "";
+		}
+		return UPDATE_TIMESTAMP2;
+	}
+	public void setUPDATE_TIMESTAMP2(String UPDATE_TIMESTAMP2) {
+
+		this.UPDATE_TIMESTAMP2 = UPDATE_TIMESTAMP2;
+	}
+	// edit n.ohkubo 2014/10/01　追加 end
 }

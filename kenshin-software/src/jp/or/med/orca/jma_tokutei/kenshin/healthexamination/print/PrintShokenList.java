@@ -1,6 +1,4 @@
-//ooku
-//v2.1.1のjarに無かったのでコメントアウト
-
+// edit n.ohkubo 2014/08/21　削除　v2.1.1のjarに無かったのでコメントアウト
 
 //package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print;
 //

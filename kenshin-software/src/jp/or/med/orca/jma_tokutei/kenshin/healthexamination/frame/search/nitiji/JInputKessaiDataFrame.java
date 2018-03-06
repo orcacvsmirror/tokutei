@@ -1,23 +1,27 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.nitiji;
 
 import java.awt.BorderLayout;
-
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.FlowLayout;
-import javax.swing.SwingConstants;
 import java.awt.CardLayout;
-import java.awt.Font;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
-import javax.swing.BorderFactory;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import jp.or.med.orca.jma_tokutei.common.app.JPath;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedButton;
@@ -26,16 +30,9 @@ import jp.or.med.orca.jma_tokutei.common.component.ExtendedImageIcon;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedLabel;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedRadioButton;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedTextField;
-import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
 import jp.or.med.orca.jma_tokutei.common.component.ImeController.ImeMode;
-import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
+import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
-import jp.or.med.orca.jma_tokutei.common.frame.ViewSettingsKey;
-
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.Dimension;
-import javax.swing.JTextField;
 
 /**
  * 健診結果データ入力画面制御
@@ -206,7 +203,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 
 	protected ExtendedTextField jTextField_DocTanka = null;
 	/* フォーカス移動制御 */
-	private JFocusTraversalPolicy focusTraversalPolicy = null;  //  @jve:decl-index=0:
+//	private JFocusTraversalPolicy focusTraversalPolicy = null;  //  @jve:decl-index=0:	// edit n.ohkubo 2014/10/01　未使用なので削除
 
 	/**
 	 * This is the default constructor
@@ -450,41 +447,43 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 //		return jPanel_TitleArea;
 //	}
 
-	// edit h.yoshitama 2009/09/25
-	/**
-	 * This method initializes jPanel_ExplArea2
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanel_ExplArea2() {
-		if (jPanel_ExplArea2 == null) {
-			GridLayout gridLayout1 = new GridLayout();
-			gridLayout1.setRows(1);
-			jPanel_ExplArea2 = new JPanel();
-			jPanel_ExplArea2.setName("jPanel4");
-			jPanel_ExplArea2.setLayout(gridLayout1);
-			jPanel_ExplArea2.add(jLabel_MainExpl, null);
-		}
-		return jPanel_ExplArea2;
-	}
+	// edit n.ohkubo 2014/10/01　未使用なので削除
+//	// edit h.yoshitama 2009/09/25
+//	/**
+//	 * This method initializes jPanel_ExplArea2
+//	 *
+//	 * @return javax.swing.JPanel
+//	 */
+//	private JPanel getJPanel_ExplArea2() {
+//		if (jPanel_ExplArea2 == null) {
+//			GridLayout gridLayout1 = new GridLayout();
+//			gridLayout1.setRows(1);
+//			jPanel_ExplArea2 = new JPanel();
+//			jPanel_ExplArea2.setName("jPanel4");
+//			jPanel_ExplArea2.setLayout(gridLayout1);
+//			jPanel_ExplArea2.add(jLabel_MainExpl, null);
+//		}
+//		return jPanel_ExplArea2;
+//	}
 
-	// edit h.yoshitama 2009/09/25
-	/**
-	 * This method initializes jPanel_ExplArea1
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanel_ExplArea1() {
-		if (jPanel_ExplArea1 == null) {
-			CardLayout cardLayout1 = new CardLayout();
-			cardLayout1.setHgap(20);
-			jPanel_ExplArea1 = new JPanel();
-			jPanel_ExplArea1.setVisible(true);
-			jPanel_ExplArea1.setLayout(cardLayout1);
-			jPanel_ExplArea1.add(getJPanel_ExplArea2(), getJPanel_ExplArea2().getName());
-		}
-		return jPanel_ExplArea1;
-	}
+	// edit n.ohkubo 2014/10/01　未使用なので削除
+//	// edit h.yoshitama 2009/09/25
+//	/**
+//	 * This method initializes jPanel_ExplArea1
+//	 *
+//	 * @return javax.swing.JPanel
+//	 */
+//	private JPanel getJPanel_ExplArea1() {
+//		if (jPanel_ExplArea1 == null) {
+//			CardLayout cardLayout1 = new CardLayout();
+//			cardLayout1.setHgap(20);
+//			jPanel_ExplArea1 = new JPanel();
+//			jPanel_ExplArea1.setVisible(true);
+//			jPanel_ExplArea1.setLayout(cardLayout1);
+//			jPanel_ExplArea1.add(getJPanel_ExplArea2(), getJPanel_ExplArea2().getName());
+//		}
+//		return jPanel_ExplArea1;
+//	}
 
 	/**
 	 * This method initializes jPanel_MainArea
@@ -624,7 +623,8 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			gridBagConstraints17.anchor = GridBagConstraints.WEST;
 			gridBagConstraints17.insets = new Insets(0, 5, 0, 0);
 			gridBagConstraints17.weightx = 1.0D;
-			gridBagConstraints17.gridx = 7;
+//			gridBagConstraints17.gridx = 7;	// edit n.ohkubo 2014/10/01　削除
+			gridBagConstraints17.gridx = 9;	// edit n.ohkubo 2014/10/01　追加
 
 			// eidt s.inoue 2012/05/15
 			GridBagConstraints gridBagConstraints18 = new GridBagConstraints();
@@ -650,7 +650,8 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			gridBagConstraints14.gridy = 0;
 			gridBagConstraints14.insets = new Insets(0, 5, 0, 0);
 			gridBagConstraints14.anchor = GridBagConstraints.WEST;
-			gridBagConstraints14.gridx = 9;
+//			gridBagConstraints14.gridx = 9;	// edit n.ohkubo 2014/10/01　削除
+			gridBagConstraints14.gridx = 7;	// edit n.ohkubo 2014/10/01　追加
 //			GridBagConstraints gridBagConstraints13 = new GridBagConstraints();
 //			gridBagConstraints13.gridx = 2;
 //			gridBagConstraints13.insets = new Insets(0, 10, 0, 0);
@@ -1264,32 +1265,35 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		return jButton_Register;
 	}
 
-	/**
-	 * This method initializes jButton_Cancel
-	 *
-	 * @return javax.swing.ExtendedButton
-	 */
-	private ExtendedButton getJButton_Cancel() {
-		if (jButton_Cancel == null) {
-			// eidt s.inoue 2011/04/01
-//			jButton_Cancel = new ExtendedButton();
-//			jButton_Cancel.setText("キャンセル");
-//			jButton_Cancel.setFont(new Font("Dialog", Font.PLAIN, 12));
-//			jButton_Cancel.setVisible(false);
+	// edit n.ohkubo 2014/10/01　未使用なので削除
+//	/**
+//	 * This method initializes jButton_Cancel
+//	 *
+//	 * @return javax.swing.ExtendedButton
+//	 */
+//	private ExtendedButton getJButton_Cancel() {
+//		if (jButton_Cancel == null) {
+//			// eidt s.inoue 2011/04/01
+////			jButton_Cancel = new ExtendedButton();
+////			jButton_Cancel.setText("キャンセル");
+////			jButton_Cancel.setFont(new Font("Dialog", Font.PLAIN, 12));
+////			jButton_Cancel.setVisible(false);
+////			jButton_Cancel.addActionListener(this);
+//			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Common_Clear);
+//			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
+//			jButton_Cancel= new ExtendedButton(
+//					"Cancel","キャンセル(C)","キャンセル(ALT+C)",KeyEvent.VK_C,icon);
 //			jButton_Cancel.addActionListener(this);
-			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Common_Clear);
-			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
-			jButton_Cancel= new ExtendedButton(
-					"Cancel","キャンセル(C)","キャンセル(ALT+C)",KeyEvent.VK_C,icon);
-			jButton_Cancel.addActionListener(this);
-		}
-		return jButton_Cancel;
-	}
+//		}
+//		return jButton_Cancel;
+//	}
 
+	@Override
 	public void actionPerformed( ActionEvent e )
 	{
 	}
 
+	@Override
 	public void itemStateChanged( ItemEvent e )
 	{
 	}
@@ -1381,6 +1385,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 	/*
 	 * FrameSize Control
 	 */
+	@Override
 	public void validate()
 	{
 		Rectangle rect = getBounds();
@@ -2410,19 +2415,16 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO 自動生成されたメソッド・スタブ
 
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO 自動生成されたメソッド・スタブ
 
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO 自動生成されたメソッド・スタブ
 
 	}
 }

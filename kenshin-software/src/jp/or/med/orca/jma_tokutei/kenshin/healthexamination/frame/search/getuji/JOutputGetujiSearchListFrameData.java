@@ -1,14 +1,15 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.getuji;
 
-import java.sql.Date;
 import java.util.ArrayList;
 
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.outputhl7.JOutputHL7Directory;
 
 import org.openswing.swing.message.receive.java.ValueObjectImpl;
-import org.openswing.swing.table.columns.client.CheckBoxColumn;
 
 public class JOutputGetujiSearchListFrameData extends ValueObjectImpl {
+
+	private static final long serialVersionUID = 7627558833386933335L;	// edit n.ohkubo 2014/10/01　追加
+	
 	private String CHECKBOX_COLUMN;
 	private String UKETUKE_ID;
 	private String NAME;
@@ -515,5 +516,23 @@ public class JOutputGetujiSearchListFrameData extends ValueObjectImpl {
 	 */
 	public void setHENKAN_NITIJI(String HENKAN_NITIJI) {
 	    this.HENKAN_NITIJI = HENKAN_NITIJI;
+	}
+	
+	// edit n.ohkubo 2014/10/01　追加　キーは「xxxx2」だが、中身は2が付いていなやつになる（変数の宣言がないとヌルポになる。宣言だけだと「使われていないワーニング」になるので、セッターでむりやり使用している）
+	private String KENSA_NENGAPI2;
+	public String getKENSA_NENGAPI2() {
+		return getKENSA_NENGAPI();
+	}
+	public void setKENSA_NENGAPI2(String KENSA_NENGAPI2) {
+		this.KENSA_NENGAPI2 = KENSA_NENGAPI2;
+		setKENSA_NENGAPI(this.KENSA_NENGAPI2);
+	}
+	private String HENKAN_NITIJI2;
+	public String getHENKAN_NITIJI2() {
+		return getHENKAN_NITIJI();
+	}
+	public void setHENKAN_NITIJI2(String HENKAN_NITIJI2) {
+		this.HENKAN_NITIJI2 = HENKAN_NITIJI2;
+		setHENKAN_NITIJI(this.HENKAN_NITIJI2);
 	}
 }

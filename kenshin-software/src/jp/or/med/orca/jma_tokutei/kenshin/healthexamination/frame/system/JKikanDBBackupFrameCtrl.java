@@ -1,47 +1,48 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.system;
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
-import java.sql.*;
-import java.text.*;
-import javax.swing.*;
-
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
 import java.sql.Date;
-import java.awt.event.*;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
-import jp.or.med.orca.jma_tokutei.common.app.JPath;
-import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
-import jp.or.med.orca.jma_tokutei.common.errormessage.*;
-import jp.or.med.orca.jma_tokutei.common.filectrl.*;
-import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenDeleteButton;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenEditButton;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenExportButton;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenFilterButton;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenImportButton;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenInsertButton;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenReloadButton;
-import jp.or.med.orca.jma_tokutei.common.sql.*;
-import jp.or.med.orca.jma_tokutei.common.table.*;
-import jp.or.med.orca.jma_tokutei.common.app.JApplication;
-import jp.or.med.orca.jma_tokutei.db.DBYearAdjuster;
-import jp.or.med.orca.jma_tokutei.dbfix.ShcDBAdjust;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.outputhl7.JOutputHL7Directory;
-
+import javax.swing.JFileChooser;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import org.apache.log4j.Logger;
-import org.openswing.swing.client.FilterButton;
-import org.openswing.swing.client.NavigatorBar;
-
+import jp.or.med.orca.jma_tokutei.common.app.JApplication;
+import jp.or.med.orca.jma_tokutei.common.app.JPath;
+import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
+import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
+import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
+import jp.or.med.orca.jma_tokutei.common.filectrl.JFile;
+import jp.or.med.orca.jma_tokutei.common.filectrl.JFileCopy;
+import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
+import jp.or.med.orca.jma_tokutei.common.sql.JConnection;
+import jp.or.med.orca.jma_tokutei.common.table.JSimpleTable;
+import jp.or.med.orca.jma_tokutei.common.table.JSimpleTableCellPosition;
 import jp.or.med.orca.jma_tokutei.common.table.JSimpleTableCellRowRenderer;
+import jp.or.med.orca.jma_tokutei.common.table.JSimpleTableScrollPanel;
+import jp.or.med.orca.jma_tokutei.db.DBYearAdjuster;
+import jp.or.med.orca.jma_tokutei.dbfix.ShcDBAdjust;
+
+import org.apache.log4j.Logger;
 
 /**
  * 機関データベースバックアップフレームのコントロール
  */
 public class JKikanDBBackupFrameCtrl extends JKikanDBBackupFrame {
+
+	private static final long serialVersionUID = 7977639730666699320L;
+
 	private JSimpleTable m_model = new JSimpleTable();
 
 	// edit h.yoshitama 2009/11/13
@@ -61,6 +62,7 @@ public class JKikanDBBackupFrameCtrl extends JKikanDBBackupFrame {
 	public JKikanDBBackupFrameCtrl() {
 		m_model.addHeader("バックアップ日付");
 		m_model.addHeader("バックアップサイズ");
+		m_model.addHeader("バージョン");	// edit n.ohkubo 2014/10/01　追加
 
 		// edit h.yoshitama 2009/11/13
 		m_fileList = new TreeMap<String,File>();
@@ -210,9 +212,9 @@ public class JKikanDBBackupFrameCtrl extends JKikanDBBackupFrame {
 			long lSize = m_fileList.get(String.valueOf(i)).length() / 1000;
 
 			String[] aryData = {
-					dateFormat
-							.format(new Date(m_fileList.get(String.valueOf(i)).lastModified())), // ファイル日付
+					dateFormat.format(new Date(m_fileList.get(String.valueOf(i)).lastModified())), // ファイル日付
 					Long.toString(lSize) + " KB" // ファイル容量
+					, m_fileList.get(String.valueOf(i)).getName().substring(0, m_fileList.get(String.valueOf(i)).getName().indexOf("_"))	// edit n.ohkubo 2014/10/01　追加		バージョンを表示
 			};
 
 			m_model.addData(aryData);
@@ -651,6 +653,7 @@ public class JKikanDBBackupFrameCtrl extends JKikanDBBackupFrame {
 	 *
 	 *    @return none
 	 */
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if (source == jButton_End) {

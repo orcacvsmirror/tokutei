@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="/work-directory/Lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="/work-directory/Lib/postgresql.jar"/>
 	<classpathentry kind="lib" path="/work-directory/DBYearAdjuster.jar"/>
-	<classpathentry kind="lib" path="/work-directory/Lib/clientos.jar"/>
+	<classpathentry kind="lib" path="/work-directory/Lib/clientos.jar" sourcepath="E:/workspace/__OpenSwing2.4.5"/>
 	<classpathentry kind="lib" path="/work-directory/Lib/jnlp-servlet.jar"/>
 	<classpathentry kind="lib" path="/work-directory/Lib/jnlp.jar"/>
 	<classpathentry kind="lib" path="/work-directory/Lib/liquidlnf.jar"/>

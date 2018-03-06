@@ -4,11 +4,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -32,9 +30,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.apache.log4j.Logger;
-import org.openswing.swing.domains.java.Domain;
 
+import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedCheckBox;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.convert.JZenkakuKatakanaToHankakuKatakana;
@@ -50,8 +47,10 @@ import jp.or.med.orca.jma_tokutei.common.sql.model.THokenjya;
 import jp.or.med.orca.jma_tokutei.common.table.JSimpleTable;
 import jp.or.med.orca.jma_tokutei.common.table.JSimpleTableCellRowRenderer;
 import jp.or.med.orca.jma_tokutei.common.validate.JValidate;
-import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.kenshin.JKojinRegisterFrameData;
+
+import org.apache.log4j.Logger;
+import org.openswing.swing.domains.java.Domain;
 
 /**
  * 保険者情報の編集のコントロール
@@ -59,6 +58,8 @@ import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.kenshin
 public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 		JHokenjyaMasterMaintenanceEditFrame {
 
+	private static final long serialVersionUID = -6848281706304077901L;	// edit n.ohkubo 2014/10/01　追加
+	
 	private JHokenjyaMasterMaintenanceEditFrameData validatedData = new JHokenjyaMasterMaintenanceEditFrameData();  //  @jve:decl-index=0:
 	private static org.apache.log4j.Logger logger =	Logger.getLogger(JHokenjyaMasterMaintenanceEditFrameCtrl.class);
 	private int mode;
@@ -71,10 +72,10 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 	private int modeYukouKigen = 0;
 
 	// add s.inoue 2010/01/20
-	private boolean initializeTanka = false;
+//	private boolean initializeTanka = false;	// edit n.ohkubo 2014/10/01　未使用なので削除
 
 	// edit s.inoue 2009/10/01
-	private String[] itakuKubunStr = { "1:個別", "2:集団" };
+//	private String[] itakuKubunStr = { "1:個別", "2:集団" };	// edit n.ohkubo 2014/10/01　未使用なので削除
 	private JSimpleTable model = new JSimpleTable();
 	private DefaultTableModel dmodel = null;
 	private TableRowSorter<TableModel> sorter =null;
@@ -166,7 +167,7 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 		jTextField_HokenjyaNumber.setBackground(ViewSettings.getRequiedItemBgColor());
 		this.jButton_RegisterYukoukigenEdit.setVisible(false);
 		this.jButton_RegisterYukoukigenDelete.setVisible(false);
-		initializeTanka = true;
+//		initializeTanka = true;	// edit n.ohkubo 2014/10/01　未使用なので削除
 		setModeAppearSettings(true);
 //		initializeComponentBgColor();
 //		functionListner();
@@ -241,7 +242,7 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 		});
 
 		this.jButton_ORCA.setVisible(false);
-		initializeTanka = true;
+//		initializeTanka = true;	// edit n.ohkubo 2014/10/01　未使用なので削除
 //		initilizeFocus();
 
 		setModeAppearSettings(false);
@@ -311,6 +312,7 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 
 			// add s.inoue 2010/01/11
 			model.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				@Override
 				public void valueChanged(ListSelectionEvent e) {
 					if(e.getValueIsAdjusting()) return;
 
@@ -471,6 +473,10 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 		Object[][] hokenjyaData = null;
 		hokenjyaData = this.resultRefresh(hokenjyaNumber);
 		dmodel = new DefaultTableModel(hokenjyaData,header){
+			
+			private static final long serialVersionUID = 5070957364507729662L;	// edit n.ohkubo 2014/10/01　追加
+
+		@Override
 		public boolean isCellEditable(int row, int column) {
 			boolean retflg = false;
 			if ( column >9 ){
@@ -853,12 +859,55 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 				return false;
 			}
 
-			// 人間ドック単価又は基本単価必須
-			if (data.getKihonTanka().equals("")
-					&& data.getNingenDocTanka().equals("")) {
-				JErrorMessage.show("M3125", null);
-				return false;
+			// edit n.ohkubo 2014/10/01　削除
+//			// 人間ドック単価又は基本単価必須
+//			if (data.getKihonTanka().equals("")
+//					&& data.getNingenDocTanka().equals("")) {
+//				JErrorMessage.show("M3125", null);
+//				return false;
+//			}
+			// edit n.ohkubo 2014/10/01　追加　start　必須チェックを修正
+			//「基本健診」選択時
+			if ("1".equals(data.getTankaHantei())) {
+				
+				//単価（基本的な健診）
+				if ("".equals(data.getKihonTanka())) {
+					JErrorMessage.show("M3113", null);
+					return false;
+				}
+				//単価（貧血検査）
+				if ("".equals(data.getHinketsuTanka())) {
+					JErrorMessage.show("M3114", null);
+					return false;
+				}
+				//単価（心電図検査）
+				if ("".equals(data.getSindenzuTanka())) {
+					JErrorMessage.show("M3115", null);
+					return false;
+				}
+				//単価（眼底検査）
+				if ("".equals(data.getGanteiTanka())) {
+					JErrorMessage.show("M3116", null);
+					return false;
+				}
+				
+			//「人間ドック」選択時
+			} else {
+				
+				//単価（基本的な健診）　※validateDataメソッドで、ブランクの場合「0」を設定しているのでエラーにはならないはずだが、一応チェックする
+				if ("".equals(data.getKihonTanka())) {
+					JErrorMessage.show("M3113", null);
+					return false;
+				}
+				//単価（人間ドック）
+				if ("".equals(data.getNingenDocTanka())) {
+					JErrorMessage.show("M3152", null);
+					return false;
+				}
 			}
+			// edit n.ohkubo 2014/10/01　追加　end　必須チェックを修正
+			
+			
 		// edit s.inoue 2010/01/27
 		// }
 		validatedData.setValidationAsDataSet();
@@ -1090,7 +1139,6 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 				try {
 					JApplication.kikanDatabase.getMConnection().rollback();
 				} catch (SQLException e1) {
-					// TODO 自動生成された catch ブロック
 					e1.printStackTrace();
 				}
 				logger.error(e.getMessage());
@@ -1408,7 +1456,12 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 		String radioHantei = jRadioButton_Kihon.isSelected() ? "1" : "2";
 		// edit s.inoue 2009/12/02 基本単価必須の為、人間ドックの場合ゼロ登録させる
 		String kihontanka = jTextField_KihonTanka.getText();
-		kihontanka = (kihontanka.equals("")) ? "0" : kihontanka;
+//		kihontanka = (kihontanka.equals("")) ? "0" : kihontanka;	// edit n.ohkubo 2014/10/01　削除
+		// edit n.ohkubo 2014/10/01　追加　start　ゼロ登録は、人間ドックを選択している場合のみ（基本健診選択時は必須チェックでエラーにする）
+		if ("2".equals(radioHantei)) {
+			kihontanka = (kihontanka.equals("")) ? "0" : kihontanka;
+		}
+		// edit n.ohkubo 2014/10/01　追加　end　ゼロ登録は、人間ドックを選択している場合のみ（基本健診選択時は必須チェックでエラーにする）
 
 		String historyNumber = (mode==CHANGE_MODE) ? getmodelColumnNumber(COLUMUN_HISTORY_NO): "1";
 
@@ -1876,6 +1929,7 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 	}
 
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if(source == jButton_Clear){
@@ -2055,6 +2109,7 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 
 	// add s.inoue 2009/10/01
 	// ラジオボタンイベント
+	@Override
 	public void itemStateChanged(ItemEvent e) {
 		Object source = e.getSource();
 

@@ -1,63 +1,50 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.kenshin;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.print.PrinterException;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.PopupMenuEvent;
-import javax.swing.text.JTextComponent;
 
-import org.apache.log4j.Logger;
-import jp.or.med.orca.jma_tokutei.common.convert.JYearAge;
+import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedComboBox;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedLabel;
-import jp.or.med.orca.jma_tokutei.common.component.ExtendedTextField;
 import jp.or.med.orca.jma_tokutei.common.component.TextFieldWithComboBoxDocumentListener;
-import jp.or.med.orca.jma_tokutei.common.convert.JEraseSpace;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
+import jp.or.med.orca.jma_tokutei.common.convert.JYearAge;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
-import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
 import jp.or.med.orca.jma_tokutei.common.frame.ProgressWindow;
-import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenFormattedFloatControl;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenTextControl;
-import jp.or.med.orca.jma_tokutei.common.orca.JORCASetting;
 import jp.or.med.orca.jma_tokutei.common.orca.JOrcaInfoSearchCtl;
 import jp.or.med.orca.jma_tokutei.common.qr.JQRReader;
 import jp.or.med.orca.jma_tokutei.common.scene.JScene;
-import jp.or.med.orca.jma_tokutei.common.sql.JConnection;
-import jp.or.med.orca.jma_tokutei.common.sql.OrcaConnection;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.DaoFactory;
 import jp.or.med.orca.jma_tokutei.common.sql.dao.TKojinDao;
+import jp.or.med.orca.jma_tokutei.common.sql.dao.TNayoseDao;
 import jp.or.med.orca.jma_tokutei.common.sql.model.TKojin;
 import jp.or.med.orca.jma_tokutei.common.sql.model.TNayose;
 import jp.or.med.orca.jma_tokutei.common.util.FiscalYearUtil;
 import jp.or.med.orca.jma_tokutei.common.validate.JValidate;
-import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.hokenja.JHokenjyaMasterMaintenanceEditFrameCtrl;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.kenshin.JKojinRegisterFrameData.T_KOJIN_COLUMN;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.select.JSelectKojinFrameCtrl;
@@ -65,13 +52,17 @@ import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.select.JSelect
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.shiharai.JShiharaiMasterMaintenanceEditFrameCtrl;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintNyuryoku;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Kojin;
-import jp.or.med.orca.jma_tokutei.common.sql.dao.TNayoseDao;
+
+import org.apache.log4j.Logger;
 
 
 /**
  * 個人登録フレーム
  */
 public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
+	
+	private static final long serialVersionUID = 920280230214173874L;	// edit n.ohkubo 2014/10/01　追加
+	
 	private static final String STRING_UNIT_PERCENT = "％";
 	private static final String STRING_UNIT_YEN = "円";
 	private static final int COMBOBOX_NUMBER_START_INDEX = 1;
@@ -89,9 +80,9 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 	/** 保険者番号、支払代行機関選択欄の、番号と名称の区切り文字列 */
 	private static final String COMBOBOX_NUMBER_NAME_SEPARATOR = " ";
 	/** 保険者番号の正規表現 */
-	private static final String REGEX_HOKENJA_NUMBER = "\\d{1,8}";
+//	private static final String REGEX_HOKENJA_NUMBER = "\\d{1,8}";	// edit n.ohkubo 2014/10/01　未使用なので削除
 	/** 支払代行機関番号の正規表現 */
-	private static final String REGEX_DAIKOU_NUMBER = "\\d{1,8}";
+//	private static final String REGEX_DAIKOU_NUMBER = "\\d{1,8}";	// edit n.ohkubo 2014/10/01　未使用なので削除
 
 //	private JFocusTraversalPolicy focusTraversalPolicy = null;
 	private TKojinDao tKojinDao;
@@ -143,6 +134,28 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 			JErrorMessage.show("M4371", null);
 			return false;
 		}
+		
+		// edit n.ohkubo 2014/10/01　追加　start　保険者情報がDBへ登録されているか確認する
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append("SELECT ");
+			sb.append("HKNJANUM, HKNJANAME, POST, ADRS, BANTI, TEL, KIGO, HON_GAIKYURATE, HON_NYUKYURATE, KZK_GAIKYURATE, KZK_NYUKYURATE, ITAKU_KBN, TANKA_KIHON, HINKETU_CD, TANKA_HINKETU, SINDENZU_CD, TANKA_SINDENZU, GANTEI_CD, TANKA_GANTEI, TANKA_NINGENDOC, TANKA_HANTEI, HKNJYA_HISTORY_NO, HKNJYA_LIMITDATE_START, HKNJYA_LIMITDATE_END, YUKOU_FLG FROM T_HOKENJYA ");
+			sb.append("WHERE ");
+			sb.append("HKNJANUM = ? AND YUKOU_FLG = '1'");
+			String[] params = {data.getHokenjyaNumber()};
+			ArrayList<Hashtable<String, String>> result = JApplication.kikanDatabase.sendExecuteQuery(sb.toString(), params);
+			
+			//DB未登録時はエラー
+			if (result.size() == 0) {
+				JErrorMessage.show("M3140", null);
+				return false;
+			}
+			
+		} catch (SQLException sqlEx) {
+			sqlEx.printStackTrace();
+			logger.error(sqlEx.getMessage());
+		}
+		// edit n.ohkubo 2014/10/01　追加　end　保険者情報がDBへ登録されているか確認する
 
 		data.setValidationAsDataSet();
 		return true;
@@ -1806,7 +1819,7 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 
 			String host = JApplication.orcaSetting.getOrcaIpAddress();
 			String port = JApplication.orcaSetting.getOrcaPort();
-			String database = JApplication.orcaSetting.getOrcaDatabase();
+//			String database = JApplication.orcaSetting.getOrcaDatabase();	// edit n.ohkubo 2014/10/01　未使用なので削除
 			String user = JApplication.orcaSetting.getNichireseUser();
 			String password = JApplication.orcaSetting.getNichiresePassword();
 
@@ -2229,13 +2242,13 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 			return;
 		}
 
-		boolean existsNumber = false;
+//		boolean existsNumber = false;	// edit n.ohkubo 2014/10/01　未使用なので削除
 
 		int itemIndex = 2;
 		for (itemIndex = 2; itemIndex < daikouNumbers.size(); itemIndex++) {
 			String number = this.daikouNumbers.get(itemIndex);
 			if (number.equals(inputNumber)) {
-				existsNumber = true;
+//				existsNumber = true;	// edit n.ohkubo 2014/10/01　未使用なので削除
 				break;
 			}
 		}
@@ -2245,7 +2258,7 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 	 * 保険者情報の新規追加ダイアログを表示する
 	 */
 	private void showAddHokenjaNumberDialog(String inputNumber) {
-		JHokenjyaMasterMaintenanceEditFrameCtrl ctrl = null;
+//		JHokenjyaMasterMaintenanceEditFrameCtrl ctrl = null;	// edit n.ohkubo 2014/10/01　未使用なので削除
 		if (inputNumber == null || inputNumber.isEmpty()) {
 			// eidt s.inoue 2012/12/21
 			// ctrl = new JHokenjyaMasterMaintenanceEditFrameCtrl();
@@ -2320,6 +2333,7 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 	/**
 	 * アクションリスナー
 	 */
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 
@@ -2401,6 +2415,7 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 		}
 	}
 
+	@Override
 	public void itemStateChanged(ItemEvent e) {
 
 		Object source = e.getSource();
@@ -2595,7 +2610,8 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 		} else if (selectedIndex == 2){
 			jTextField_SyubetsuNum.setText("2");
 			// jTextField_SyubetsuNum.setEditable(false);
-			jTextField_SyubetsuNum.setEnabled(false);
+//			jTextField_SyubetsuNum.setEnabled(false);	// edit n.ohkubo 2014/10/01　削除
+			jTextField_Jougen.setEnabled(false);	// edit n.ohkubo 2014/10/01　追加
 		} else if (selectedIndex == 3){
 			jTextField_SyubetsuNum.setText("3");
 			// jTextField_Jougen.setEditable(false);
@@ -2611,6 +2627,7 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 	 * 保険者情報登録画面のウィンドウリスナー
 	 */
 	public class HokenjyaWindowEvent extends WindowAdapter {
+		@Override
 		public void windowClosed(WindowEvent e) {
 			if (JHokenjyaMasterMaintenanceEditFrameCtrl.isRegistered()) {
 				JKojinRegisterFrameCtrl.this.initializeHokenjaNumComboBox();
@@ -2634,6 +2651,7 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 	 * 支払代行機関登録画面のウィンドウリスナー
 	 */
 	public class DaikouWindowEvent extends WindowAdapter {
+		@Override
 		public void windowClosed(WindowEvent e) {
 			if (JShiharaiMasterMaintenanceEditFrameCtrl.isRegistered()) {
 				JKojinRegisterFrameCtrl.this.initializeDaikouNumberComboBox();
@@ -2656,6 +2674,7 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 	/**
 	 * keyTyped イベントハンドラ
 	 */
+	@Override
 	public void keyTyped(java.awt.event.KeyEvent e) {
 
 		Object source = e.getSource();
@@ -2838,6 +2857,7 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 //			this.jTextField_NingenDocTanka.setText("");
 //		}
 //	}
+	@Override
 	public void popupMenuWillBecomeInvisible(PopupMenuEvent event) {
 		Object source = event.getSource();
 
