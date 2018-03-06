@@ -182,7 +182,52 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 
 	/* フォーカス移動制御 */
 //	private JFocusTraversalPolicy focusTraversalPolicy = null;	// edit n.ohkubo 2014/10/01　未使用なので削除
+	
+	// edit n.ohkubo 2015/03/01　追加　start　スクロール位置調整
+	//マイパターンタブのスクロールバーの値
+	private List<Integer> scrollValueListMyTab = new ArrayList<Integer>();
+	//基本健診タブのスクロールバーの値
+	private List<Integer> scrollValueListKenshinTab = new ArrayList<Integer>();
+	//詳細健診タブのスクロールバーの値
+	private List<Integer> scrollValueListSyosaiTab = new ArrayList<Integer>();
+	//追加健診タブのスクロールバーの値
+	private List<Integer> scrollValueListTuikaTab = new ArrayList<Integer>();
+	//問診等タブのスクロールバーの値
+	private List<Integer> scrollValueListMonshinTab = new ArrayList<Integer>();
+	// edit n.ohkubo 2015/03/01　追加　end　スクロール位置調整
 
+	// edit n.ohkubo 2015/03/01　追加　start　生活機能問診のツールチップ対応（問診等タブの質問1～25）
+	private static final Map<String, String> questionMap;
+	static {
+		questionMap = new HashMap<String, String>();
+		questionMap.put("質問1", "１．バスや電車で1人で外出していますか");
+		questionMap.put("質問2", "２．日用品の買物をしていますか");
+		questionMap.put("質問3", "３．預貯金の出し入れをしていますか");
+		questionMap.put("質問4", "４．友人の家を訪ねていますか");
+		questionMap.put("質問5", "５．家族や友人の相談にのっていますか");
+		questionMap.put("質問6", "６．階段を手すりや壁をつたわらずに昇っていますか");
+		questionMap.put("質問7", "７．椅子に座った状態から何もつかまらずに立ち上がっていますか");
+		questionMap.put("質問8", "８．15分位続けて歩いていますか");
+		questionMap.put("質問9", "９．この1年間に転んだことがありますか");
+		questionMap.put("質問10", "１０．転倒に対する不安は大きいですか");
+		questionMap.put("質問11", "１１．6ヵ月間で2～3kg以上の体重減少がありましたか");
+		questionMap.put("質問12", "１２．身長　　　　cm　体重　　　　kg　（BMI=　　　　）");
+		questionMap.put("質問13", "１３．半年前に比べて固いものが食べにくくなりましたか");
+		questionMap.put("質問14", "１４．お茶や汁物等でむせることがありますか");
+		questionMap.put("質問15", "１５．口の渇きが気になりますか");
+		questionMap.put("質問16", "１６．週に１回以上は外出していますか");
+		questionMap.put("質問17", "１７．昨年と比べて外出の回数が減っていますか");
+		questionMap.put("質問18", "１８．周りの人から「いつも同じ事を聞く」などの物忘れがあると言われますか");
+		questionMap.put("質問19", "１９．自分で電話番号を調べて、電話をかけることをしていますか");
+		questionMap.put("質問20", "２０．今日が何月何日かわからない時がありますか");
+		questionMap.put("質問21", "２１．（ここ2週間）毎日の生活に充実感がない");
+		questionMap.put("質問22", "２２．（ここ2週間）これまで楽しんでやれていたことが楽しめなくなった");
+		questionMap.put("質問23", "２３．（ここ2週間）以前は楽にできていたことが今ではおっくうに感じられる");
+		questionMap.put("質問24", "２４．（ここ2週間）自分が役に立つ人間だと思えない");
+		questionMap.put("質問25", "２５．（ここ2週間）わけもなく疲れたような感じがする");
+	}
+	// edit n.ohkubo 2015/03/01　追加　end　生活機能問診のツールチップ対応（問診等タブの質問1～25）
+	
 	public JRegisterFlameCtrl(String patternNo){
 		JRegisterFrameTabSetting(null,true);
 	}
@@ -211,6 +256,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			kensakekaTokuteiDao = (TKensakekaTokuteiDao) DaoFactory.createDao(connection,kensakekaTokutei);
 			kensakekaSonotaDao = (TKensakekaSonotaDao) DaoFactory.createDao(connection,kensakekaSonota);
 		} catch (Exception e) {
+			e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.error(e.getMessage());
 		}
 	}
@@ -250,6 +296,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 
 			result = JApplication.kikanDatabase.sendExecuteQuery(sb.toString());
 		}catch(Exception ex){
+			ex.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.error(ex.getMessage());
 		}
 
@@ -305,6 +352,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			// 通常Tab
 			tableResult = JApplication.kikanDatabase.sendExecuteQuery(createCellDataSql());
 		} catch (SQLException e) {
+			e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.error(e.getMessage());
 		}
 
@@ -322,6 +370,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			// MyTab
 			tableMyTabResult = JApplication.kikanDatabase.sendExecuteQuery(createCellDataMyTabSql());
 		} catch (SQLException e) {
+			e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.error(e.getMessage());
 		}
 
@@ -431,6 +480,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			kensaTokutei = kensakekaTokuteiDao.selectKekkaTokuteiByPrimaryKey(new Long(uketuke_id),new Integer(validatedData.getKensaJissiDate()));
 
 		} catch (Exception ex) {
+			ex.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.error(ex.getMessage());
 		}
 
@@ -457,9 +507,12 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			String kensaJissiDate = validatedData.getKensaJissiDate();
 
 			if (srcData != null){
-				jLabel_Name.setText(srcData.getNAME());
-				jLabel_Name.setToolTipText(srcData.getNAME());
-				jLabel_Field_Sex.setText(srcData.getSEX());
+//				jLabel_Name.setText(srcData.getNAME());	// edit n.ohkubo 2015/03/01　削除
+				jLabel_Name.setText(srcData.getKANANAME());	// edit n.ohkubo 2015/03/01　追加
+//				jLabel_Name.setToolTipText(srcData.getNAME());	// edit n.ohkubo 2015/03/01　削除
+				jLabel_Name.setToolTipText(srcData.getKANANAME());	// edit n.ohkubo 2015/03/01　追加
+//				jLabel_Field_Sex.setText(srcData.getSEX());	// edit n.ohkubo 2015/03/01　削除
+				jLabel_Field_Sex.setText(("1".equals(srcData.getSEX()) ? "男性" : ("2".equals(srcData.getSEX()) ? "女性" : srcData.getSEX())));	// edit n.ohkubo 2015/03/01　追加
 				jLable_Field_BirthDate.setText(String.valueOf(srcData.getBIRTHDAY()));
 
 				jLabel_HiHokenjyaCode.setText(srcData.getHIHOKENJYASYO_KIGOU());
@@ -496,6 +549,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 					Date dt = jTextField_KenshinJisiDay.getTextToDate(jisibi);
 					jTextField_KenshinJisiDay.setDate(dt);
 				} catch (ParseException e) {
+					e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 					logger.error(e.getMessage());
 				}
 
@@ -526,6 +580,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 						jTextField_KenshinJisiDay.setDate(dt);
 					}
 				} catch (ParseException e) {
+					e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 					logger.error(e.getMessage());
 				}
 			}
@@ -615,9 +670,12 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			jComboBox_HokenSidouLevel.setSelectedIndex(0);
 
 			if (srcData != null){
-				jLabel_Name.setText(srcData.getNAME());
-				jLabel_Name.setToolTipText(srcData.getNAME());
-				jLabel_Field_Sex.setText(srcData.getSEX());
+//				jLabel_Name.setText(srcData.getNAME());	// edit n.ohkubo 2015/03/01　削除
+				jLabel_Name.setText(srcData.getKANANAME());	// edit n.ohkubo 2015/03/01　追加
+//				jLabel_Name.setToolTipText(srcData.getNAME());	// edit n.ohkubo 2015/03/01　削除
+				jLabel_Name.setToolTipText(srcData.getKANANAME());	// edit n.ohkubo 2015/03/01　追加
+//				jLabel_Field_Sex.setText(srcData.getSEX());	// edit n.ohkubo 2015/03/01　削除
+				jLabel_Field_Sex.setText(("1".equals(srcData.getSEX()) ? "男性" : ("2".equals(srcData.getSEX()) ? "女性" : srcData.getSEX())));	// edit n.ohkubo 2015/03/01　追加
 				jLable_Field_BirthDate.setText(String.valueOf(srcData.getBIRTHDAY()));
 
 				jLabel_HiHokenjyaCode.setText(srcData.getHIHOKENJYASYO_KIGOU());
@@ -632,6 +690,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 					Date dt = jTextField_KenshinJisiDay.getTextToDate(kensaJissiDate);
 					jTextField_KenshinJisiDay.setDate(dt);
 				} catch (ParseException e) {
+					e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 					logger.error(e.getMessage());
 				}
 
@@ -936,7 +995,15 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 		}
 
 		jLabelKoumokuNm.setText(dbItem.get(JConstantString.COLUMN_NAME_KOUMOKUNAME) + tmpAdd);
-		jLabelKoumokuNm.setToolTipText(dbItem.get(JConstantString.COLUMN_NAME_KOUMOKUNAME));
+//		jLabelKoumokuNm.setToolTipText(dbItem.get(JConstantString.COLUMN_NAME_KOUMOKUNAME));	// edit n.ohkubo 2015/03/01　削除
+		// edit n.ohkubo 2015/03/01　追加　start　生活機能問診のツールチップ対応（問診等タブの質問1～25）
+		if (questionMap.get(dbItem.get(JConstantString.COLUMN_NAME_KOUMOKUNAME)) == null) {
+			jLabelKoumokuNm.setToolTipText(dbItem.get(JConstantString.COLUMN_NAME_KOUMOKUNAME));
+		} else {
+			jLabelKoumokuNm.setToolTipText(questionMap.get(dbItem.get(JConstantString.COLUMN_NAME_KOUMOKUNAME)));
+		}
+		// edit n.ohkubo 2015/03/01　追加　end　生活機能問診のツールチップ対応（問診等タブの質問1～25）
+		
 		jLabelKoumokuNm.setPreferredSize(new Dimension(koumoku_nm_Width, controlLabelHeight));
 		jLabelKoumokuNm.setFocusable(false);
 
@@ -1052,9 +1119,17 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 						if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
 							int modfiersKey = keyEvent.getModifiersEx();
 							if ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0){
-								jScrollbarMyTab.setValue(irow*forcus_range - forcus_back);
+//								jScrollbarMyTab.setValue(irow*forcus_range - forcus_back);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListMyTab, irow, true);
+								jScrollbarMyTab.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}else{
-								jScrollbarMyTab.setValue(irow*forcus_range - forcus_foward);
+//								jScrollbarMyTab.setValue(irow*forcus_range - forcus_foward);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListMyTab, irow, false);
+								jScrollbarMyTab.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}
 						}
 					}
@@ -1223,9 +1298,17 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 						if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
 							int modfiersKey = keyEvent.getModifiersEx();
 							if ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0){
-								jScrollbarMyTab.setValue(irow*forcus_range - forcus_back);
+//								jScrollbarMyTab.setValue(irow*forcus_range - forcus_back);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListMyTab, irow, true);
+								jScrollbarMyTab.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}else{
-								jScrollbarMyTab.setValue(irow*forcus_range - forcus_foward);
+//								jScrollbarMyTab.setValue(irow*forcus_range - forcus_foward);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListMyTab, irow, false);
+								jScrollbarMyTab.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}
 						}
 					}
@@ -1295,9 +1378,17 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 						if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
 							int modfiersKey = keyEvent.getModifiersEx();
 							if ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0){
-								jScrollbarMyTab.setValue(irow*forcus_range - forcus_back);
+//								jScrollbarMyTab.setValue(irow*forcus_range - forcus_back);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListMyTab, irow, true);
+								jScrollbarMyTab.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}else{
-								jScrollbarMyTab.setValue(irow*forcus_range - forcus_foward);
+//								jScrollbarMyTab.setValue(irow*forcus_range - forcus_foward);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListMyTab, irow, true);
+								jScrollbarMyTab.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}
 						}
 					}
@@ -1379,21 +1470,38 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 							int modfiersKey = keyEvent.getModifiersEx();
 
 							String title = jPanelRegisterCenter.getTitleAt(jPanelRegisterCenter.getSelectedIndex());
-							int diff = 0;
-							if ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0){
-								diff = forcus_back;
-							}else{
-								diff = forcus_foward;
-							}
+							// edit n.ohkubo 2015/03/01　未使用なので削除　start
+//							int diff = 0;
+//							if ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0){
+//								diff = forcus_back;
+//							}else{
+//								diff = forcus_foward;
+//							}
+							// edit n.ohkubo 2015/03/01　未使用なので削除　end
 
 							if (title.equals("基本健診")){
-								jScrollbarKihon.setValue(irow*forcus_range - diff);
+//								jScrollbarKihon.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListKenshinTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarKihon.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}else if (title.equals("詳細健診")){
-								jScrollbarSyosai.setValue(irow*forcus_range - diff);
+//								jScrollbarSyosai.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListSyosaiTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarSyosai.setValue(scrollValue);
 							}else if (title.equals("追加健診")){
-								jScrollbarTuika.setValue(irow*forcus_range - diff);
+//								jScrollbarTuika.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListTuikaTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarTuika.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}else if (title.equals("問診等")){
-								jScrollbarMonshin.setValue(irow*forcus_range - diff);
+//								jScrollbarMonshin.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListMonshinTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarMonshin.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}
 
 						}
@@ -1561,21 +1669,38 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 							int modfiersKey = keyEvent.getModifiersEx();
 
 							String title = jPanelRegisterCenter.getTitleAt(jPanelRegisterCenter.getSelectedIndex());
-							int diff = 0;
-							if ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0){
-								diff = forcus_back;
-							}else{
-								diff = forcus_foward;
-							}
+							// edit n.ohkubo 2015/03/01　未使用なので削除　start
+//							int diff = 0;
+//							if ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0){
+//								diff = forcus_back;
+//							}else{
+//								diff = forcus_foward;
+//							}
+							// edit n.ohkubo 2015/03/01　未使用なので削除　end
 
 							if (title.equals("基本健診")){
-								jScrollbarKihon.setValue(irow*forcus_range - diff);
+//								jScrollbarKihon.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListKenshinTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarKihon.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}else if (title.equals("詳細健診")){
-								jScrollbarSyosai.setValue(irow*forcus_range - diff);
+//								jScrollbarSyosai.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListSyosaiTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarSyosai.setValue(scrollValue);
 							}else if (title.equals("追加健診")){
-								jScrollbarTuika.setValue(irow*forcus_range - diff);
+//								jScrollbarTuika.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListTuikaTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarTuika.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}else if (title.equals("問診等")){
-								jScrollbarMonshin.setValue(irow*forcus_range - diff);
+//								jScrollbarMonshin.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListMonshinTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarMonshin.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}
 						}
 					}
@@ -1654,21 +1779,39 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 //							}
 
 							String title = jPanelRegisterCenter.getTitleAt(jPanelRegisterCenter.getSelectedIndex());
-							int diff = 0;
-							if ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0){
-								diff = forcus_back;
-							}else{
-								diff = forcus_foward;
-							}
+							// edit n.ohkubo 2015/03/01　未使用なので削除　start
+//							int diff = 0;
+//							if ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0){
+//								diff = forcus_back;
+//							}else{
+//								diff = forcus_foward;
+//							}
+							// edit n.ohkubo 2015/03/01　未使用なので削除　end
 
 							if (title.equals("基本健診")){
-								jScrollbarKihon.setValue(irow*forcus_range - diff);
+//								jScrollbarKihon.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListKenshinTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarKihon.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}else if (title.equals("詳細健診")){
-								jScrollbarSyosai.setValue(irow*forcus_range - diff);
+//								jScrollbarSyosai.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListSyosaiTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarSyosai.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}else if (title.equals("追加健診")){
-								jScrollbarTuika.setValue(irow*forcus_range - diff);
+//								jScrollbarTuika.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListTuikaTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarTuika.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}else if (title.equals("問診等")){
-								jScrollbarMonshin.setValue(irow*forcus_range - diff);
+//								jScrollbarMonshin.setValue(irow*forcus_range - diff);	// edit n.ohkubo 2015/03/01　削除
+								// edit n.ohkubo 2015/03/01　追加　start
+								int scrollValue = getScrollValue(scrollValueListMonshinTab, irow, ((modfiersKey & InputEvent.SHIFT_DOWN_MASK) == 0));
+								jScrollbarMonshin.setValue(scrollValue);
+								// edit n.ohkubo 2015/03/01　追加　end
 							}
 						}
 					}
@@ -1718,12 +1861,15 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				jInnerTranPanelKenshin.add(jLabelTani, gridCtl[2]);
 				if (dataType.equals(NUMBER_FIELD)){
 					jInnerTranPanelKenshin.add(jTextField_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListKenshinTab, false);	// edit n.ohkubo 2015/03/01　追加
 				}else if (dataType.equals(CODE_FIELD)){
 					jInnerTranPanelKenshin.add(jComboBox_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListKenshinTab, false);	// edit n.ohkubo 2015/03/01　追加
 				}else if (dataType.equals(TEXT_FIELD)){
 					// eidt s.inoue 2013/02/14
 					// jInnerTranPanelKenshin.add(jTextAreaField_1[irowAll], gridCtl[3]);
 					jInnerTranPanelKenshin.add(jTextScrollPane_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListKenshinTab, true);	// edit n.ohkubo 2015/03/01　追加
 				}
 				jInnerTranPanelKenshin.add(jLabelZenkai, gridCtl[4]);
 //				// 検査方法項目
@@ -1739,12 +1885,15 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				jInnerTranPanelSyosai.add(jLabelTani, gridCtl[2]);
 				if (dataType.equals(NUMBER_FIELD)){
 					jInnerTranPanelSyosai.add(jTextField_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListSyosaiTab, false);	// edit n.ohkubo 2015/03/01　追加
 				}else if (dataType.equals(CODE_FIELD)){
 					jInnerTranPanelSyosai.add(jComboBox_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListSyosaiTab, false);	// edit n.ohkubo 2015/03/01　追加
 				}else if (dataType.equals(TEXT_FIELD)){
 					// eidt s.inoue 2013/02/14
 					// jInnerTranPanelSyosai.add(jTextAreaField_1[irowAll], gridCtl[3]);
 					jInnerTranPanelSyosai.add(jTextScrollPane_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListSyosaiTab, true);	// edit n.ohkubo 2015/03/01　追加
 				}
 				jInnerTranPanelSyosai.add(jLabelZenkai, gridCtl[4]);
 //				// 検査方法項目
@@ -1760,12 +1909,15 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				jInnerTranPanelTuika.add(jLabelTani, gridCtl[2]);
 				if (dataType.equals(NUMBER_FIELD)){
 					jInnerTranPanelTuika.add(jTextField_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListTuikaTab, false);	// edit n.ohkubo 2015/03/01　追加
 				}else if (dataType.equals(CODE_FIELD)){
 					jInnerTranPanelTuika.add(jComboBox_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListTuikaTab, false);	// edit n.ohkubo 2015/03/01　追加
 				}else if (dataType.equals(TEXT_FIELD)){
 					// eidt s.inoue 2013/02/14
 					// jInnerTranPanelTuika.add(jTextAreaField_1[irowAll], gridCtl[3]);
 					jInnerTranPanelTuika.add(jTextScrollPane_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListTuikaTab, true);	// edit n.ohkubo 2015/03/01　追加
 				}
 				jInnerTranPanelTuika.add(jLabelZenkai, gridCtl[4]);
 //				// 検査方法項目
@@ -1782,12 +1934,15 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				jInnerTranPanelMonshin.add(jLabelTani, gridCtl[2]);
 				if (dataType.equals(NUMBER_FIELD)){
 					jInnerTranPanelMonshin.add(jTextField_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListMonshinTab, false);	// edit n.ohkubo 2015/03/01　追加
 				}else if (dataType.equals(CODE_FIELD)){
 					jInnerTranPanelMonshin.add(jComboBox_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListMonshinTab, false);	// edit n.ohkubo 2015/03/01　追加
 				}else if (dataType.equals(TEXT_FIELD)){
 					// eidt s.inoue 2013/02/14
 					// jInnerTranPanelMonshin.add(jTextAreaField_1[irowAll], gridCtl[3]);
 					jInnerTranPanelMonshin.add(jTextScrollPane_1[irowAll], gridCtl[3]);
+					addScrollValue(scrollValueListMonshinTab, true);	// edit n.ohkubo 2015/03/01　追加
 				}
 				jInnerTranPanelMonshin.add(jLabelZenkai, gridCtl[4]);
 //				// 検査方法項目
@@ -1804,12 +1959,15 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			jInnerTranPanelMyTab.add(jLabelTani, gridCtl[2]);
 			if (dataType.equals(NUMBER_FIELD)){
 				jInnerTranPanelMyTab.add(jTextField_2[irowAll], gridCtl[3]);
+				addScrollValue(scrollValueListMyTab, false);	// edit n.ohkubo 2015/03/01　追加
 			}else if (dataType.equals(CODE_FIELD)){
 				jInnerTranPanelMyTab.add(jComboBox_2[irowAll], gridCtl[3]);
+				addScrollValue(scrollValueListMyTab, false);	// edit n.ohkubo 2015/03/01　追加
 			}else if (dataType.equals(TEXT_FIELD)){
 				// eidt s.inoue 2013/02/15
 				// jInnerTranPanelMyTab.add(jTextAreaField_2[irowAll], gridCtl[3]);
 				jInnerTranPanelMyTab.add(jTextScrollPane_2[irowAll], gridCtl[3]);
+				addScrollValue(scrollValueListMyTab, true);	// edit n.ohkubo 2015/03/01　追加
 			}
 			jInnerTranPanelMyTab.add(jLabelZenkai, gridCtl[4]);
 //			// 検査方法項目
@@ -1953,6 +2111,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 					|| (getScale(roundUpValue) > scale))
 				roundUpValue = "";
 		} catch (NumberFormatException e) {
+			e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 		}
 
 		return roundUpValue;
@@ -2046,6 +2205,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 							txtArea.setToolTipText(dialogs.getText());
 						}
 					}catch(Exception ex){
+						ex.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 						logger.error(ex.getMessage());
 					}
 				}
@@ -2301,8 +2461,10 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 
 		strSeikatu.append(" SELECT master.XMLITEM_SEQNO,master.KOUMOKU_CD AS KOUMOKUCD,");
 		strSeikatu.append(" case ");
-		strSeikatu.append(" when master.KOUMOKU_NAME ='生活機能問診1'  then '質問1-1'  when master.KOUMOKU_NAME ='生活機能問診2'  then '質問1-2'");
-		strSeikatu.append(" when master.KOUMOKU_NAME ='生活機能問診3'  then '質問1-3'  when master.KOUMOKU_NAME ='生活機能問診4'  then '質問4'");
+//		strSeikatu.append(" when master.KOUMOKU_NAME ='生活機能問診1'  then '質問1-1'  when master.KOUMOKU_NAME ='生活機能問診2'  then '質問1-2'");	// edit n.ohkubo 2015/03/01　削除
+		strSeikatu.append(" when master.KOUMOKU_NAME ='生活機能問診1'  then '質問1'  when master.KOUMOKU_NAME ='生活機能問診2'  then '質問2'");		// edit n.ohkubo 2015/03/01　追加
+//		strSeikatu.append(" when master.KOUMOKU_NAME ='生活機能問診3'  then '質問1-3'  when master.KOUMOKU_NAME ='生活機能問診4'  then '質問4'");	// edit n.ohkubo 2015/03/01　削除
+		strSeikatu.append(" when master.KOUMOKU_NAME ='生活機能問診3'  then '質問3'  when master.KOUMOKU_NAME ='生活機能問診4'  then '質問4'");		// edit n.ohkubo 2015/03/01　追加
 		strSeikatu.append(" when master.KOUMOKU_NAME ='生活機能問診5'  then '質問5'    when master.KOUMOKU_NAME ='生活機能問診6'  then '質問6'");
 		strSeikatu.append(" when master.KOUMOKU_NAME ='生活機能問診7'  then '質問7'    when master.KOUMOKU_NAME ='生活機能問診8'  then '質問8'");
 		strSeikatu.append(" when master.KOUMOKU_NAME ='生活機能問診9'  then '質問9'    when master.KOUMOKU_NAME ='生活機能問診10' then '質問10'");
@@ -2497,6 +2659,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				try {
 					tKojinDao = (TKojinDao) DaoFactory.createDao(JApplication.kikanDatabase.getMConnection(), new TKojin());
 				} catch (Exception ex) {
+					ex.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 					logger.error(ex.getMessage());
 				}
 
@@ -2504,6 +2667,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				try {
 					uketukeId = tKojinDao.selectNewUketukeId();
 				} catch (Exception exx) {
+					exx.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 					logger.error(exx.getMessage());
 				}
 				validatedData.setUketuke_id(new Long(uketukeId).toString());
@@ -2643,6 +2807,15 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 	 * 健診パターンのコンボボックスが変更された場合に呼ばれる
 	 */
 	public boolean stateChangedKenshinPatternNumber(String uketukeId,String jissiDate,boolean blnKensaRegist,boolean blnKekka) {
+		
+		// edit n.ohkubo 2015/03/01　追加　start
+		//スクロール位置格納用変数の初期化
+		scrollValueListMyTab = new ArrayList<Integer>();
+		scrollValueListKenshinTab = new ArrayList<Integer>();
+		scrollValueListSyosaiTab = new ArrayList<Integer>();
+		scrollValueListTuikaTab = new ArrayList<Integer>();
+		scrollValueListMonshinTab = new ArrayList<Integer>();
+		// edit n.ohkubo 2015/03/01　追加　end
 
 		boolean retPattan = false;
 
@@ -2776,6 +2949,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			}
 			PropertyUtil.setProperty( "register.myTabPos", String.valueOf(idxVal) );
 		}catch( Exception ex ){
+			ex.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.error(ex.getMessage());
 			JErrorMessage.show("M3551", this);
 			return;
@@ -2923,6 +3097,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 						if (resultCnt > 0)
 							JErrorMessage.show("M3607", this);
 					}catch (Exception ex) {
+						ex.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 						logger.error(ex.getMessage());
 					}
 
@@ -2932,6 +3107,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 						// T_KOJIN登録処理
 						JApplication.kikanDatabase.sendNoResultQuery(registerKojinCopy());
 					} catch (SQLException e) {
+						e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 						logger.error(e.getMessage());
 						// JApplication.kikanDatabase.rollback();
 						// eidt s.inoue 2013/02/20
@@ -2957,6 +3133,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 //					int i = 0;
 
 			} catch (SQLException f) {
+				f.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 				logger.error(f.getMessage());
 				try {
 					// JApplication.kikanDatabase.rollback();
@@ -3020,6 +3197,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				return false;
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.warn(e.getMessage());
 			JErrorMessage.show("M3645", this);
 			try {
@@ -3125,7 +3303,15 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 
 			case 2:
 				// コードの場合
-				if (jComboBox_1[choseiRow] == null)continue;
+//				if (jComboBox_1[choseiRow] == null)continue;	// edit n.ohkubo 2015/03/01　削除
+				// edit n.ohkubo 2015/03/01　追加　start　「メタボ」と「保健指導」の判定に、コード値も追加
+				if (jComboBox_1[choseiRow] == null) {
+					continue;
+				} else if ("9N501000000000011".equals(koumokuCode) || "9N506000000000011".equals(koumokuCode)) {
+					continue;
+				}
+				// edit n.ohkubo 2015/03/01　追加　end　「メタボ」と「保健指導」の判定に、コード値も追加
+				
 // del s.inoue 2012/02/17 1次
 // eidt s.inoue 2012/11/19 再修正
 //				String kekkaCode = (jComboBox_1[choseiRow].getValue()== null)?"":(String)jComboBox_1[choseiRow].getValue();
@@ -3143,6 +3329,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				try {
 					codeResult = JApplication.kikanDatabase.sendExecuteQuery(query);
 				} catch (SQLException e) {
+					e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 					logger.warn(e.getMessage());
 				}
 
@@ -3220,6 +3407,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 					kensakekaSonota.setKENSA_NENGAPI(new Integer(validatedData.getKensaJissiDate()));
 					kensakekaSonota.setNENDO(FiscalYearUtil.getThisYear(validatedData.getKensaJissiDate()));
 				} catch (NumberFormatException e) {
+					e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 					logger.error(e.getMessage());
 				}
 				kensakekaSonota.setKOUMOKU_CD(validatedData.getKensaKoumokuCode());
@@ -3244,6 +3432,14 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				kensakekaSonota.setHANTEI(new Integer(validatedData.getHantei()));
 			} catch (NumberFormatException e) {
 				/* 何もしない */
+				/*	// edit n.ohkubo 2015/03/01　追加　コメントの追加
+					「kensakekaSonota.setHANTEI(new Integer(validatedData.getHantei()));」で
+					java.lang.NumberFormatException: For input string: ""が発生している
+					printStackTraceしたいが、ループ内なので大量に出るからやめる
+					「判定結果」が「未判」だと、""にしているが、空文字は数字ではないので当然エラーになる
+					取りあえず正常に動いているなら対応しない
+					何かおかしければ再度見直す
+				 */
 			}
 
 // del s.inoue 2011/11/16
@@ -3305,6 +3501,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 					}
 				}
 			}catch (Exception e) {
+				e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 				logger.error(e.getMessage());
 				System.out.println(e.getMessage());
 			}
@@ -3406,6 +3603,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			}
 			kensakekaSonotaDao.insert(kensakekaSonota);
 		} catch (Exception e) {
+			e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.error(e.getMessage());
 		}
 
@@ -3528,6 +3726,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			this.isNewKekkaData = false;
 
 		} catch (Exception e) {
+			e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.error(e.getMessage());
 			try {
 				// JApplication.kikanDatabase.rollback();
@@ -3600,6 +3799,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				}
 			}
 		}catch(Exception ex){
+			ex.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.error(ex.getMessage());
 		}
 
@@ -3649,6 +3849,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				}
 			}
 		}catch(Exception ex){
+			ex.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.warn(ex.getMessage());
 		}
 		return true;
@@ -3751,6 +3952,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 		try {
 			kensanengapi = new Integer(kensaJissiDate);
 		} catch (NumberFormatException e) {
+			e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 		}
 
 		List<TKensakekaSonota> resultList = null;
@@ -3817,6 +4019,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 					try {
 						JApplication.kikanDatabase.sendNoResultQuery(nayoseQuery.toString());
 					} catch (SQLException e) {
+						e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 						logger.error(e.getMessage());
 
 						try {
@@ -3842,6 +4045,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				try {
 					JApplication.kikanDatabase.sendNoResultQuery(newNayoseQuery.toString());
 				} catch (SQLException e) {
+					e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 					logger.error(e.getMessage());
 					try {
 						// JApplication.kikanDatabase.rollback();
@@ -3852,6 +4056,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 					}
 				}
 			} catch (Exception e) {
+				e.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 				logger.error(e.getMessage());
 			}
 	}
@@ -3899,6 +4104,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				cancelFlg = true;
 			}
 		} catch (Exception ex) {
+			ex.printStackTrace();	// edit n.ohkubo 2015/03/01　追加
 			logger.error(ex.getMessage());
 			// eidt s.inoue 2012/07/06
 			JErrorMessage.show("M3552", null);
@@ -3909,6 +4115,53 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
     }
 
     /************************* アクション制御 end *************************/
+    
+	// edit n.ohkubo 2015/03/01　追加　start　スクロール位置調整
+	/**
+	 * スクロールバーの値（位置）を設定する
+	 * 
+	 * @param scrollValueList	値を設定するリスト（各タブごと）
+	 * @param isTextField		テキストフィールドの場合：true、以外：false
+	 */
+	private void addScrollValue(List<Integer> scrollValueList, boolean isTextField) {
+		int addVal;//WindowsとLinuxで加算する値を変える（同じ値だと位置にずれが出る）
+		if (System.getProperty("os.name").indexOf("Windows") >= 0) {
+//			System.out.println("addScrollValue Windows");
+			addVal = 80;
+		} else {
+//			System.out.println("addScrollValue Linux");
+			addVal = 64;
+		}
+		int scrollValue;
+		int preValue = (scrollValueList.size() == 0) ? 0 : scrollValueList.get(scrollValueList.size() - 1).intValue();
+		if (isTextField) {
+			scrollValue = (preValue + forcus_range + addVal);
+		} else {
+			scrollValue = (preValue + forcus_range);
+		}
+//		System.out.println("addScrollValue　scrollValue:[" + scrollValue + "] isTextField:[" + isTextField + "]");
+		scrollValueList.add(Integer.valueOf(scrollValue));
+	}
+	/**
+	 * スクロールバーの値（位置）を取得する
+	 * 
+	 * @param scrollValueList	値を取得するリスト（各タブごと）
+	 * @param index				対象の項目の順番
+	 * @param isFoward			下方向に移動（エンター）の場合：true、上方向に移動（シフト＋エンター）の場合：false
+	 * @return
+	 */
+	private int getScrollValue(List<Integer> scrollValueList, int index, boolean isFoward) {
+		int result;
+		if (isFoward) {
+			result = (scrollValueList.get(index).intValue() - forcus_foward);
+		} else {
+			int temp = (index > 0) ? scrollValueList.get(index - 1).intValue() : scrollValueList.get(0).intValue();
+			result = (temp - forcus_back - 60);
+		}
+//		System.out.println("getScrollValue　result:[" + result + "] index:[" + index + "] isFoward:[" + isFoward + "]");
+		return result;
+	}
+	// edit n.ohkubo 2015/03/01　追加　end　スクロール位置調整
 }
 
 /************************* 部品 *************************/

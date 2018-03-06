@@ -632,7 +632,8 @@ public class JHanteiSearchResultListFrameCtl
 			if (!firstViewFlg) {
 				if ((result != null) && (!result.isError() && (result instanceof VOListResponse))){
 					if (((VOListResponse)result).getRows().size() == 0) {
-						JErrorMessage.show("M3550", getGridControl());
+//						JErrorMessage.show("M3550", getGridControl());	// edit n.ohkubo 2015/03/01　削除
+						JErrorMessage.show("M4957", getGridControl());	// edit n.ohkubo 2015/03/01　追加　メッセージの変更
 					}
 				}
 			}
@@ -763,6 +764,12 @@ public class JHanteiSearchResultListFrameCtl
 	   */
 	  @Override
 	public boolean isCellEditable(GridControl grid,int row,String attributeName) {
+
+		// edit n.ohkubo 2015/03/01　追加　start　「Alt+E」等が正常に動作しない対応（キー押下でチェックボックスの値が反転する）
+		if (this.grid.isKeyPressed()) {
+			return false;
+		}
+		// edit n.ohkubo 2015/03/01　追加　end　「Alt+E」等が正常に動作しない対応（キー押下でチェックボックスの値が反転する）
 
 		  int jcnt = 0;
 		  JApplication.selectedPreservRows = new ArrayList<Integer>();

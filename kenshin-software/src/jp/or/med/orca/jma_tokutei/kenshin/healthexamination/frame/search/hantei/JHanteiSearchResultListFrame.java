@@ -70,6 +70,7 @@ import org.openswing.swing.client.GridControl;
 import org.openswing.swing.client.GridControl.ColumnContainer;
 import org.openswing.swing.client.NavigatorBar;
 import org.openswing.swing.client.TextControl;
+import org.openswing.swing.table.client.Grid;
 import org.openswing.swing.table.columns.client.CheckBoxColumn;
 import org.openswing.swing.table.columns.client.ComboColumn;
 import org.openswing.swing.table.columns.client.TextColumn;
@@ -236,6 +237,13 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 	}
 	// edit n.ohkubo 2014/10/01　追加 end
 
+	// edit n.ohkubo 2015/03/01　追加 start
+	private boolean isKeyPressed = false;
+	public boolean isKeyPressed() {
+		return this.isKeyPressed;
+	}
+	// edit n.ohkubo 2015/03/01　追加 end
+
 	/* コンストラクタ */
 	public JHanteiSearchResultListFrame(Connection conn,
 			JHanteiSearchResultListFrameCtl controller) {
@@ -273,6 +281,23 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 			this.addWindowListener(specialFilterPanel);
 			// edit n.ohkubo 2014/10/01　追加 end　検索画面にチェックボックスを追加
 			
+			// edit n.ohkubo 2015/03/01　追加　start　「Alt+E」等が正常に動作しない対応（キー押下でチェックボックスの値が反転する）
+			Grid table = grid.getTable().getGrid();
+			table.addKeyListener(new KeyListener() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+				}
+				@Override
+				public void keyReleased(KeyEvent e) {
+					isKeyPressed = false;
+				}
+				@Override
+				public void keyPressed(KeyEvent e) {
+					isKeyPressed = true;
+				}
+			});
+			// edit n.ohkubo 2015/03/01　追加　end　「Alt+E」等が正常に動作しない対応（キー押下でチェックボックスの値が反転する）
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1699,15 +1724,63 @@ public class JHanteiSearchResultListFrame extends JFrame implements KeyListener,
 				if (!pdfexe.isWindows() && !pdfexe.isMac()) {
 					System.out.println(stumeiPdf.getPath());
 
-					Process process0=  Runtime.getRuntime().exec("which acroread xpdf");
-					InputStream is = process0.getInputStream();
-					InputStreamReader isr = new InputStreamReader(is);
-					BufferedReader br = new BufferedReader(isr);
-					String answer;
-					String cmd=null;
-					while ( (answer = br.readLine()) !=null) {
-						cmd = answer;
+					// edit n.ohkubo 2015/03/01　削除　start　Linux対応
+//					Process process0=  Runtime.getRuntime().exec("which acroread xpdf");
+//					InputStream is = process0.getInputStream();
+//					InputStreamReader isr = new InputStreamReader(is);
+//					BufferedReader br = new BufferedReader(isr);
+//					String answer;
+//					String cmd=null;
+//					while ( (answer = br.readLine()) !=null) {
+//						cmd = answer;
+//					}
+					// edit n.ohkubo 2015/03/01　削除　end　Linux対応
+					
+					// edit n.ohkubo 2015/03/01　追加　start　Linux対応
+					//common-componentプロジェクトの以下のソースから同じ処理をコピー
+					//jp.or.med.orca.jma_tokutei.common.printer.JGraphicPrinter.java
+					//（ただし、BufferedReaderの2つがcloseされていなかったので、そこは変更した）
+					BufferedReader br2 = null;
+					BufferedReader br = null;
+					String cmd = null;
+					try {
+						Process process2 = Runtime.getRuntime().exec("uname -r");
+						InputStream is2 = process2.getInputStream();
+						InputStreamReader isr2 = new InputStreamReader(is2);
+						br2 = new BufferedReader(isr2);
+						String answer2;
+						String cmd2=null;
+						while ( (answer2 = br2.readLine()) !=null) {
+							cmd2 = answer2;
+						}
+						if (cmd2 != null)  {
+							answer2 = cmd2.substring(0,2);
+						}
+						String exeStr = "";
+						if (Float.parseFloat(answer2) < 3.0){
+							exeStr = "which acroread xpdf";
+						}else{
+							exeStr = "which evince";
+						}
+						
+						Process process0=  Runtime.getRuntime().exec(exeStr);
+						InputStream is = process0.getInputStream();
+						InputStreamReader isr = new InputStreamReader(is);
+						br = new BufferedReader(isr);
+						String answer;
+						while ( (answer = br.readLine()) !=null) {
+							cmd = answer;
+						}
+					} finally {
+						if (br != null) {
+							br.close();
+						}
+						if (br2 != null) {
+							br2.close();
+						}
 					}
+					// edit n.ohkubo 2015/03/01　追加　end　Linux対応
+					
 					if (cmd != null)  {
 						pdfexe.acroread = cmd;
 						process = Runtime.getRuntime().exec(cmd + " "+ stumeiPdf.getPath());

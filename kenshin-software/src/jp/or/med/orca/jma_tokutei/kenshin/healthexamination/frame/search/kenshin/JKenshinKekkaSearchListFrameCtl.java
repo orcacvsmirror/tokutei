@@ -580,7 +580,7 @@ public class JKenshinKekkaSearchListFrameCtl
 	 */
 	@Override
 	public Response loadData(int action, int startIndex, Map filteredColumns, ArrayList currentSortedColumns, ArrayList currentSortedVersusColumns, Class valueObjectType, Map otherGridParams) {
-			
+		
 		try {
 			Map<String, String> attribute2dbField = new HashMap<String, String>();
 			attribute2dbField.put("CHECKBOX_COLUMN","CHECKBOX_COLUMN");
@@ -682,7 +682,8 @@ public class JKenshinKekkaSearchListFrameCtl
 			if (!firstViewFlg) {
 				if ((result != null) && (!result.isError() && (result instanceof VOListResponse))){
 					if (((VOListResponse)result).getRows().size() == 0) {
-						JErrorMessage.show("M3550", getGridControl());
+//						JErrorMessage.show("M3550", getGridControl());	// edit n.ohkubo 2015/03/01　削除
+						JErrorMessage.show("M3553", getGridControl());	// edit n.ohkubo 2015/03/01　追加　メッセージの変更
 					}
 				}
 			}
@@ -697,8 +698,6 @@ public class JKenshinKekkaSearchListFrameCtl
 		}
 	}
 	// edit n.ohkubo 2014/10/01　end　検索条件の保持等の修正を行うので、メソッドを新規で作成（既存のロジックは全コメント）
-
-
 
 //	/**
 //	* SQL文を組み立てる
@@ -822,6 +821,12 @@ public class JKenshinKekkaSearchListFrameCtl
 	  @Override
 	public boolean isCellEditable(GridControl grid,int row,String attributeName) {
 
+		// edit n.ohkubo 2015/03/01　追加　start　「Alt+E」等が正常に動作しない対応（キー押下でチェックボックスの値が反転する）
+		if (this.grid.isKeyPressed()) {
+			return false;
+		}
+		// edit n.ohkubo 2015/03/01　追加　end　「Alt+E」等が正常に動作しない対応（キー押下でチェックボックスの値が反転する）
+		
 		  int jcnt = 0;
 		  JApplication.selectedPreservRows = new ArrayList<Integer>();
 

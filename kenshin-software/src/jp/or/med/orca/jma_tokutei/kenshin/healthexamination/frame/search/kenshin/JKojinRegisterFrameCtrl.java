@@ -134,6 +134,12 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 			JErrorMessage.show("M4371", null);
 			return false;
 		}
+		// edit n.ohkubo 2015/03/01　追加　start
+		if (data.getHihokenjyaNumber().equals("")) {
+			JErrorMessage.show("M4364", null);
+			return false;
+		}
+		// edit n.ohkubo 2015/03/01　追加　end
 		
 		// edit n.ohkubo 2014/10/01　追加　start　保険者情報がDBへ登録されているか確認する
 		try {

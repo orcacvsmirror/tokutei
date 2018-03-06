@@ -1,6 +1,8 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.kenshin;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -20,6 +22,7 @@ import java.util.EnumSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.Box;
@@ -29,6 +32,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.app.JApplication.FlagEnum_Master;
@@ -66,6 +71,8 @@ import org.openswing.swing.message.receive.java.VOListResponse;
 import org.openswing.swing.message.send.java.GridParams;
 import org.openswing.swing.table.columns.client.ComboColumn;
 import org.openswing.swing.table.columns.client.TextColumn;
+import org.openswing.swing.table.model.client.VOListTableModel;
+import org.openswing.swing.util.client.ClientSettings;
 import org.openswing.swing.util.client.ClientUtils;
 
 /**
@@ -167,6 +174,11 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		return this.savedJCheckBox;
 	}
 	// edit n.ohkubo 2014/10/01　追加 end
+	
+	// edit n.ohkubo 2015/03/01　追加
+	protected ExtendedOpenGenericButton buttonDefault = null;		//初期値ボタン
+	protected String afterDefaultToolTipText = null;				//初期値ボタン押下後のツールチップ文言
+	protected List<TableCellRenderer> tableCellRendererList = null;	//TableCellRendererの初期設定退避用（初期値ボタン押下で設定し、再読込押下時に使用）
 
 	/* コンストラクタ */
 	public JKenshinMasterMaintenanceListFrame(Connection conn,
@@ -482,11 +494,13 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 	    buttonPanel.add(buttonClose, null);
 	    buttonPanel.add(buttonExport,null);
 	    buttonPanel.add(buttonImport,null);
+	    buttonPanel.add(buttonDefault,null);	// edit n.ohkubo 2015/03/01　追加
 
 		// action設定
 		buttonClose.addActionListener(new ListFrame_button_actionAdapter(this));
 		buttonExport.addActionListener(new ListFrame_button_actionAdapter(this));
 		buttonImport.addActionListener(new ListFrame_button_actionAdapter(this));
+		buttonDefault.addActionListener(new ListFrame_button_actionAdapter(this));	// edit n.ohkubo 2015/03/01　追加z
 
 		// openswing s.inoue 2011/01/25
 		Box origineBox = new Box(BoxLayout.X_AXIS);
@@ -637,6 +651,12 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 				  logger.info(buttonImport.getText());
 				  pushedImportButton(e);
 			  }
+			// edit n.ohkubo 2015/03/01　追加　start
+			  else if (source == buttonDefault) {
+				  logger.info(buttonDefault.getText());
+				  pushedDefaultButton();
+			  }
+			// edit n.ohkubo 2015/03/01　追加　end
 		  }
 		private void presevColumnStatus() {
 			if(!textColumn_HokenjaNumber.isVisible()) {
@@ -835,6 +855,31 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 					"Import","取込(I)","取込(ALT+I)",KeyEvent.VK_I,icon);
 			buttonImport.addActionListener(this);
 		}
+		
+		// edit n.ohkubo 2015/03/01　追加　start
+		if (buttonDefault == null) {
+			ExtendedImageIcon iIcon = new ExtendedImageIcon(JPath.Ico_Default);
+			ImageIcon icon = iIcon.setStrechIcon(this, JPath.CONST_FIX_ICON);
+
+			buttonDefault= new ExtendedOpenGenericButton(
+					"Default","初期値(Q)","初期値(ALT+Q)",KeyEvent.VK_Q,icon);
+			buttonDefault.addActionListener(this);
+			
+			//初期表示時は非活性
+			buttonDefault.setEnabled(false);
+		}
+		//初期値ボタンの制御を追加
+		if (editButton != null) {
+			editButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					//修正ボタン押下で活性化
+					buttonDefault.setEnabled(true);
+				}
+			});
+		}
+		// edit n.ohkubo 2015/03/01　追加　end
+		
 //		// 結果削除
 //		if (buttonDeleteKekka == null) {
 //			ExtendedImageIcon iIcon = new ExtendedImageIcon(ICON_DELETE_KEKKA);
@@ -1307,4 +1352,312 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 //	public void closeButtton_keyPerformed(KeyEvent e) {
 //		dispose();
 //	}
+	
+	// edit n.ohkubo 2015/03/01　追加　start
+	/**
+	 * 初期値ボタン押下処理
+	 */
+	private void pushedDefaultButton() {
+		
+		try {
+			//「再読込」実行で、セルの色とツールチップを戻すため、初回実行時に、初期設定のTableCellRendererを退避しておく
+			if (tableCellRendererList == null) {
+				tableCellRendererList = new ArrayList<TableCellRenderer>();
+				if (isColumnVisible("DS_KAGEN")) {
+					tableCellRendererList.add(grid.getTable().getGrid().getColumn(ClientSettings.getInstance().getResources().getResource("DS_KAGEN")).getCellRenderer());
+				} else {
+					tableCellRendererList.add(null);
+				}
+				if (isColumnVisible("DS_JYOUGEN")) {
+					tableCellRendererList.add(grid.getTable().getGrid().getColumn(ClientSettings.getInstance().getResources().getResource("DS_JYOUGEN")).getCellRenderer());
+				} else {
+					tableCellRendererList.add(null);
+				}
+				if (isColumnVisible("JS_KAGEN")) {
+					tableCellRendererList.add(grid.getTable().getGrid().getColumn(ClientSettings.getInstance().getResources().getResource("JS_KAGEN")).getCellRenderer());
+				} else {
+					tableCellRendererList.add(null);
+				}
+				if (isColumnVisible("JS_JYOUGEN")) {
+					tableCellRendererList.add(grid.getTable().getGrid().getColumn(ClientSettings.getInstance().getResources().getResource("JS_JYOUGEN")).getCellRenderer());
+				} else {
+					tableCellRendererList.add(null);
+				}
+			}
+			
+			//デフォルト（HKNJANUM=99999999）のデータを取得
+			Map<String, List<String>> defaultData = ((JKenshinMasterMaintenanceListFrameCtrl)grid.getController()).getDefaultData();
+//			System.out.println(defaultData);
+			
+			//TableCellRendererで使用する値の保持用BeanList
+			List<CellInfoBean> beanList_DS_KAGEN = new ArrayList<JKenshinMasterMaintenanceListFrame.CellInfoBean>();
+			List<CellInfoBean> beanList_DS_JYOUGEN = new ArrayList<JKenshinMasterMaintenanceListFrame.CellInfoBean>();
+			List<CellInfoBean> beanList_JS_KAGEN = new ArrayList<JKenshinMasterMaintenanceListFrame.CellInfoBean>();
+			List<CellInfoBean> beanList_JS_JYOUGEN = new ArrayList<JKenshinMasterMaintenanceListFrame.CellInfoBean>();
+			
+			//テーブル（現在表示している値）のデータを取得
+			VOListTableModel voListTableModel = grid.getVOListTableModel();
+			for (int i = 0; i < voListTableModel.getRowCount(); i++) {
+				
+				//項目コードをキーにデフォルト値を取得
+				List<String> defaultDataList = defaultData.get(voListTableModel.getField(i, "KOUMOKU_CD"));
+				
+				//デフォルト値と差異が有る場合、Beanをaddする
+				//"基準値下限(男性)"
+				String dispVal_DS_KAGEN = (voListTableModel.getField(i, "DS_KAGEN") != null) ? (String)voListTableModel.getField(i, "DS_KAGEN") : "";
+				if (!defaultDataList.get(0).equals(dispVal_DS_KAGEN)) {
+					beanList_DS_KAGEN.add(
+							createCellInfoBean(
+									"DS_KAGEN", 
+									defaultDataList.get(0), 
+									dispVal_DS_KAGEN, 
+									i
+							)
+					);
+				}
+				//"基準値上限(男性)"
+				String dispVal_DS_JYOUGEN = (voListTableModel.getField(i, "DS_JYOUGEN") != null) ? (String)voListTableModel.getField(i, "DS_JYOUGEN") : "";
+				if (!defaultDataList.get(1).equals(dispVal_DS_JYOUGEN)) {
+					beanList_DS_JYOUGEN.add(
+							createCellInfoBean(
+									"DS_JYOUGEN", 
+									defaultDataList.get(1), 
+									dispVal_DS_JYOUGEN, 
+									i
+							)
+					);
+				}
+				//"基準値下限(女性)"
+				String dispVal_JS_KAGEN = (voListTableModel.getField(i, "JS_KAGEN") != null) ? (String)voListTableModel.getField(i, "JS_KAGEN") : "";
+				if (!defaultDataList.get(2).equals(dispVal_JS_KAGEN)) {
+					beanList_JS_KAGEN.add(
+							createCellInfoBean(
+									"JS_KAGEN", 
+									defaultDataList.get(2), 
+									dispVal_JS_KAGEN, 
+									i
+							)
+					);
+				}
+				//"基準値上限(女性)"
+				String dispVal_JS_JYOUGEN = (voListTableModel.getField(i, "JS_JYOUGEN") != null) ? (String)voListTableModel.getField(i, "JS_JYOUGEN") : "";
+				if (!defaultDataList.get(3).equals(dispVal_JS_JYOUGEN)) {
+					beanList_JS_JYOUGEN.add(
+							createCellInfoBean(
+									"JS_JYOUGEN", 
+									defaultDataList.get(3), 
+									dispVal_JS_JYOUGEN, 
+									i
+							)
+					);
+				}
+			}
+			
+			//デフォルト値と表示値に差異が有る場合、専用のTableCellRendererを設定し、「表示値」「セルの色」「ツールチップ」を変更する
+			if (beanList_DS_KAGEN.size() != 0 && isColumnVisible("DS_KAGEN")) {
+				createMyTableCellRenderer(beanList_DS_KAGEN);
+			}
+			if (beanList_DS_JYOUGEN.size() != 0 && isColumnVisible("DS_JYOUGEN")) {
+				createMyTableCellRenderer(beanList_DS_JYOUGEN);
+			}
+			if (beanList_JS_KAGEN.size() != 0 && isColumnVisible("JS_KAGEN")) {
+				createMyTableCellRenderer(beanList_JS_KAGEN);
+			}
+			if (beanList_JS_JYOUGEN.size() != 0 && isColumnVisible("JS_JYOUGEN")) {
+				createMyTableCellRenderer(beanList_JS_JYOUGEN);
+			}
+
+			//セルの色表示の反映（ボタン押下だけでは表示が反映されないので、テーブルに対して何かアクションをかける（テーブルの行にマウスのカーソルがあたれば表示が反映されるが、ボタン押下のみで反映させる））
+			grid.getTable().getGrid().clearSelection();
+			
+		} catch (Exception ex) {
+			JErrorMessage.show("M3820", null);
+			ex.printStackTrace();
+		}
+	}
+	
+	/**
+	 * TableCellRendererの設定と、表示値をデフォルト値へ変える
+	 * 
+	 * @param cellInfoBeanList
+	 */
+	private void createMyTableCellRenderer(List<CellInfoBean> cellInfoBeanList) {
+		
+		//TableCellRendererで、「セルの色」と「ツールチップ」を変更する
+		MyTableCellRenderer myTableCellRenderer = new MyTableCellRenderer(cellInfoBeanList);
+		grid.getTable().getGrid().getColumn(ClientSettings.getInstance().getResources().getResource(cellInfoBeanList.get(0).getAttributeName())).setCellRenderer(myTableCellRenderer);
+
+		for (int i = 0; i < cellInfoBeanList.size(); i++) {
+			//表示値をデフォルト値へ変える
+			grid.getVOListTableModel().setField(cellInfoBeanList.get(i).getTargetRow(), cellInfoBeanList.get(i).getAttributeName(), cellInfoBeanList.get(i).getDefaultValue());
+		}
+	}
+
+	
+	/**
+	 * カラムが表示されているかの判定
+	 * 
+	 * @param attributeName		対象のカラム名
+	 * @return					表示している：true　非表示：false
+	 */
+	private boolean isColumnVisible(String attributeName) {
+		boolean isResult = true;
+		try {
+			grid.getTable().getGrid().getColumn(ClientSettings.getInstance().getResources().getResource(attributeName));
+		} catch (IllegalArgumentException iex) {
+			isResult = false;
+		}
+		return isResult;
+	}
+
+	/**
+	 * 引数の値を設定したBeanを作成する
+	 * 
+	 * @param attributeName
+	 * @param defaultValu
+	 * @param oldValue
+	 * @param row
+	 * 
+	 * @return
+	 */
+	private CellInfoBean createCellInfoBean(String attributeName, String defaultValu, String oldValue, int row) {
+		
+		CellInfoBean bean = new CellInfoBean();
+		bean.setAttributeName(attributeName);
+		bean.setDefaultValue(defaultValu);
+		bean.setOldValue(oldValue);
+		bean.setTargetColumn(getColumnindex(attributeName));
+		bean.setTargetRow(row);
+		return bean;
+	}
+	
+	/**
+	 * 基準値（男女の上下限）のカラムのindexを取得する
+	 * ※前の項目が「非表示」だったり、カラムの位置を「移動」していても、現在表示しているindexを取得する
+	 * 
+	 * @param attributeName	基準値（男女の上下限）のカラム名
+	 * @return
+	 */
+	private int getColumnindex(String attributeName) {
+		
+		int modelColumnIndex = (
+				"DS_KAGEN".equals(attributeName) ? 5 : 
+					"DS_JYOUGEN".equals(attributeName) ? 6 : 
+						"JS_KAGEN".equals(attributeName) ? 7 : 8);
+		
+		int result = grid.getTable().getGrid().convertColumnIndexToView(modelColumnIndex);
+//		System.out.println("attributeName:[" + attributeName + "] index:[" + modelColumnIndex + "] result:[" + result + "]");
+		return result;
+	}
+	
+	
+	/**
+	 * セルの色とツールチップに設定する文言を変更するクラス
+	 */
+	private class MyTableCellRenderer implements TableCellRenderer {
+		
+		private int targetColumn;
+		private List<CellInfoBean> cellInfoBeanList;
+		private List<TableCellRenderer> rendererList;
+		
+		/**
+		 * コンストラクタ
+		 * 
+		 * @param cellInfoBeanList
+		 */
+		public MyTableCellRenderer(List<CellInfoBean> cellInfoBeanList) {
+			
+			this.cellInfoBeanList = cellInfoBeanList;
+			this.targetColumn = cellInfoBeanList.get(0).getTargetColumn();	//targetColumnの値は同じはずなので、ここで一度だけセット
+			this.rendererList = new ArrayList<TableCellRenderer>();			//「table.prepareRenderer()」内で直接設定すると、「StackOverflowError」になるのでここで設定しておく
+			for (int i = 0; i < grid.getTable().getGrid().getModel().getRowCount(); i++) {
+				TableCellRenderer renderer = grid.getTable().getGrid().getCellRenderer(i, targetColumn);
+				this.rendererList.add(renderer);
+			}
+		}
+		
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+//			System.out.println("MyTableCellRenderer targetColumn:[" + targetColumn + "] value:[" + (String)value + "] row:[" + row + "] column:[" + column + "]");
+			
+			//セル
+			Component component = null;
+			try {
+				//ツールチップの文言
+				String toolTipText = null;
+				afterDefaultToolTipText = null;
+				
+				for (int i = 0; i < cellInfoBeanList.size(); i++) {
+					
+					//行と列のIndexから、対象のセルを判定
+					if ((targetColumn == column) && (row == cellInfoBeanList.get(i).getTargetRow())) {
+						
+						//セルのツールチップ文言を変更
+						toolTipText = "\"" + cellInfoBeanList.get(i).getOldValue() + "\"から\"" + ((cellInfoBeanList.get(i).getDefaultValue() != null) ? cellInfoBeanList.get(i).getDefaultValue() : "") + "\"へ変更";
+						afterDefaultToolTipText = toolTipText;
+						
+						//変更対象のセルを取得（prepareRendererメソッド内でCtrlクラスのgetCellTooltipメソッドが呼ばれる？ので、位置に注意）
+						component = table.prepareRenderer(rendererList.get(row), row, column);
+						
+						//セルの色を変更
+						component.setBackground(Color.PINK);
+						
+						break;
+					}
+				}
+				
+				//変更対象のセルが無かった場合
+				if (component == null) {
+					component = table.prepareRenderer(rendererList.get(row), row, column);
+				}
+//				System.out.println("ToolTipText:[" + toolTipText + "]　afterDefaultToolTipText:[" + afterDefaultToolTipText + "]");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			return component;
+		}
+	}
+	
+	/**
+	 * セル情報（TableCellRenderer等で使用）を保持するBean
+	 */
+	private class CellInfoBean {
+		private int targetRow;
+		private int targetColumn;
+		private String oldValue;
+		private String defaultValue;
+		private String attributeName;
+		
+		public int getTargetRow() {
+			return targetRow;
+		}
+		public void setTargetRow(int targetRow) {
+			this.targetRow = targetRow;
+		}
+		public int getTargetColumn() {
+			return targetColumn;
+		}
+		public void setTargetColumn(int targetColumn) {
+			this.targetColumn = targetColumn;
+		}
+		public String getOldValue() {
+			return oldValue;
+		}
+		public void setOldValue(String oldValue) {
+			this.oldValue = oldValue;
+		}
+		public String getDefaultValue() {
+			return defaultValue;
+		}
+		public void setDefaultValue(String defaultValue) {
+			this.defaultValue = defaultValue;
+		}
+		public String getAttributeName() {
+			return attributeName;
+		}
+		public void setAttributeName(String attributeName) {
+			this.attributeName = attributeName;
+		}
+	}
+	// edit n.ohkubo 2015/03/01　追加　end
 }

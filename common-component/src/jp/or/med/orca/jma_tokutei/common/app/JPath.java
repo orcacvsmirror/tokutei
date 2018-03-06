@@ -1,16 +1,14 @@
 package jp.or.med.orca.jma_tokutei.common.app;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
-
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
+
+import org.apache.log4j.Logger;
 
 /**
  * ファイルパスの管理クラス
@@ -129,6 +127,9 @@ public class JPath {
 
 	/* メタボ判定 */
 	final public static String Ico_Hantei_Detail =IcoPath + "hantei_Metabohantei.png";
+	
+	// edit n.ohkubo 2015/03/01　追加
+	final public static String Ico_Default = IcoPath + "default.png";	//「健診項目マスタメンテナンス　｜　編集」画面の「初期値」ボタン
 
 	/**
 	 *  スプラッシュイメージ

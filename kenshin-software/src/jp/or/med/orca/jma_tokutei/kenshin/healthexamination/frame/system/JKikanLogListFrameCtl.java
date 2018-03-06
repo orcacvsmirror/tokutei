@@ -326,7 +326,8 @@ public class JKikanLogListFrameCtl
 			if (!firstViewFlg) {
 				if ((result != null) && (!result.isError() && (result instanceof VOListResponse))){
 					if (((VOListResponse)result).getRows().size() == 0) {
-						JErrorMessage.show("M3550", getGridControl());
+//						JErrorMessage.show("M3550", getGridControl());	// edit n.ohkubo 2015/03/01　削除
+						JErrorMessage.show("M7600", getGridControl());	// edit n.ohkubo 2015/03/01　追加　メッセージの変更
 					}
 				}
 			}

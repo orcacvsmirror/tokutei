@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
@@ -28,6 +30,7 @@ import org.openswing.swing.server.QueryUtil;
 import org.openswing.swing.server.UserSessionParameters;
 import org.openswing.swing.table.client.GridController;
 import org.openswing.swing.table.java.GridDataLocator;
+import org.openswing.swing.util.client.ClientSettings;
 
 /**
  * 一覧Ctl画面
@@ -112,7 +115,16 @@ public class JKenshinMasterMaintenanceListFrameCtrl
 	*/
 	@Override
 	public String getCellTooltip(int row,String attributeName) {
-
+		
+		// edit n.ohkubo 2015/03/01　追加　start　初期値ボタン押下後のツールチップ対応
+		if ("DS_KAGEN".equals(attributeName) || "DS_JYOUGEN".equals(attributeName) || "JS_KAGEN".equals(attributeName) || "JS_JYOUGEN".equals(attributeName)) {
+//			System.out.println("row:[" + row + "] attributeName:[" + attributeName + "] afterDefaultToolTipText:[" + grid.afterDefaultToolTipText + "]");
+			if (grid.afterDefaultToolTipText != null) {
+				return grid.afterDefaultToolTipText;
+			}
+		}
+		// edit n.ohkubo 2015/03/01　追加　end　初期値ボタン押下後のツールチップ対応
+		
 		return (String) grid.getGrid().getVOListTableModel().getField(row,attributeName);
 //			return attributeName+" at row "+row;
 	}
@@ -311,7 +323,8 @@ public class JKenshinMasterMaintenanceListFrameCtrl
 			if (!firstViewFlg) {
 				if ((result != null) && (!result.isError() && (result instanceof VOListResponse))){
 					if (((VOListResponse)result).getRows().size() == 0) {
-						JErrorMessage.show("M3550", getGridControl());
+//						JErrorMessage.show("M3550", getGridControl());	// edit n.ohkubo 2015/03/01　削除
+						JErrorMessage.show("M3832", getGridControl());	// edit n.ohkubo 2015/03/01　追加　メッセージの変更
 					}
 				}
 			}
@@ -658,4 +671,97 @@ public class JKenshinMasterMaintenanceListFrameCtrl
 		}
 	}
 	// edit n.ohkubo 2014/10/01　追加 end　「戻る」ボタンの処理（テーブルの表示項目の「表示 or 非表示」を登録）
+	
+	// edit n.ohkubo 2015/03/01　追加　start　「初期値」ボタンの処理
+	/**
+	 * 「再読込」押下後のコールバック
+	 * @see org.openswing.swing.table.client.GridController#afterReloadGrid()
+	 */
+	@Override
+	public void afterReloadGrid() {
+		super.afterReloadGrid();
+		
+		//初期値ボタンで変更した情報を戻す
+		afterGridDefaultButtonProcessing();
+	}
+	
+	/**
+	 * 「登録」押下後のコールバック
+	 * @see org.openswing.swing.table.client.GridController#afterEditGrid(org.openswing.swing.client.GridControl)
+	 */
+	@Override
+	public void afterEditGrid(GridControl grid) {
+		super.afterEditGrid(grid);
+		
+		//初期値ボタンで変更した情報を戻す
+		afterGridDefaultButtonProcessing();
+	}
+	
+	/**
+	 * 画面再表示時の処理（初期値ボタン関係専用）
+	 */
+	private void afterGridDefaultButtonProcessing() {
+		
+		//初期値ボタン非活性化
+		grid.buttonDefault.setEnabled(false);
+		
+		//色つきのセルを戻す
+		if (grid.tableCellRendererList != null) {
+			//退避してある初期設定のTableCellRendererを設定
+			if (grid.tableCellRendererList.get(0) != null) {
+				grid.getGrid().getTable().getGrid().getColumn(ClientSettings.getInstance().getResources().getResource("DS_KAGEN")).setCellRenderer(grid.tableCellRendererList.get(0));
+			}
+			if (grid.tableCellRendererList.get(1) != null) {
+				grid.getGrid().getTable().getGrid().getColumn(ClientSettings.getInstance().getResources().getResource("DS_JYOUGEN")).setCellRenderer(grid.tableCellRendererList.get(1));
+			}
+			if (grid.tableCellRendererList.get(2) != null) {
+				grid.getGrid().getTable().getGrid().getColumn(ClientSettings.getInstance().getResources().getResource("JS_KAGEN")).setCellRenderer(grid.tableCellRendererList.get(2));
+			}
+			if (grid.tableCellRendererList.get(3) != null) {
+				grid.getGrid().getTable().getGrid().getColumn(ClientSettings.getInstance().getResources().getResource("JS_JYOUGEN")).setCellRenderer(grid.tableCellRendererList.get(3));
+			}
+			
+			//初期化しておく
+			grid.tableCellRendererList = null;
+		}
+		
+		//ツールチップの初期化（表示値をそのまま表示する）
+		grid.afterDefaultToolTipText = null;
+	}
+	
+	/**
+	 * デフォルト（HKNJANUM=99999999）のデータを取得する
+	 * 
+	 * @return
+	 */
+	protected Map<String, List<String>> getDefaultData() {
+		
+		//DBからデフォルトのデータを取得する
+		String sql = "SELECT KOUMOKU_CD, DS_KAGEN, DS_JYOUGEN, JS_KAGEN, JS_JYOUGEN FROM T_KENSHINMASTER WHERE HKNJANUM = '99999999'";
+		ArrayList<Hashtable<String, String>> dbResult = null;
+		try {
+			dbResult = JApplication.kikanDatabase.sendExecuteQuery(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		//取得したデータを設定
+		Map<String, List<String>> result = new HashMap<String, List<String>>();
+		for (int i = 0; i < dbResult.size(); i++) {
+			Hashtable<String, String> temp = dbResult.get(i);
+			
+			//男性下限、男性上限、女性下限、女性上限の順番で格納
+			List<String> rowList = new ArrayList<String>();
+			rowList.add(temp.get("DS_KAGEN"));
+			rowList.add(temp.get("DS_JYOUGEN"));
+			rowList.add(temp.get("JS_KAGEN"));
+			rowList.add(temp.get("JS_JYOUGEN"));
+			
+			//キーは項目コード
+			result.put(temp.get("KOUMOKU_CD"), rowList);
+		}
+		return result;
+	}
+	// edit n.ohkubo 2015/03/01　追加　end　「初期値」ボタンの処理
 }

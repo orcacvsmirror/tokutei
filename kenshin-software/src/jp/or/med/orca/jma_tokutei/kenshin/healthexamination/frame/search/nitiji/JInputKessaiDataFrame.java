@@ -3,6 +3,7 @@ package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.nitiji
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -18,6 +19,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -228,6 +230,13 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		this.setVisible(true);
 		// edit s.inoue 2009/11/09
 //		this.focusInitialize();
+
+		// edit n.ohkubo 2015/03/01　追加　start　初期表示時の負担金額・割合の値（「ブランク」or「円」or「％」）の表示対応
+		jLabel_UnitMadoKihon.setText("");
+		jLabel_UnitMadoSyosai.setText("");
+		jLabel_UnitMadoTsuika.setText("");
+		jLabel_UnitMadoNingenDoc.setText("");
+		// edit n.ohkubo 2015/03/01　追加　end　初期表示時の負担金額・割合の値（「ブランク」or「円」or「％」）の表示対応
 	}
 
 	/**
@@ -515,8 +524,10 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			gridBagConstraints75.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints75.insets = new Insets(5, 0, 0, 0);
 			gridBagConstraints75.gridy = 1;
-			jLabel6 = new ExtendedLabel();
-			jLabel6.setHtmlText("<b>追加健診項目（内訳）</b>");
+//			jLabel6 = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel6.setHtmlText("<b>追加健診項目（内訳）</b>");	// edit n.ohkubo 2015/03/01　削除
+			jLabel6 = new ExtendedLabel(Font.BOLD);	// edit n.ohkubo 2015/03/01　追加
+			jLabel6.setText("追加健診項目（内訳）");	// edit n.ohkubo 2015/03/01　追加
 			GridBagConstraints gridBagConstraints74 = new GridBagConstraints();
 			gridBagConstraints74.gridx = 0;
 			gridBagConstraints74.weightx = 1.0D;
@@ -832,6 +843,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			jTextField_Jyusinken_ID = new ExtendedTextField("", 11, ImeMode.IME_OFF);
 			// eidt s.inoue 2012/05/15 150 → 110
 			jTextField_Jyusinken_ID.setPreferredSize(new Dimension(100, 20));
+			jTextField_Jyusinken_ID.setMinimumSize(new Dimension(100, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 		}
 		return jTextField_Jyusinken_ID;
 	}
@@ -845,6 +857,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_Name == null) {
 			jTextField_Name = new ExtendedTextField(ImeMode.IME_ZENKAKU);
 			jTextField_Name.setPreferredSize(new Dimension(150, 20));
+			jTextField_Name.setMinimumSize(new Dimension(150, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 		}
 		return jTextField_Name;
 	}
@@ -858,6 +871,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_KensaDate == null) {
 			jTextField_KensaDate = new ExtendedTextField("", 8, ImeMode.IME_OFF);
 			jTextField_KensaDate.setPreferredSize(new Dimension(80, 20));
+			jTextField_KensaDate.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 		}
 		return jTextField_KensaDate;
 	}
@@ -872,6 +886,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			jTextField_Birthday = new ExtendedTextField("", 8, ImeMode.IME_OFF);
 			// edit ver2 s.inoue 2009/08/28
 			jTextField_Birthday.setPreferredSize(new Dimension(100, 20));
+			jTextField_Birthday.setMinimumSize(new Dimension(100, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 		}
 		return jTextField_Birthday;
 	}
@@ -943,8 +958,10 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			gridBagConstraints118.gridy = 0;
 			gridBagConstraints118.insets = new Insets(0, 10, 0, 0);
 
-			jLabel7 = new ExtendedLabel();
-			jLabel7.setHtmlText("<b>委託料単価区分</b>");
+//			jLabel7 = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel7.setHtmlText("<b>委託料単価区分</b>");	// edit n.ohkubo 2015/03/01　削除
+			jLabel7 = new ExtendedLabel(Font.BOLD);	// edit n.ohkubo 2015/03/01　追加
+			jLabel7.setText("委託料単価区分");	// edit n.ohkubo 2015/03/01　追加
 //			Font currentFont = jLabel7.getFont();
 //			jLabel7.setFont(new Font(currentFont.getFontName(), Font.BOLD, currentFont.getSize()));
 			jPanel17 = new JPanel();
@@ -1083,6 +1100,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_KihonTanka == null) {
 			jTextField_KihonTanka = new ExtendedTextField();
 			jTextField_KihonTanka.setPreferredSize(new Dimension(80, 20));
+			jTextField_KihonTanka.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_KihonTanka.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_KihonTanka;
@@ -1097,6 +1115,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_HinketuTanka == null) {
 			jTextField_HinketuTanka = new ExtendedTextField();
 			jTextField_HinketuTanka.setPreferredSize(new Dimension(80, 20));
+			jTextField_HinketuTanka.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_HinketuTanka.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_HinketuTanka;
@@ -1111,6 +1130,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_SindenzuTanka == null) {
 			jTextField_SindenzuTanka = new ExtendedTextField();
 			jTextField_SindenzuTanka.setPreferredSize(new Dimension(80, 20));
+			jTextField_SindenzuTanka.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_SindenzuTanka.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_SindenzuTanka;
@@ -1125,6 +1145,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_GanteiTanka == null) {
 			jTextField_GanteiTanka = new ExtendedTextField();
 			jTextField_GanteiTanka.setPreferredSize(new Dimension(80, 20));
+			jTextField_GanteiTanka.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_GanteiTanka.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_GanteiTanka;
@@ -1139,6 +1160,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_DocTanka == null) {
 			jTextField_DocTanka = new ExtendedTextField();
 			jTextField_DocTanka.setPreferredSize(new Dimension(80, 20));
+			jTextField_DocTanka.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_DocTanka.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_DocTanka;
@@ -1153,6 +1175,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_MadoguchiKihonKin == null) {
 			jTextField_MadoguchiKihonKin = new ExtendedTextField("", 6, ImeMode.IME_OFF);
 			jTextField_MadoguchiKihonKin.setPreferredSize(new Dimension(80, 20));
+			jTextField_MadoguchiKihonKin.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_MadoguchiKihonKin.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_MadoguchiKihonKin;
@@ -1167,6 +1190,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_MadoguchiSyousaiKin == null) {
 			jTextField_MadoguchiSyousaiKin = new ExtendedTextField("", 6, ImeMode.IME_OFF);
 			jTextField_MadoguchiSyousaiKin.setPreferredSize(new Dimension(80, 20));
+			jTextField_MadoguchiSyousaiKin.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_MadoguchiSyousaiKin.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_MadoguchiSyousaiKin;
@@ -1181,6 +1205,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_MadoguchiTsuikaKin == null) {
 			jTextField_MadoguchiTsuikaKin = new ExtendedTextField("", 6, ImeMode.IME_OFF);
 			jTextField_MadoguchiTsuikaKin.setPreferredSize(new Dimension(80, 20));
+			jTextField_MadoguchiTsuikaKin.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_MadoguchiTsuikaKin.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_MadoguchiTsuikaKin;
@@ -1195,6 +1220,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_MadoguchiNingenDocKin == null) {
 			jTextField_MadoguchiNingenDocKin = new ExtendedTextField("", 6, ImeMode.IME_OFF);
 			jTextField_MadoguchiNingenDocKin.setPreferredSize(new Dimension(80, 20));
+			jTextField_MadoguchiNingenDocKin.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_MadoguchiNingenDocKin.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_MadoguchiNingenDocKin;
@@ -1208,6 +1234,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_AllTanka == null) {
 			jTextField_AllTanka = new ExtendedTextField();
 			jTextField_AllTanka.setPreferredSize(new Dimension(80, 20));
+			jTextField_AllTanka.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_AllTanka.setEditable(false);
 			jTextField_AllTanka.setHorizontalAlignment(JTextField.RIGHT);
 		}
@@ -1223,6 +1250,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_AllMadoguchi == null) {
 			jTextField_AllMadoguchi = new ExtendedTextField();
 			jTextField_AllMadoguchi.setPreferredSize(new Dimension(80, 20));
+			jTextField_AllMadoguchi.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_AllMadoguchi.setEditable(false);
 			jTextField_AllMadoguchi.setHorizontalAlignment(JTextField.RIGHT);
 		}
@@ -1238,6 +1266,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_TotalFee == null) {
 			jTextField_TotalFee = new ExtendedTextField();
 			jTextField_TotalFee.setPreferredSize(new Dimension(80, 20));
+			jTextField_TotalFee.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_TotalFee.setEditable(false);
 			jTextField_TotalFee.setHorizontalAlignment(JTextField.RIGHT);
 		}
@@ -1513,6 +1542,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_Sex == null) {
 			jTextField_Sex = new ExtendedTextField();
 			jTextField_Sex.setPreferredSize(new Dimension(50, 20));
+			jTextField_Sex.setMinimumSize(new Dimension(50, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 		}
 		return jTextField_Sex;
 	}
@@ -1563,8 +1593,10 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			gridBagConstraints113.gridx = 0;
 			gridBagConstraints113.anchor = GridBagConstraints.WEST;
 			gridBagConstraints113.gridy = 8;
-			jLabel_ningenDoc = new ExtendedLabel();
-			jLabel_ningenDoc.setHtmlText("<b>人間ドック</b>");
+//			jLabel_ningenDoc = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel_ningenDoc.setHtmlText("<b>人間ドック</b>");	// edit n.ohkubo 2015/03/01　削除
+			jLabel_ningenDoc = new ExtendedLabel(Font.BOLD);	// edit n.ohkubo 2015/03/01　追加
+			jLabel_ningenDoc.setText("人間ドック");	// edit n.ohkubo 2015/03/01　追加
 			GridBagConstraints gridBagConstraints114 = new GridBagConstraints();
 			gridBagConstraints114.fill = GridBagConstraints.VERTICAL;
 			gridBagConstraints114.gridy = 8;
@@ -1653,8 +1685,21 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			gridBagConstraints105.gridx = 10;
 			gridBagConstraints105.gridwidth = 2;
 			gridBagConstraints105.gridy = 0;
-			jLabel_kingaku1 = new ExtendedLabel();
-			jLabel_kingaku1.setHtmlText("<center><b>保険者負担<br>上限額</b></center>");
+//			jLabel_kingaku1 = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel_kingaku1.setHtmlText("<center><b>保険者負担<br>上限額</b></center>");	// edit n.ohkubo 2015/03/01　削除
+			// edit n.ohkubo 2015/03/01　追加　start　LinuxのMetalで表示が崩れる対応
+			JPanel jLabel_kingaku1Panel = new JPanel();
+			jLabel_kingaku1Panel.setLayout(new BoxLayout(jLabel_kingaku1Panel, BoxLayout.PAGE_AXIS));
+			jLabel_kingaku1 = new ExtendedLabel(Font.BOLD);
+			jLabel_kingaku1.setText("保険者負担");
+			jLabel_kingaku1.setAlignmentX(Component.CENTER_ALIGNMENT);
+			ExtendedLabel jLabel_kingaku1_2 = new ExtendedLabel(Font.BOLD);
+			jLabel_kingaku1_2.setText("上限額");
+			jLabel_kingaku1_2.setAlignmentX(Component.CENTER_ALIGNMENT);
+			jLabel_kingaku1Panel.add(jLabel_kingaku1);
+			jLabel_kingaku1Panel.add(jLabel_kingaku1_2);
+			// edit n.ohkubo 2015/03/01　追加　end　LinuxのMetalで表示が崩れる対応
+			
 			GridBagConstraints gridBagConstraints104 = new GridBagConstraints();
 			gridBagConstraints104.gridx = 16;
 			gridBagConstraints104.gridy = 1;
@@ -1743,8 +1788,21 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			gridBagConstraints93.insets = new Insets(0, 20, 0, 0);
 			gridBagConstraints93.gridwidth = 2;
 			gridBagConstraints93.gridy = 0;
-			jLabel_sonotaFutangaku = new ExtendedLabel();
-			jLabel_sonotaFutangaku.setHtmlText("<center><b>その他の健診に<br>よる負担金額</b></center>");
+//			jLabel_sonotaFutangaku = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel_sonotaFutangaku.setHtmlText("<center><b>その他の健診に<br>よる負担金額</b></center>");	// edit n.ohkubo 2015/03/01　削除
+			// edit n.ohkubo 2015/03/01　追加　start　LinuxのMetalで表示が崩れる対応
+			JPanel jLabel_sonotaFutangakuPanel = new JPanel();
+			jLabel_sonotaFutangakuPanel.setLayout(new BoxLayout(jLabel_sonotaFutangakuPanel, BoxLayout.PAGE_AXIS));
+			jLabel_sonotaFutangaku = new ExtendedLabel(Font.BOLD);
+			jLabel_sonotaFutangaku.setText("その他の健診に");
+			jLabel_sonotaFutangaku.setAlignmentX(Component.CENTER_ALIGNMENT);
+			ExtendedLabel jLabel_sonotaFutangaku_2 = new ExtendedLabel(Font.BOLD);
+			jLabel_sonotaFutangaku_2.setText("よる負担金額");
+			jLabel_sonotaFutangaku_2.setAlignmentX(Component.CENTER_ALIGNMENT);
+			jLabel_sonotaFutangakuPanel.add(jLabel_sonotaFutangaku);
+			jLabel_sonotaFutangakuPanel.add(jLabel_sonotaFutangaku_2);
+			// edit n.ohkubo 2015/03/01　追加　end　LinuxのMetalで表示が崩れる対応
+
 			GridBagConstraints gridBagConstraints88 = new GridBagConstraints();
 			gridBagConstraints88.gridx = 9;
 			gridBagConstraints88.gridy = 7;
@@ -1775,8 +1833,21 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			gridBagConstraints83.gridx = 8;
 			gridBagConstraints83.gridwidth = 2;
 			gridBagConstraints83.gridy = 0;
-			jLabel_kingakuInput = new ExtendedLabel();
-			jLabel_kingakuInput.setHtmlText("<center><b>窓口負担<br>（受診券情報）</b></center>");
+//			jLabel_kingakuInput = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel_kingakuInput.setHtmlText("<center><b>窓口負担<br>（受診券情報）</b></center>");	// edit n.ohkubo 2015/03/01　削除
+			// edit n.ohkubo 2015/03/01　追加　start　LinuxのMetalで表示が崩れる対応
+			JPanel jLabel_kingakuInputPanel = new JPanel();
+			jLabel_kingakuInputPanel.setLayout(new BoxLayout(jLabel_kingakuInputPanel, BoxLayout.PAGE_AXIS));
+			jLabel_kingakuInput = new ExtendedLabel(Font.BOLD);
+			jLabel_kingakuInput.setText("窓口負担");
+			jLabel_kingakuInput.setAlignmentX(Component.CENTER_ALIGNMENT);
+			ExtendedLabel jLabel_kingakuInput_2 = new ExtendedLabel(Font.BOLD);
+			jLabel_kingakuInput_2.setText("（受診券情報）");
+			jLabel_kingakuInput_2.setAlignmentX(Component.CENTER_ALIGNMENT);
+			jLabel_kingakuInputPanel.add(jLabel_kingakuInput);
+			jLabel_kingakuInputPanel.add(jLabel_kingakuInput_2);
+			// edit n.ohkubo 2015/03/01　追加　end　LinuxのMetalで表示が崩れる対応
+
 			GridBagConstraints gridBagConstraints82 = new GridBagConstraints();
 			gridBagConstraints82.fill = GridBagConstraints.VERTICAL;
 			gridBagConstraints82.gridy = 1;
@@ -1863,41 +1934,77 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			gridBagConstraints61.gridx = 0;
 			gridBagConstraints61.anchor = GridBagConstraints.WEST;
 			gridBagConstraints61.gridy = 11;
-			jLabel_goukei = new ExtendedLabel();
-			jLabel_goukei.setHtmlText("<b>合計</b>");
+//			jLabel_goukei = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel_goukei.setHtmlText("<b>合計</b>");	// edit n.ohkubo 2015/03/01　削除
+			jLabel_goukei = new ExtendedLabel(Font.BOLD);	// edit n.ohkubo 2015/03/01　追加
+			jLabel_goukei.setText("合計");	// edit n.ohkubo 2015/03/01　追加
 			GridBagConstraints gridBagConstraints60 = new GridBagConstraints();
 			gridBagConstraints60.gridx = 0;
 			gridBagConstraints60.anchor = GridBagConstraints.WEST;
 			gridBagConstraints60.gridy = 7;
-			jLabel_tsuika = new ExtendedLabel();
-			jLabel_tsuika.setHtmlText("<b>追加健診</b>");
+//			jLabel_tsuika = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel_tsuika.setHtmlText("<b>追加健診</b>");	// edit n.ohkubo 2015/03/01　削除
+			jLabel_tsuika = new ExtendedLabel(Font.BOLD);	// edit n.ohkubo 2015/03/01　追加
+			jLabel_tsuika.setText("追加健診");	// edit n.ohkubo 2015/03/01　追加
 			GridBagConstraints gridBagConstraints59 = new GridBagConstraints();
 			gridBagConstraints59.gridx = 0;
 			gridBagConstraints59.anchor = GridBagConstraints.WEST;
 			gridBagConstraints59.gridy = 3;
-			jLabel_syousai = new ExtendedLabel();
-			jLabel_syousai.setHtmlText("<b>詳細な健診</b>");
+//			jLabel_syousai = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel_syousai.setHtmlText("<b>詳細な健診</b>");	// edit n.ohkubo 2015/03/01　削除
+			jLabel_syousai = new ExtendedLabel(Font.BOLD);	// edit n.ohkubo 2015/03/01　追加
+			jLabel_syousai.setText("詳細な健診");	// edit n.ohkubo 2015/03/01　追加
 			GridBagConstraints gridBagConstraints58 = new GridBagConstraints();
 			gridBagConstraints58.gridx = 0;
 			gridBagConstraints58.gridy = 1;
-			jLabel_kihon = new ExtendedLabel();
-			jLabel_kihon.setHtmlText("<b>基本的な健診</b>");
+//			jLabel_kihon = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel_kihon.setHtmlText("<b>基本的な健診</b>");	// edit n.ohkubo 2015/03/01　削除
+			jLabel_kihon = new ExtendedLabel(Font.BOLD);	// edit n.ohkubo 2015/03/01　追加
+			jLabel_kihon.setText("基本的な健診");	// edit n.ohkubo 2015/03/01　追加
 			GridBagConstraints gridBagConstraints57 = new GridBagConstraints();
 			gridBagConstraints57.gridx = 12;
 			gridBagConstraints57.gridwidth = 2;
 			gridBagConstraints57.gridy = 0;
-			jLabel_kingaku = new ExtendedLabel();
-			jLabel_kingaku.setHtmlText("<center><b>窓口負担金額<br>（実際の負担額）</b></center>");
+//			jLabel_kingaku = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel_kingaku.setHtmlText("<center><b>窓口負担金額<br>（実際の負担額）</b></center>");	// edit n.ohkubo 2015/03/01　削除
+			// edit n.ohkubo 2015/03/01　追加　start　LinuxのMetalで表示が崩れる対応
+			JPanel jLabel_kingakuPanel = new JPanel();
+			jLabel_kingakuPanel.setLayout(new BoxLayout(jLabel_kingakuPanel, BoxLayout.PAGE_AXIS));
+			jLabel_kingaku = new ExtendedLabel(Font.BOLD);
+			jLabel_kingaku.setText("窓口負担金額");
+			jLabel_kingaku.setAlignmentX(Component.CENTER_ALIGNMENT);
+			ExtendedLabel jLabel_kingaku_2 = new ExtendedLabel(Font.BOLD);
+			jLabel_kingaku_2.setText("（実際の負担額）");
+			jLabel_kingaku_2.setAlignmentX(Component.CENTER_ALIGNMENT);
+			jLabel_kingakuPanel.add(jLabel_kingaku);
+			jLabel_kingakuPanel.add(jLabel_kingaku_2);
+			// edit n.ohkubo 2015/03/01　追加　end　LinuxのMetalで表示が崩れる対応
+
 			GridBagConstraints gridBagConstraints56 = new GridBagConstraints();
 			gridBagConstraints56.gridx = 6;
 			gridBagConstraints56.gridy = 0;
-			jLabel_syubetu = new ExtendedLabel();
-			jLabel_syubetu.setHtmlText("<center><b>受診者の<br>窓口負担</b></center>");
+//			jLabel_syubetu = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel_syubetu.setHtmlText("<center><b>受診者の<br>窓口負担</b></center>");	// edit n.ohkubo 2015/03/01　削除
+			// edit n.ohkubo 2015/03/01　追加　start　LinuxのMetalで表示が崩れる対応
+			JPanel jLabel_syubetuPanel = new JPanel();
+			jLabel_syubetuPanel.setLayout(new BoxLayout(jLabel_syubetuPanel, BoxLayout.PAGE_AXIS));
+			jLabel_syubetu = new ExtendedLabel(Font.BOLD);
+			jLabel_syubetu.setText("受診者の");
+			jLabel_syubetu.setAlignmentX(Component.CENTER_ALIGNMENT);
+			ExtendedLabel jLabel_syubetu_2 = new ExtendedLabel(Font.BOLD);
+			jLabel_syubetu_2.setText("窓口負担");
+			jLabel_syubetu_2.setAlignmentX(Component.CENTER_ALIGNMENT);
+			jLabel_syubetuPanel.add(jLabel_syubetu);
+			jLabel_syubetuPanel.add(jLabel_syubetu_2);
+			// edit n.ohkubo 2015/03/01　追加　end　LinuxのMetalで表示が崩れる対応
+
 			GridBagConstraints gridBagConstraints50 = new GridBagConstraints();
 			gridBagConstraints50.gridx = 3;
 			gridBagConstraints50.gridy = 0;
-			jLabel_tanka = new ExtendedLabel();
-			jLabel_tanka.setHtmlText("<b>単価</b>");
+//			jLabel_tanka = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel_tanka.setHtmlText("<b>単価</b>");	// edit n.ohkubo 2015/03/01　削除
+			jLabel_tanka = new ExtendedLabel(Font.BOLD);	// edit n.ohkubo 2015/03/01　追加
+			jLabel_tanka.setText("単価");	// edit n.ohkubo 2015/03/01　追加
 			GridBagConstraints gridBagConstraints49 = new GridBagConstraints();
 			gridBagConstraints49.fill = GridBagConstraints.VERTICAL;
 			gridBagConstraints49.gridy = 7;
@@ -2026,8 +2133,10 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			jLabel17.setText("眼底検査");
 			jLabel17.setFont(new Font("Dialog", Font.PLAIN, 12));
 
-			jLabel23 = new ExtendedLabel();
-			jLabel23.setHtmlText("<b>請求金額</b>");
+//			jLabel23 = new ExtendedLabel();	// edit n.ohkubo 2015/03/01　削除
+//			jLabel23.setHtmlText("<b>請求金額</b>");	// edit n.ohkubo 2015/03/01　削除
+			jLabel23 = new ExtendedLabel(Font.BOLD);	// edit n.ohkubo 2015/03/01　追加
+			jLabel23.setText("請求金額");	// edit n.ohkubo 2015/03/01　追加
 
 			jPanel210 = new JPanel();
 			jPanel210.setLayout(new GridBagLayout());
@@ -2054,8 +2163,10 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			jPanel210.add(getJComboBox_MadoguchiNingenDocSyubetu(), gridBagConstraints116);
 
 			jPanel210.add(jLabel_tanka, gridBagConstraints50);
-			jPanel210.add(jLabel_syubetu, gridBagConstraints56);
-			jPanel210.add(jLabel_kingaku, gridBagConstraints57);
+//			jPanel210.add(jLabel_syubetu, gridBagConstraints56);	// edit n.ohkubo 2015/03/01　削除
+			jPanel210.add(jLabel_syubetuPanel, gridBagConstraints56);	// edit n.ohkubo 2015/03/01　追加
+//			jPanel210.add(jLabel_kingaku, gridBagConstraints57);	// edit n.ohkubo 2015/03/01　削除
+			jPanel210.add(jLabel_kingakuPanel, gridBagConstraints57);	// edit n.ohkubo 2015/03/01　追加
 			jPanel210.add(jLabel_kihon, gridBagConstraints58);
 			jPanel210.add(jLabel_syousai, gridBagConstraints59);
 			jPanel210.add(jLabel_tsuika, gridBagConstraints60);
@@ -2079,7 +2190,8 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			jPanel210.add(getJTextField_MadoguchiKihonKinInput(), gridBagConstraints82);
 			jPanel210.add(getJTextField_MadoguchiNingenDocKinInput(), gridBagConstraints117);
 
-			jPanel210.add(jLabel_kingakuInput, gridBagConstraints83);
+//			jPanel210.add(jLabel_kingakuInput, gridBagConstraints83);	// edit n.ohkubo 2015/03/01　削除
+			jPanel210.add(jLabel_kingakuInputPanel, gridBagConstraints83);	// edit n.ohkubo 2015/03/01　追加
 			jPanel210.add(getJTextField_MadoguchiSyhosaiKinInput(), gridBagConstraints84);
 			jPanel210.add(getJTextField_MadoguchiTsuikaKinInput(), gridBagConstraints85);
 			jPanel210.add(jLabel_UnitMadoKihon, gridBagConstraints86);
@@ -2087,7 +2199,8 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			jPanel210.add(jLabel_UnitMadoTsuika, gridBagConstraints88);
 			jPanel210.add(jLabel_UnitMadoNingenDoc, gridBagConstraints118);
 
-			jPanel210.add(jLabel_sonotaFutangaku, gridBagConstraints93);
+//			jPanel210.add(jLabel_sonotaFutangaku, gridBagConstraints93);	// edit n.ohkubo 2015/03/01　削除
+			jPanel210.add(jLabel_sonotaFutangakuPanel, gridBagConstraints93);	// edit n.ohkubo 2015/03/01　追加
 			jPanel210.add(jLabel_UnitMadoKihon1, gridBagConstraints94);
 			jPanel210.add(jLabel_UnitMadoKihon2, gridBagConstraints95);
 			jPanel210.add(jLabel_UnitMadoKihon3, gridBagConstraints96);
@@ -2102,7 +2215,8 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 			jPanel210.add(getJTextField_MadoguchiSonota(), gridBagConstraints103);
 			jPanel210.add(jLabel1547, gridBagConstraints104);
 			jPanel210.add(jLabel1548, gridBagConstraints115);
-			jPanel210.add(jLabel_kingaku1, gridBagConstraints105);
+//			jPanel210.add(jLabel_kingaku1, gridBagConstraints105);	// edit n.ohkubo 2015/03/01　削除
+			jPanel210.add(jLabel_kingaku1Panel, gridBagConstraints105);	// edit n.ohkubo 2015/03/01　追加
 			jPanel210.add(jLabel_UnitMadoKihon11, gridBagConstraints106);
 			jPanel210.add(getJTextField_hokenjyaJougenKihon(), gridBagConstraints107);
 			jPanel210.add(getJTextField_hokenjyaJougenSyosai(), gridBagConstraints108);
@@ -2206,6 +2320,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 		if (jTextField_TsuikaTankaSum == null) {
 			jTextField_TsuikaTankaSum = new ExtendedTextField();
 			jTextField_TsuikaTankaSum.setPreferredSize(new Dimension(80, 20));
+			jTextField_TsuikaTankaSum.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_TsuikaTankaSum.setHorizontalAlignment(JTextField.RIGHT);
 			// edit s.inoue 2010/02/16
 			// jTextField_TsuikaTankaSum.setEditable(false);
@@ -2238,6 +2353,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 					6,
 					ImeMode.IME_OFF);
 			jTextField_MadoguchiKihonKinInput.setPreferredSize(new Dimension(80, 20));
+			jTextField_MadoguchiKihonKinInput.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_MadoguchiKihonKinInput.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_MadoguchiKihonKinInput;
@@ -2255,6 +2371,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 					6,
 					ImeMode.IME_OFF);
 			jTextField_MadoguchiSyousaiKinInput.setPreferredSize(new Dimension(80, 20));
+			jTextField_MadoguchiSyousaiKinInput.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_MadoguchiSyousaiKinInput.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_MadoguchiSyousaiKinInput;
@@ -2272,6 +2389,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 					6,
 					ImeMode.IME_OFF);
 			jTextField_MadoguchiTsuikaKinInput.setPreferredSize(new Dimension(80, 20));
+			jTextField_MadoguchiTsuikaKinInput.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_MadoguchiTsuikaKinInput.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_MadoguchiTsuikaKinInput;
@@ -2289,6 +2407,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 					6,
 					ImeMode.IME_OFF);
 			jTextField_MadoguchiDocKinInput.setPreferredSize(new Dimension(80, 20));
+			jTextField_MadoguchiDocKinInput.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_MadoguchiDocKinInput.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_MadoguchiDocKinInput;
@@ -2306,6 +2425,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 					8,
 					ImeMode.IME_ZENKAKU);
 			jTextField_hihokenjasyotouKigou.setPreferredSize(new Dimension(140, 20));
+			jTextField_hihokenjasyotouKigou.setMinimumSize(new Dimension(140, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_hihokenjasyotouKigou.setVisible(false);
 		}
 		return jTextField_hihokenjasyotouKigou;
@@ -2323,6 +2443,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 					8,
 					ImeMode.IME_ZENKAKU);
 			jTextField_hihokenjasyotouBangou.setPreferredSize(new Dimension(140, 20));
+			jTextField_hihokenjasyotouBangou.setMinimumSize(new Dimension(140, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_hihokenjasyotouBangou.setVisible(false);
 		}
 		return jTextField_hihokenjasyotouBangou;
@@ -2340,6 +2461,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 					9,
 					ImeMode.IME_OFF);
 			jTextField_MadoguchiSonota.setPreferredSize(new Dimension(80, 20));
+			jTextField_MadoguchiSonota.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_MadoguchiSonota.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_MadoguchiSonota;
@@ -2357,6 +2479,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 					6,
 					ImeMode.IME_OFF);
 			jTextField_hokenjyaJougenKihon.setPreferredSize(new Dimension(80, 20));
+			jTextField_hokenjyaJougenKihon.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_hokenjyaJougenKihon.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_hokenjyaJougenKihon;
@@ -2374,6 +2497,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 					6,
 					ImeMode.IME_OFF);
 			jTextField_hokenjyaJougenSyosai.setPreferredSize(new Dimension(80, 20));
+			jTextField_hokenjyaJougenSyosai.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_hokenjyaJougenSyosai.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_hokenjyaJougenSyosai;
@@ -2391,6 +2515,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 					6,
 					ImeMode.IME_OFF);
 			jTextField_hokenjyaJougenTsuika.setPreferredSize(new Dimension(80, 20));
+			jTextField_hokenjyaJougenTsuika.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_hokenjyaJougenTsuika.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_hokenjyaJougenTsuika;
@@ -2408,6 +2533,7 @@ public class JInputKessaiDataFrame extends JFrame implements ActionListener,Item
 					6,
 					ImeMode.IME_OFF);
 			jTextField_hokenjyaJougenDoc.setPreferredSize(new Dimension(80, 20));
+			jTextField_hokenjyaJougenDoc.setMinimumSize(new Dimension(80, 20));	// edit n.ohkubo 2015/03/01　追加　LinuxのMetalで表示が崩れる対応
 			jTextField_hokenjyaJougenDoc.setHorizontalAlignment(JTextField.RIGHT);
 		}
 		return jTextField_hokenjyaJougenDoc;

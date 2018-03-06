@@ -10,8 +10,6 @@ import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.convert.JCalendarConvert;
 import jp.or.med.orca.jma_tokutei.common.convert.JZenkakuKatakanaToHankakuKatakana;
 
-import org.apache.log4j.Logger;
-
 /**
  * 文字列検証、変換用クラス
  * クラスコメント追加
@@ -20,7 +18,7 @@ public class JValidate {
 	public static final String USER_KENGEN_IPANUSER = "一般ユーザ";
 	public static final String USER_KENGEN_KANRISYA = "管理者";
 
-	private static org.apache.log4j.Logger logger = Logger.getLogger(JValidate.class);
+//	private static org.apache.log4j.Logger logger = Logger.getLogger(JValidate.class);	// edit n.ohkubo 2015/03/01　未使用なので削除
 
 	/* unicodeTO */
 	public static String encodeUNICODEtoConvert(String str){
@@ -601,6 +599,13 @@ public class JValidate {
 		{
 			return null;
 		}
+		
+		// edit n.ohkubo 2015/03/01　追加　start
+		//全角スペースは不可
+		if (str.indexOf("　") > 0) {
+			return null;
+		}
+		// edit n.ohkubo 2015/03/01　追加　end
 
 		return str;
 	}
@@ -624,7 +629,14 @@ public class JValidate {
 		{
 			return null;
 		}
-
+		
+		// edit n.ohkubo 2015/03/01　追加　start
+		//全角スペースは不可
+		if (str.indexOf("　") > 0) {
+			return null;
+		}
+		// edit n.ohkubo 2015/03/01　追加　end
+		
 		return str;
 	}
 
@@ -731,7 +743,7 @@ public class JValidate {
 			if ( str.isEmpty() )
 				return null;
 
-			String temp = "";
+//			String temp = "";	// edit n.ohkubo 2015/03/01　未使用なので削除
 
 			JorAD = JCalendarConvert.JCorAD(str);
 

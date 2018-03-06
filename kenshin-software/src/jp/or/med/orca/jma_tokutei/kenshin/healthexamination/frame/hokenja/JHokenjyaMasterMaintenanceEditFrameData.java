@@ -563,6 +563,7 @@ public class JHokenjyaMasterMaintenanceEditFrameData {
 		this.HanteiTanka = JValidate.validateTankaHantei(hanteiTanka);
 
 		if( this.HanteiTanka == null ) {
+			JErrorMessage.show("M3127", null);	// edit n.ohkubo 2015/03/01@’Ç‰Á
 			return false;
 		}
 

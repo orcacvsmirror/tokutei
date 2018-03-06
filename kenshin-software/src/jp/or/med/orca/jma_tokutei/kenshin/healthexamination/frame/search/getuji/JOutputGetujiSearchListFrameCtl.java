@@ -189,6 +189,13 @@ public class JOutputGetujiSearchListFrameCtl
 	 */
 	 @Override
 	public boolean isCellEditable(GridControl grid,int row,String attributeName) {
+		 
+		// edit n.ohkubo 2015/03/01　追加　start　「Alt+E」等が正常に動作しない対応（キー押下でチェックボックスの値が反転する）
+		if (this.grid.isKeyPressed()) {
+			return false;
+		}
+		// edit n.ohkubo 2015/03/01　追加　end　「Alt+E」等が正常に動作しない対応（キー押下でチェックボックスの値が反転する）
+		 
 		  JOutputGetujiSearchListFrameData vo = (JOutputGetujiSearchListFrameData)grid.getVOListTableModel().getObjectForRow(row);
 	    if ("CHECKBOX_COLUMN".equals(attributeName)){
 	    	// eidt s.inoue 2011/04/28
@@ -660,7 +667,8 @@ public class JOutputGetujiSearchListFrameCtl
 			if (!firstViewFlg) {
 				if ((result != null) && (!result.isError() && (result instanceof VOListResponse))){
 					if (((VOListResponse)result).getRows().size() == 0) {
-						JErrorMessage.show("M3550", getGridControl());
+//						JErrorMessage.show("M3550", getGridControl());	// edit n.ohkubo 2015/03/01　削除
+						JErrorMessage.show("M4760", getGridControl());	// edit n.ohkubo 2015/03/01　追加　メッセージの変更
 					}
 				}
 			}

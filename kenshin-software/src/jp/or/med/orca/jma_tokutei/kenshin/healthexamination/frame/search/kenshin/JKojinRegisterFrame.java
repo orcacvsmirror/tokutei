@@ -535,6 +535,7 @@ public class JKojinRegisterFrame extends JFrame
 			jLabel9.setForeground(ViewSettings.getRequiedItemFrColor());	// edit n.ohkubo 2014/10/01　追加
 			jLabel8 = new ExtendedLabel();
 			jLabel8.setText("被保険者証等番号");
+			jLabel8.setForeground(ViewSettings.getRequiedItemFrColor());	// edit n.ohkubo 2015/03/01　追加
 			jLabel7 = new ExtendedLabel();
 			jLabel7.setText("被保険者証等記号");
 			jLabel6 = new ExtendedLabel();
@@ -2412,6 +2413,18 @@ public class JKojinRegisterFrame extends JFrame
 			gridBagConstraints144.gridy = 0;
 			jLabel71 = new ExtendedLabel(null, Font.BOLD);
 			jLabel71.setText("保険証情報");
+			
+			// edit n.ohkubo 2015/03/01　追加　start
+			ExtendedLabel hokenshoInfo = new ExtendedLabel();
+			hokenshoInfo.setText("（被保険者証等の記号と番号は、全角と半角の混在は出来ません）");
+			GridBagConstraints gridBagConstraintsHokenshoInfo = new GridBagConstraints();
+			gridBagConstraintsHokenshoInfo.gridx = 2;
+			gridBagConstraintsHokenshoInfo.anchor = GridBagConstraints.WEST;
+			gridBagConstraintsHokenshoInfo.insets = new Insets(0, 0, 5, 0);
+			gridBagConstraintsHokenshoInfo.gridy = 0;
+			gridBagConstraintsHokenshoInfo.gridwidth = 4;
+			// edit n.ohkubo 2015/03/01　追加　end
+			
 			GridBagConstraints gridBagConstraints143 = new GridBagConstraints();
 			gridBagConstraints143.gridx = 5;
 			gridBagConstraints143.anchor = GridBagConstraints.WEST;
@@ -2436,13 +2449,16 @@ public class JKojinRegisterFrame extends JFrame
 			gridBagConstraints139.anchor = GridBagConstraints.WEST;
 			gridBagConstraints139.gridy = 2;
 			jLabel_bango_format = new ExtendedLabel();
-			jLabel_bango_format.setText("（全角のみ20文字以内）");
+//			jLabel_bango_format.setText("（全角のみ20文字以内）");			// edit n.ohkubo 2015/03/01　削除
+			jLabel_bango_format.setText("（全角20文字/半角40文字以内）");		// edit n.ohkubo 2015/03/01　追加
+			
 			GridBagConstraints gridBagConstraints138 = new GridBagConstraints();
 			gridBagConstraints138.gridx = 5;
 			gridBagConstraints138.anchor = GridBagConstraints.WEST;
 			gridBagConstraints138.gridy = 1;
 			jLabel_kigo_format = new ExtendedLabel();
-			jLabel_kigo_format.setText("（全角のみ20文字以内）");
+//			jLabel_kigo_format.setText("（全角のみ20文字以内）");			// edit n.ohkubo 2015/03/01　削除
+			jLabel_kigo_format.setText("（全角20文字/半角40文字以内）");		// edit n.ohkubo 2015/03/01　追加
 
 			GridBagConstraints gridBagConstraints29 = new GridBagConstraints();
 			gridBagConstraints29.anchor = GridBagConstraints.WEST;
@@ -2567,6 +2583,7 @@ public class JKojinRegisterFrame extends JFrame
 			// add ver2 s.inoue 2009/07/29
 			jPanel6.add(jLabel_yearold_format, gridBagConstraints146);
 			jPanel6.add(jLabel71, gridBagConstraints144);
+			jPanel6.add(hokenshoInfo, gridBagConstraintsHokenshoInfo);	// edit n.ohkubo 2015/03/01　追加
 			jPanel6.add(jLabel_sex_format, gridBagConstraints145);
 		}
 		return jPanel6;

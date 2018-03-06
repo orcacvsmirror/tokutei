@@ -60,6 +60,7 @@ import org.apache.log4j.Logger;
 import org.openswing.swing.client.GridControl;
 import org.openswing.swing.client.GridControl.ColumnContainer;
 import org.openswing.swing.client.TextControl;
+import org.openswing.swing.table.client.Grid;
 import org.openswing.swing.table.columns.client.CheckBoxColumn;
 import org.openswing.swing.table.columns.client.ComboColumn;
 import org.openswing.swing.table.columns.client.TextColumn;
@@ -162,6 +163,13 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 		return this.savedJCheckBox;
 	}
 	// edit n.ohkubo 2014/10/01　追加 end
+	
+	// edit n.ohkubo 2015/03/01　追加 start
+	private boolean isKeyPressed = false;
+	public boolean isKeyPressed() {
+		return this.isKeyPressed;
+	}
+	// edit n.ohkubo 2015/03/01　追加 end
 
 	/* コンストラクタ */
 	public JKenshinKekkaSearchListFrame(Connection conn,
@@ -205,6 +213,23 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 			//このフレーム（一覧画面）がアクティブ化（画面右の検索ウィンドウ）　or　非アクティブ化（検索ウィンドウがポップアップで開かれ場合）されたときに動作するように、Listenerを設定（FilterPanelへのチェックボックス追加はListener内で行う）
 			this.addWindowListener(specialFilterPanel);
 			// edit n.ohkubo 2014/10/01　追加 end　検索画面にチェックボックスを追加
+			
+			// edit n.ohkubo 2015/03/01　追加　start　「Alt+E」等が正常に動作しない対応（キー押下でチェックボックスの値が反転する）
+			Grid table = grid.getTable().getGrid();
+			table.addKeyListener(new KeyListener() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+				}
+				@Override
+				public void keyReleased(KeyEvent e) {
+					isKeyPressed = false;
+				}
+				@Override
+				public void keyPressed(KeyEvent e) {
+					isKeyPressed = true;
+				}
+			});
+			// edit n.ohkubo 2015/03/01　追加　end　「Alt+E」等が正常に動作しない対応（キー押下でチェックボックスの値が反転する）
 
 		} catch (Exception e) {
 			e.printStackTrace();

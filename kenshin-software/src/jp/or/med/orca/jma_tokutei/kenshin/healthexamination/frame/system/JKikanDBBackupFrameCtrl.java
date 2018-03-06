@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
  */
 public class JKikanDBBackupFrameCtrl extends JKikanDBBackupFrame {
 
-	private static final long serialVersionUID = 7977639730666699320L;
+	private static final long serialVersionUID = 7977639730666699320L;	// edit n.ohkubo 2014/10/01　追加
 
 	private JSimpleTable m_model = new JSimpleTable();
 
@@ -458,6 +458,13 @@ public class JKikanDBBackupFrameCtrl extends JKikanDBBackupFrame {
 						int nowVer = 0;
 						try {
 							nowVer = Integer.parseInt(JApplication.versionNumber.replace(".", ""));
+							
+							// edit n.ohkubo 2015/03/01　追加　start　存在しないファイルの場合、エラーメッセージを表示し、正常に終了させる（Exceptionにしない）
+							if (!dirSelect.getSelectedFile().isFile()) {
+								JErrorMessage.show("M4215", this);
+								return;
+							}
+							// edit n.ohkubo 2015/03/01　追加　end　存在しないファイルの場合、エラーメッセージを表示し、正常に終了させる（Exceptionにしない）
 
 							// C:\Users\asc\Desktop\1.4.0_20130301101211.fdb
 							if (dirSelect.getSelectedFile().getPath().indexOf(".fdb")<=0){

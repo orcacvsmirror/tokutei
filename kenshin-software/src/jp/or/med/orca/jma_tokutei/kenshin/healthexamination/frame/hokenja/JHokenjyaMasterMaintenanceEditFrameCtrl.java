@@ -842,6 +842,11 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 		// }else{
 			// add s.inoue 2010/01/15
 
+		// edit n.ohkubo 2015/03/01　追加　start　不要な入力チェックは行わない
+		//保険者情報の更新以外なら、有効期限や単価のチェックを行う
+		if (pmode != CHANGE_MODE) {
+		// edit n.ohkubo 2015/03/01　追加　end　不要な入力チェックは行わない
+
 			// 有効期限必須
 			if (data.getYukouKigenFrom().equals("")){
 				JErrorMessage.show(
@@ -892,7 +897,8 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 				}
 				
 			//「人間ドック」選択時
-			} else {
+//			} else {	// edit n.ohkubo 2015/03/01　削除
+			} else if ("2".equals(data.getTankaHantei())) {	// edit n.ohkubo 2015/03/01　追加
 				
 				//単価（基本的な健診）　※validateDataメソッドで、ブランクの場合「0」を設定しているのでエラーにはならないはずだが、一応チェックする
 				if ("".equals(data.getKihonTanka())) {
@@ -904,9 +910,19 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 					JErrorMessage.show("M3152", null);
 					return false;
 				}
+				
+			// edit n.ohkubo 2015/03/01　追加　start
+			//不正な単価判定
+			} else {
+				//※もっと前でもチェックしているのでエラーにはならないはずだが、一応チェックする
+				JErrorMessage.show("M3127", null);
+				return false;
+			// edit n.ohkubo 2015/03/01　追加　end
+				
 			}
 			// edit n.ohkubo 2014/10/01　追加　end　必須チェックを修正
 			
+		}	// edit n.ohkubo 2015/03/01　追加　不要な入力チェックは行わないifのクローズ
 			
 		// edit s.inoue 2010/01/27
 		// }
@@ -1168,36 +1184,68 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 			buffer.append("HKNJYA_HISTORY_NO,");
 			buffer.append("HKNJYA_LIMITDATE_START,HKNJYA_LIMITDATE_END,");
 			buffer.append("YUKOU_FLG)");
-			buffer.append("VALUES ( "
-				+ JQueryConvert.queryConvertAppendComma(inputHokenjyaNumber)
-				+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getHokenjyaName())
-				+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getZipcode())
-				+ JQueryConvert.queryConvertAppendBlankAndComma(address)
-				+ JQueryConvert.queryConvertAppendBlankAndComma(tiban)
-				+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getTEL())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getCode())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getHonninGairai())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getHonninNyuin())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getKazokuGairai())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getKazokuNyuin())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getItakuKubun())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getKihonTanka())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getHinketsuCode())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getHinketsuTanka())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getShindenzuCode())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getSindenzuTanka())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getGanteiCode())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getGanteiTanka())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getNingenDocTanka())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getTankaHantei())
-				// edit s.inoue 2010/01/19
-				+ JQueryConvert.queryConvertAppendComma(String.valueOf(historyNum))
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getYukouKigenFrom())
-				+ JQueryConvert.queryConvertAppendComma(validatedData.getYukouKigenTo())
-				// edit s.inoue 2010/01/13
-				// 有効フラグを"1"で登録する。validatedData.getYukouFlg()
-				+ JQueryConvert.queryConvert("1")
-				+ ")");
+			// edit n.ohkubo 2015/03/01　削除　start　「'」の入力を可能にするために、プリペアーにする
+//			buffer.append("VALUES ( "
+//				+ JQueryConvert.queryConvertAppendComma(inputHokenjyaNumber)
+//				+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getHokenjyaName())
+//				+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getZipcode())
+//				+ JQueryConvert.queryConvertAppendBlankAndComma(address)
+//				+ JQueryConvert.queryConvertAppendBlankAndComma(tiban)
+//				+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getTEL())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getCode())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getHonninGairai())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getHonninNyuin())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getKazokuGairai())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getKazokuNyuin())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getItakuKubun())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getKihonTanka())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getHinketsuCode())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getHinketsuTanka())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getShindenzuCode())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getSindenzuTanka())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getGanteiCode())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getGanteiTanka())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getNingenDocTanka())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getTankaHantei())
+//				// edit s.inoue 2010/01/19
+//				+ JQueryConvert.queryConvertAppendComma(String.valueOf(historyNum))
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getYukouKigenFrom())
+//				+ JQueryConvert.queryConvertAppendComma(validatedData.getYukouKigenTo())
+//				// edit s.inoue 2010/01/13
+//				// 有効フラグを"1"で登録する。validatedData.getYukouFlg()
+//				+ JQueryConvert.queryConvert("1")
+//				+ ")");
+			// edit n.ohkubo 2015/03/01　削除　end　「'」の入力を可能にするために、プリペアーにする
+			// edit n.ohkubo 2015/03/01　追加　start　「'」の入力を可能にするために、プリペアーにする
+			buffer.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			params = new String[25];
+			params[0] = (inputHokenjyaNumber == null || inputHokenjyaNumber.isEmpty()) ? null : inputHokenjyaNumber;
+			params[1] = (validatedData.getHokenjyaName() == null) ? "" : validatedData.getHokenjyaName();
+			params[2] = (validatedData.getZipcode() == null) ? "" : validatedData.getZipcode();
+			params[3] = (address == null) ? "" : address;
+			params[4] = (tiban == null) ? "" : tiban;
+			params[5] = (validatedData.getTEL() == null) ? "" : validatedData.getTEL();
+			params[6] = (validatedData.getCode() == null || validatedData.getCode().isEmpty()) ? null : validatedData.getCode();
+			params[7] = (validatedData.getHonninGairai() == null || validatedData.getHonninGairai().isEmpty()) ? null : validatedData.getHonninGairai();
+			params[8] = (validatedData.getHonninNyuin() == null || validatedData.getHonninNyuin().isEmpty()) ? null : validatedData.getHonninNyuin();
+			params[9] = (validatedData.getKazokuGairai() == null || validatedData.getKazokuGairai().isEmpty()) ? null : validatedData.getKazokuGairai();
+			params[10] = (validatedData.getKazokuNyuin() == null || validatedData.getKazokuNyuin().isEmpty()) ? null : validatedData.getKazokuNyuin();
+			params[11] = (validatedData.getItakuKubun() == null || validatedData.getItakuKubun().isEmpty()) ? null : validatedData.getItakuKubun();
+			params[12] = (validatedData.getKihonTanka() == null || validatedData.getKihonTanka().isEmpty()) ? null : validatedData.getKihonTanka();
+			params[13] = (validatedData.getHinketsuCode() == null || validatedData.getHinketsuCode().isEmpty()) ? null : validatedData.getHinketsuCode();
+			params[14] = (validatedData.getHinketsuTanka() == null || validatedData.getHinketsuTanka().isEmpty()) ? null : validatedData.getHinketsuTanka();
+			params[15] = (validatedData.getShindenzuCode() == null || validatedData.getShindenzuCode().isEmpty()) ? null : validatedData.getShindenzuCode();
+			params[16] = (validatedData.getSindenzuTanka() == null || validatedData.getSindenzuTanka().isEmpty()) ? null : validatedData.getSindenzuTanka();
+			params[17] = (validatedData.getGanteiCode() == null || validatedData.getGanteiCode().isEmpty()) ? null : validatedData.getGanteiCode();
+			params[18] = (validatedData.getGanteiTanka() == null || validatedData.getGanteiTanka().isEmpty()) ? null : validatedData.getGanteiTanka();
+			params[19] = (validatedData.getNingenDocTanka() == null || validatedData.getNingenDocTanka().isEmpty()) ? null : validatedData.getNingenDocTanka();
+			params[20] = (validatedData.getTankaHantei() == null || validatedData.getTankaHantei().isEmpty()) ? null : validatedData.getTankaHantei();
+			params[21] = (String.valueOf(historyNum) == null || String.valueOf(historyNum).isEmpty()) ? null : String.valueOf(historyNum);
+			params[22] = (validatedData.getYukouKigenFrom() == null || validatedData.getYukouKigenFrom().isEmpty()) ? null : validatedData.getYukouKigenFrom();
+			params[23] = (validatedData.getYukouKigenTo() == null || validatedData.getYukouKigenTo().isEmpty()) ? null : validatedData.getYukouKigenTo();
+			params[24] = "1";
+			// edit n.ohkubo 2015/03/01　追加　end　「'」の入力を可能にするために、プリペアーにする
+
 		}
 		// edit s.inoue 2010/01/21
 		else if (pmode == CHANGE_MODE ||
@@ -1215,34 +1263,102 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 // edit s.inoue 2010/01/21
 			if (pmode == CHANGE_MODE_TANKA){
 //				if (modeYukouKigen == CHANGE_MODE){
-					buffer.append("TANKA_KIHON = "+ JQueryConvert.queryConvertAppendComma(validatedData.getKihonTanka()));
-					buffer.append("HINKETU_CD = "+ JQueryConvert.queryConvertAppendComma(validatedData.getHinketsuCode()));
-					buffer.append("TANKA_HINKETU = "+ JQueryConvert.queryConvertAppendComma(validatedData.getHinketsuTanka()));
-					buffer.append("SINDENZU_CD = "+ JQueryConvert.queryConvertAppendComma(validatedData.getShindenzuCode()));
-					buffer.append("TANKA_SINDENZU = "+ JQueryConvert.queryConvertAppendComma(validatedData.getSindenzuTanka()));
-					buffer.append("GANTEI_CD = "+ JQueryConvert.queryConvertAppendComma(validatedData.getGanteiCode()));
-					buffer.append("TANKA_GANTEI = "+ JQueryConvert.queryConvertAppendComma(validatedData.getGanteiTanka()));
-					buffer.append("TANKA_NINGENDOC = "+ JQueryConvert.queryConvertAppendComma(validatedData.getNingenDocTanka()));
-					buffer.append("TANKA_HANTEI = "+ JQueryConvert.queryConvertAppendComma(validatedData.getTankaHantei()));
-					buffer.append("HKNJYA_LIMITDATE_START = "+ JQueryConvert.queryConvertAppendComma(validatedData.getYukouKigenFrom()));
-					buffer.append("HKNJYA_LIMITDATE_END = "+ JQueryConvert.queryConvertAppendComma(validatedData.getYukouKigenTo()));
-					// add s.inoue 2010/04/21
-					if (itakuEditFlg)
-						buffer.append(" ITAKU_KBN = " +JQueryConvert.queryConvertAppendComma(validatedData.getItakuKubun()));
-
-					buffer.append("YUKOU_FLG = "+ JQueryConvert.queryConvert("1"));
+				// edit n.ohkubo 2015/03/01　削除　start　「'」の入力を可能にするために、プリペアーにする
+//					buffer.append("TANKA_KIHON = "+ JQueryConvert.queryConvertAppendComma(validatedData.getKihonTanka()));
+//					buffer.append("HINKETU_CD = "+ JQueryConvert.queryConvertAppendComma(validatedData.getHinketsuCode()));
+//					buffer.append("TANKA_HINKETU = "+ JQueryConvert.queryConvertAppendComma(validatedData.getHinketsuTanka()));
+//					buffer.append("SINDENZU_CD = "+ JQueryConvert.queryConvertAppendComma(validatedData.getShindenzuCode()));
+//					buffer.append("TANKA_SINDENZU = "+ JQueryConvert.queryConvertAppendComma(validatedData.getSindenzuTanka()));
+//					buffer.append("GANTEI_CD = "+ JQueryConvert.queryConvertAppendComma(validatedData.getGanteiCode()));
+//					buffer.append("TANKA_GANTEI = "+ JQueryConvert.queryConvertAppendComma(validatedData.getGanteiTanka()));
+//					buffer.append("TANKA_NINGENDOC = "+ JQueryConvert.queryConvertAppendComma(validatedData.getNingenDocTanka()));
+//					buffer.append("TANKA_HANTEI = "+ JQueryConvert.queryConvertAppendComma(validatedData.getTankaHantei()));
+//					buffer.append("HKNJYA_LIMITDATE_START = "+ JQueryConvert.queryConvertAppendComma(validatedData.getYukouKigenFrom()));
+//					buffer.append("HKNJYA_LIMITDATE_END = "+ JQueryConvert.queryConvertAppendComma(validatedData.getYukouKigenTo()));
+//					// add s.inoue 2010/04/21
+//					if (itakuEditFlg)
+//						buffer.append(" ITAKU_KBN = " +JQueryConvert.queryConvertAppendComma(validatedData.getItakuKubun()));
+//
+//					buffer.append("YUKOU_FLG = "+ JQueryConvert.queryConvert("1"));
+				// edit n.ohkubo 2015/03/01　削除　end　「'」の入力を可能にするために、プリペアーにする
+					
+					// edit n.ohkubo 2015/03/01　追加　start　「'」の入力を可能にするために、プリペアーにする
+					buffer.append("TANKA_KIHON = ?, ");
+					buffer.append("HINKETU_CD = ?, ");
+					buffer.append("TANKA_HINKETU = ?, ");
+					buffer.append("SINDENZU_CD = ?, ");
+					buffer.append("TANKA_SINDENZU = ?, ");
+					buffer.append("GANTEI_CD = ?, ");
+					buffer.append("TANKA_GANTEI = ?, ");
+					buffer.append("TANKA_NINGENDOC = ?, ");
+					buffer.append("TANKA_HANTEI = ?, ");
+					buffer.append("HKNJYA_LIMITDATE_START = ?, ");
+					buffer.append("HKNJYA_LIMITDATE_END = ?, ");
+					buffer.append("YUKOU_FLG = ?");
+					if (itakuEditFlg) {
+						buffer.append(", ITAKU_KBN = ?");
+					}
+					
+					if (itakuEditFlg) {
+						params = new String[13];
+					} else {
+						params = new String[12];
+					}
+					params[0] = (validatedData.getKihonTanka() == null || validatedData.getKihonTanka().isEmpty()) ? null : validatedData.getKihonTanka();
+					params[1] = (validatedData.getHinketsuCode() == null || validatedData.getHinketsuCode().isEmpty()) ? null : validatedData.getHinketsuCode();
+					params[2] = (validatedData.getHinketsuTanka() == null || validatedData.getHinketsuTanka().isEmpty()) ? null : validatedData.getHinketsuTanka();
+					params[3] = (validatedData.getShindenzuCode() == null || validatedData.getShindenzuCode().isEmpty()) ? null : validatedData.getShindenzuCode();
+					params[4] = (validatedData.getSindenzuTanka() == null || validatedData.getSindenzuTanka().isEmpty()) ? null : validatedData.getSindenzuTanka();
+					params[5] = (validatedData.getGanteiCode() == null || validatedData.getGanteiCode().isEmpty()) ? null : validatedData.getGanteiCode();
+					params[6] = (validatedData.getGanteiTanka() == null || validatedData.getGanteiTanka().isEmpty()) ? null : validatedData.getGanteiTanka();
+					params[7] = (validatedData.getNingenDocTanka() == null || validatedData.getNingenDocTanka().isEmpty()) ? null : validatedData.getNingenDocTanka();
+					params[8] = (validatedData.getTankaHantei() == null || validatedData.getTankaHantei().isEmpty()) ? null : validatedData.getTankaHantei();
+					params[9] = (validatedData.getYukouKigenFrom() == null || validatedData.getYukouKigenFrom().isEmpty()) ? null : validatedData.getYukouKigenFrom();
+					params[10] = (validatedData.getYukouKigenTo() == null || validatedData.getYukouKigenTo().isEmpty()) ? null : validatedData.getYukouKigenTo();
+					params[11] = "1";
+					if (itakuEditFlg) {
+						params[12] = (validatedData.getItakuKubun() == null || validatedData.getItakuKubun().isEmpty()) ? null : validatedData.getItakuKubun();
+					}
+					// edit n.ohkubo 2015/03/01　追加　end　「'」の入力を可能にするために、プリペアーにする
 
 				}else{
-					buffer.append("HKNJANAME = "+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getHokenjyaName()));
-					buffer.append("POST = "+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getZipcode()));
-					buffer.append("ADRS = "+ JQueryConvert.queryConvertAppendBlankAndComma(address));
-					buffer.append("BANTI = "+ JQueryConvert.queryConvertAppendBlankAndComma(tiban));
-					buffer.append("TEL = "+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getTEL()));
-					buffer.append("KIGO = "+ JQueryConvert.queryConvertAppendComma(validatedData.getCode()));
-					buffer.append("HON_GAIKYURATE = "+ JQueryConvert.queryConvertAppendComma(validatedData.getHonninGairai()));
-					buffer.append("HON_NYUKYURATE = "+ JQueryConvert.queryConvertAppendComma(validatedData.getHonninNyuin()));
-					buffer.append("KZK_GAIKYURATE = "+ JQueryConvert.queryConvertAppendComma(validatedData.getKazokuGairai()));
-					buffer.append("KZK_NYUKYURATE = "+ JQueryConvert.queryConvert(validatedData.getKazokuNyuin()));
+					// edit n.ohkubo 2015/03/01　削除　start　「'」の入力を可能にするために、プリペアーにする
+//					buffer.append("HKNJANAME = "+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getHokenjyaName()));
+//					buffer.append("POST = "+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getZipcode()));
+//					buffer.append("ADRS = "+ JQueryConvert.queryConvertAppendBlankAndComma(address));
+//					buffer.append("BANTI = "+ JQueryConvert.queryConvertAppendBlankAndComma(tiban));
+//					buffer.append("TEL = "+ JQueryConvert.queryConvertAppendBlankAndComma(validatedData.getTEL()));
+//					buffer.append("KIGO = "+ JQueryConvert.queryConvertAppendComma(validatedData.getCode()));
+//					buffer.append("HON_GAIKYURATE = "+ JQueryConvert.queryConvertAppendComma(validatedData.getHonninGairai()));
+//					buffer.append("HON_NYUKYURATE = "+ JQueryConvert.queryConvertAppendComma(validatedData.getHonninNyuin()));
+//					buffer.append("KZK_GAIKYURATE = "+ JQueryConvert.queryConvertAppendComma(validatedData.getKazokuGairai()));
+//					buffer.append("KZK_NYUKYURATE = "+ JQueryConvert.queryConvert(validatedData.getKazokuNyuin()));
+					// edit n.ohkubo 2015/03/01　削除　end　「'」の入力を可能にするために、プリペアーにする
+					
+					// edit n.ohkubo 2015/03/01　追加　start　「'」の入力を可能にするために、プリペアーにする
+					buffer.append("HKNJANAME = ?, ");
+					buffer.append("POST = ?, ");
+					buffer.append("ADRS = ?, ");
+					buffer.append("BANTI = ?, ");
+					buffer.append("TEL = ?, ");
+					buffer.append("KIGO = ?, ");
+					buffer.append("HON_GAIKYURATE = ?, ");
+					buffer.append("HON_NYUKYURATE = ?, ");
+					buffer.append("KZK_GAIKYURATE = ?, ");
+					buffer.append("KZK_NYUKYURATE = ?");
+
+					params = new String[10];
+					params[0] = (validatedData.getHokenjyaName() == null) ? "" : validatedData.getHokenjyaName();
+					params[1] = (validatedData.getZipcode() == null) ? "" : validatedData.getZipcode();
+					params[2] = (address == null) ? "" : address;
+					params[3] = (tiban == null) ? "" : tiban;
+					params[4] = (validatedData.getTEL() == null) ? "" : validatedData.getTEL();
+					params[5] = (validatedData.getCode() == null || validatedData.getCode().isEmpty()) ? null : validatedData.getCode();
+					params[6] = (validatedData.getHonninGairai() == null || validatedData.getHonninGairai().isEmpty()) ? null : validatedData.getHonninGairai();
+					params[7] = (validatedData.getHonninNyuin() == null || validatedData.getHonninNyuin().isEmpty()) ? null : validatedData.getHonninNyuin();
+					params[8] = (validatedData.getKazokuGairai() == null || validatedData.getKazokuGairai().isEmpty()) ? null : validatedData.getKazokuGairai();
+					params[9] = (validatedData.getKazokuNyuin() == null || validatedData.getKazokuNyuin().isEmpty()) ? null : validatedData.getKazokuNyuin();
+					// edit n.ohkubo 2015/03/01　追加　end　「'」の入力を可能にするために、プリペアーにする
 				}
 
 				buffer.append(" WHERE HKNJANUM = "+ JQueryConvert.queryConvert(validatedData.getHokenjyaNumber()));
@@ -1264,7 +1380,8 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 			// JApplication.kikanDatabase.Transaction();
 			JApplication.kikanDatabase.getMConnection().setAutoCommit(false);
 
-			JApplication.kikanDatabase.sendNoResultQuery(buffer.toString());
+//			JApplication.kikanDatabase.sendNoResultQuery(buffer.toString());			// edit n.ohkubo 2015/03/01　削除　「'」の入力を可能にするために、プリペアーにする
+			JApplication.kikanDatabase.sendNoResultQuery(buffer.toString(), params);	// edit n.ohkubo 2015/03/01　追加　「'」の入力を可能にするために、プリペアーにする
 
 			// add s.inoue 2012/10/24
 			Domain dm = JApplication.clientSettings.getDomain(JApplication.hokenjaDomain.getDomainId());
@@ -1453,7 +1570,8 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 	}
 
 	private boolean validateData(int pmode) {
-		String radioHantei = jRadioButton_Kihon.isSelected() ? "1" : "2";
+//		String radioHantei = jRadioButton_Kihon.isSelected() ? "1" : "2";	// edit n.ohkubo 2015/03/01　削除
+		String radioHantei = jRadioButton_Kihon.isSelected() ? "1" : jRadioButton_Doc.isSelected() ? "2" : "";	// edit n.ohkubo 2015/03/01　追加
 		// edit s.inoue 2009/12/02 基本単価必須の為、人間ドックの場合ゼロ登録させる
 		String kihontanka = jTextField_KihonTanka.getText();
 //		kihontanka = (kihontanka.equals("")) ? "0" : kihontanka;	// edit n.ohkubo 2014/10/01　削除
@@ -1475,19 +1593,39 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 		}
 		address = JValidate.encodeUNICODEtoConvert(address);
 
-		rettanka= validatedData.setHokenjyaName(jTextField_HokenjyaName.getText())
-			&& validatedData.setHokenjyaNumber(jTextField_HokenjyaNumber.getText())
-			&& validatedData.setHonninGairai(jTextField_HonninGairai.getText())
-			&& validatedData.setHinketsuCode(jTextField_HinketuCode.getText())
-			&& validatedData.setShindenzuCode(jTextField_SindenzuCode.getText())
-			&& validatedData.setGanteiCode(jTextField_GanteiCode.getText())
-			&& validatedData.setTEL(jTextField_TEL.getText())
-			&& validatedData.setZipcode(jTextField_Zipcode.getTextTrim())
-			// edit s.inoue 2010/02/01
-			&& validatedData.setAddress(address)
-			&& validatedData.setChiban(jTextField_Chiban.getText())
-			&& validatedData.setKigo(jTextField_Kigo.getText());
+		// edit n.ohkubo 2015/03/01　追加　start　不要な入力チェックは行わない
+		//有効期限や単価の更新の場合、保険者の情報はチェックしない
+		if(pmode != ADD_MODE_TANKA && pmode != CHANGE_MODE_TANKA) {
+		// edit n.ohkubo 2015/03/01　追加　end　不要な入力チェックは行わない
+			
+			rettanka= validatedData.setHokenjyaName(jTextField_HokenjyaName.getText())
+				&& validatedData.setHokenjyaNumber(jTextField_HokenjyaNumber.getText())
+				&& validatedData.setHonninGairai(jTextField_HonninGairai.getText())
+				&& validatedData.setHinketsuCode(jTextField_HinketuCode.getText())
+				&& validatedData.setShindenzuCode(jTextField_SindenzuCode.getText())
+				&& validatedData.setGanteiCode(jTextField_GanteiCode.getText())
+				&& validatedData.setTEL(jTextField_TEL.getText())
+				&& validatedData.setZipcode(jTextField_Zipcode.getTextTrim())
+				// edit s.inoue 2010/02/01
+				&& validatedData.setAddress(address)
+				&& validatedData.setChiban(jTextField_Chiban.getText())
+				&& validatedData.setKigo(jTextField_Kigo.getText());
+			
+		// edit n.ohkubo 2015/03/01　追加　start　不要な入力チェックは行わない
+		} else {
+			//画面から変更できない値を設定（画面上からは変更できないので、エラーチェックには引っかからないはず）
+			validatedData.setHokenjyaNumber(jTextField_HokenjyaNumber.getText());
+			validatedData.setHonninGairai(jTextField_HonninGairai.getText());
+			validatedData.setHinketsuCode(jTextField_HinketuCode.getText());
+			validatedData.setShindenzuCode(jTextField_SindenzuCode.getText());
+			validatedData.setGanteiCode(jTextField_GanteiCode.getText());
+		}
+		// edit n.ohkubo 2015/03/01　追加　end　不要な入力チェックは行わない
 
+		// edit n.ohkubo 2015/03/01　追加　start　不要な入力チェックは行わない
+		//保険者の更新の場合、有効期限や単価の情報はチェックしない
+		if (pmode != CHANGE_MODE) {
+			
 	// edit s.inoue 2010/02/01
 	rethokenjya =
 //	rethokenjya = validatedData.setAddress(jTextField_Address.getText())
@@ -1513,8 +1651,28 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 			// eidt s.inoue 2011/12/13
 			&& validatedData.setYukouKigenFrom(jTextField_YukoukigenFrom.getDateText())
 			&& validatedData.setYukouKigenTo(jTextField_YukoukigenTo.getDateText());
+	
+		// edit n.ohkubo 2015/03/01　追加　start　不要な入力チェックは行わない
+		} else {
+			//画面から変更できない値を設定（画面上からは変更できないので、エラーチェックには引っかからないはず）
+			validatedData.setHonninNyuin(jTextField_HonninNyuin.getText());
+			validatedData.setKazokuGairai(jTextField_KazokuNyuin.getText());
+			validatedData.setKazokuNyuin(jTextField_KazokuNyuin.getText());
+			validatedData.setHknjyaHistoryNumber(historyNumber);
+		}
+		// edit n.ohkubo 2015/03/01　追加　end　不要な入力チェックは行わない
 
-		return rettanka && rethokenjya;
+//		return rettanka && rethokenjya;	// edit n.ohkubo 2015/03/01　削除
+		// edit n.ohkubo 2015/03/01　追加　start　不要な入力チェックは行わない
+//		System.out.println("pmode:[" + pmode + "] rettanka:[" + rettanka + "] rethokenjya:[" + rethokenjya + "]");
+		if (pmode == ADD_MODE) {
+			return rettanka && rethokenjya;
+		} else if (pmode == CHANGE_MODE) {
+			return rettanka;
+		} else {
+			return rethokenjya;
+		}
+		// edit n.ohkubo 2015/03/01　追加　end　不要な入力チェックは行わない
 	}
 
 	// add s.inoue 2010/01/12
@@ -1601,7 +1759,8 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 					this.jTextField_HokenjyaName.setText(vec.get(1));
 					this.jTextField_Address.setText(vec.get(2));
 					this.jTextField_Zipcode.setText(vec.get(3));
-					this.jTextField_TEL.setText(vec.get(4));
+//					this.jTextField_TEL.setText(vec.get(4));	// edit n.ohkubo 2015/03/01　削除
+					this.jTextField_TEL.setText((vec.get(4) != null) ? vec.get(4).replaceAll("-", "") : vec.get(4));	// edit n.ohkubo 2015/03/01　追加
 					// add s.inoue 2012/05/08
 					this.jTextField_Chiban.grabFocus();
 				}else if (dialogs.getStatus().equals(RETURN_VALUE.CANCEL)){
@@ -1688,34 +1847,34 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 //			this.jTextField_HokenjyaName.grabFocus();
 //		}
 	}
-
-	private void setDbDataToComponent(ArrayList<Hashtable<String, String>> result) {
-		jTextField_HokenjyaName.setText(result.get(0).get("hknjaname"));
-		jTextField_Zipcode.setText(result.get(0).get("post").trim());
-		jTextField_Address.setText(result.get(0).get("adrs"));
-		jTextField_Chiban.setText(result.get(0).get("banti"));
-		jTextField_Kigo.setText(result.get(0).get("kigo"));
-		jTextField_HonninGairai.setText(result.get(0).get("hon_gaikyurate"));
-		jTextField_HonninNyuin.setText(result.get(0).get("hon_nyukyurate"));
-		jTextField_KazokuGairai.setText(result.get(0).get("kzk_gaikyurate"));
-		jTextField_KazokuNyuin.setText(result.get(0).get("kzk_nyukyurate"));
-	}
-
-	private ArrayList<Hashtable<String, String>> getHokenjaInfo(
-			JConnection sql,
-			String hokenjyaNumber
-			) throws SQLException {
-
-		String numberForSql =
-			JQueryConvert.queryConvert(hokenjyaNumber);
-
-		ArrayList<Hashtable<String, String>> result =
-			sql.sendExecuteQuery(
-				"SELECT * FROM TBL_HKNJAINF WHERE HKNJANUM = "
-						+ numberForSql);
-
-		return result;
-	}
+	// edit n.ohkubo 2015/03/01　未使用なので削除
+//	private void setDbDataToComponent(ArrayList<Hashtable<String, String>> result) {
+//		jTextField_HokenjyaName.setText(result.get(0).get("hknjaname"));
+//		jTextField_Zipcode.setText(result.get(0).get("post").trim());
+//		jTextField_Address.setText(result.get(0).get("adrs"));
+//		jTextField_Chiban.setText(result.get(0).get("banti"));
+//		jTextField_Kigo.setText(result.get(0).get("kigo"));
+//		jTextField_HonninGairai.setText(result.get(0).get("hon_gaikyurate"));
+//		jTextField_HonninNyuin.setText(result.get(0).get("hon_nyukyurate"));
+//		jTextField_KazokuGairai.setText(result.get(0).get("kzk_gaikyurate"));
+//		jTextField_KazokuNyuin.setText(result.get(0).get("kzk_nyukyurate"));
+//	}
+	// edit n.ohkubo 2015/03/01　未使用なので削除
+//	private ArrayList<Hashtable<String, String>> getHokenjaInfo(
+//			JConnection sql,
+//			String hokenjyaNumber
+//			) throws SQLException {
+//
+//		String numberForSql =
+//			JQueryConvert.queryConvert(hokenjyaNumber);
+//
+//		ArrayList<Hashtable<String, String>> result =
+//			sql.sendExecuteQuery(
+//				"SELECT * FROM TBL_HKNJAINF WHERE HKNJANUM = "
+//						+ numberForSql);
+//
+//		return result;
+//	}
 
 	/**
 	 * 登録ボタン
@@ -2070,7 +2229,8 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 		this.jTextField_HokenjyaName.setText(item.get("INSURER_NAME"));
 		this.jTextField_Address.setText(item.get("INSURER_ADDRESS"));
 		this.jTextField_Zipcode.setText(item.get("INSURER_POST"));
-		this.jTextField_TEL.setText(item.get("INSURER_TEL"));
+//		this.jTextField_TEL.setText(item.get("INSURER_TEL"));	// edit n.ohkubo 2015/03/01　削除
+		this.jTextField_TEL.setText((item.get("INSURER_TEL") != null) ? item.get("INSURER_TEL").replaceAll("-", "") : item.get("INSURER_TEL"));	// edit n.ohkubo 2015/03/01　追加
 
 		return bln;
 	}

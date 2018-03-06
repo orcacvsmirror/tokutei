@@ -287,7 +287,8 @@ public class JShiharaiMasterMaintenanceListFrame extends JFrame implements KeyLi
 		grid.getColumnContainer().add(textColumn_TEL, null);
 
 		// edit n.ohkubo 2014/10/01　追加　start　openswingのバグ対応（putする数と"並び順"で指定した個数が一致するとIndexOutOfBoundsExceptionが発生し、検索画面が開かなくなる対応）
-		Column dummy = new Column();
+//		Column dummy = new Column();		// edit n.ohkubo 2015/03/01　削除　一覧をクリックしても反応しない対応
+		Column dummy = new TextColumn();	// edit n.ohkubo 2015/03/01　追加　一覧をクリックしても反応しない対応
 		dummy.setColumnName("DUMMY");
 		dummy.setAutoFitColumn(false);
 		dummy.setAutoscrolls(false);
