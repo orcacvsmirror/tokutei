@@ -1,40 +1,33 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.kenshin;
 
-import org.apache.log4j.Logger;
-import org.openswing.swing.table.client.GridController;
-import org.openswing.swing.table.columns.client.CheckBoxColumn;
-import org.openswing.swing.message.receive.java.*;
-
-import java.awt.Checkbox;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Date;
-import java.sql.*;
-
-import javax.swing.JCheckBox;
-import javax.swing.KeyStroke;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
-import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenNavigatorBar;
 import jp.or.med.orca.jma_tokutei.common.util.FiscalYearUtil;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.hantei.JHanteiSearchResultListFrameData;
 
-import org.openswing.swing.table.java.GridDataLocator;
-import org.openswing.swing.util.java.Consts;
+import org.apache.log4j.Logger;
 import org.openswing.swing.client.GridControl;
-import org.openswing.swing.server.QueryUtil;
-import org.openswing.swing.server.UserSessionParameters;
-import org.openswing.swing.message.send.java.FilterWhereClause;
-import org.openswing.swing.message.send.java.GridParams;
 import org.openswing.swing.export.java.ExportOptions;
 import org.openswing.swing.form.client.FormController;
+import org.openswing.swing.message.receive.java.ErrorResponse;
+import org.openswing.swing.message.receive.java.Response;
+import org.openswing.swing.message.receive.java.VOResponse;
+import org.openswing.swing.message.receive.java.ValueObject;
+import org.openswing.swing.message.send.java.FilterWhereClause;
+import org.openswing.swing.message.send.java.GridParams;
+import org.openswing.swing.server.QueryUtil;
+import org.openswing.swing.server.UserSessionParameters;
+import org.openswing.swing.table.client.GridController;
+import org.openswing.swing.table.java.GridDataLocator;
 
 /**
  * 一覧Ctl画面
@@ -236,7 +229,10 @@ public class JKenshinKekkaSearchListFrameCtl
 		// add s.inoue 2013/02/26
 		if (selectedRows == null)return;
 
-		if (selectedRows.size() <= 1)return;
+		// edit s.inoue 2013/10/24
+		// if (selectedRows.size() <= 1)return;
+		if (grid.getGrid().getVOListTableModel().getRowCount() == 0)return;
+
 		for (int i = 0; i < selectedRows.size(); i++) {
 			grid.getGrid().getVOListTableModel().setValueAt("N", selectedRows.get(i), 0);
 			grid.getGrid().getVOListTableModel().setValueAt("Y", selectedRows.get(i), 0);
@@ -326,17 +322,62 @@ public class JKenshinKekkaSearchListFrameCtl
 					filteredColumns, currentSortedColumns,
 					currentSortedVersusColumns, otherGridParams);
 
+			// add s.inoue 2013/11/06
+			// 初期値 又は あいまい検索の設定
+		    if (currentSortedColumns.iterator().hasNext()){
+				Iterator it_dt = currentSortedColumns.iterator();
+				Object sortClauses = null;
+
+			    // add s.inoue 2013/11/06
+			    JApplication.currentSortedColumns = new ArrayList();
+
+			    while(it_dt.hasNext()) {
+			      sortClauses = (Object)it_dt.next();
+			      // add s.inoue 2013/11/06
+			      JApplication.currentSortedColumns.add(sortClauses);
+			    }
+		    }
+
+		    // add s.inoue 2013/11/19
+		    JApplication.currentSorted = new HashMap<Integer, String>();		    
+		    int keymap = 0;
+		    
+		    if (currentSortedVersusColumns.iterator().hasNext()){
+				Iterator it_dt = currentSortedVersusColumns.iterator();
+				Object sortClauses = null;
+
+			    // add s.inoue 2013/11/06
+				JApplication.currentSortedVersusColumns = new ArrayList();
+			    
+			    while(it_dt.hasNext()) {
+			      sortClauses = (Object)it_dt.next();
+			      // add s.inoue 2013/11/06
+			      JApplication.currentSortedVersusColumns.add(sortClauses);
+			      // add s.inoue 2013/11/19
+			      JApplication.currentSorted.put(keymap, (String)sortClauses);
+			      keymap++;
+			    }
+		    }
+
 			// 初期値 又は あいまい検索の設定
 		    if (filteredColumns.values().iterator().hasNext()){
 				Iterator it_dt = filteredColumns.values().iterator();
 			    FilterWhereClause[] filterClauses = null;
+
+			    // add s.inoue 2013/11/06
+			    int ii = 0;
+			    JApplication.clauseDesign = new FilterWhereClause[filteredColumns.size()];
 
 			    // add s.inoue 2013/03/25
 			    while(it_dt.hasNext()) {
 			      filterClauses = (FilterWhereClause[])it_dt.next();
 
 			      if (filterClauses[0].getOperator().equals("like")){
-			    	  filterClauses[0].setValue("%" + filterClauses[0].getValue() + "%");
+			    	  // add s.inoue 2014/03/18
+			    	  String filterval = filterClauses[0].getValue().toString();
+			    	  if(!filterval.startsWith("%"))
+			    		  filterval = "%"+filterval+"%";
+			    	  filterClauses[0].setValue(filterval);
 
 						gridParams.getFilteredColumns().put(filterClauses[0].getAttributeName(),
 								new FilterWhereClause[] { filterClauses[0], null });
@@ -348,26 +389,62 @@ public class JKenshinKekkaSearchListFrameCtl
 //			    	  filterClauses[0].setValue(filterClauses[0].getValue());
 //					  gridParams.getFilteredColumns().put(filterClauses[0].getAttributeName(),
 //								new FilterWhereClause[] { filterClauses[0], null });
+
 			      }
+
+			      // add s.inoue 2013/11/06
+			      JApplication.clauseDesign[ii] = new FilterWhereClause();
+				  JApplication.clauseDesign[ii].setAttributeName(filterClauses[0].getAttributeName());
+				  JApplication.clauseDesign[ii].setOperator(filterClauses[0].getOperator());
+				  // edit s.inoue 2014/03/18
+		    	  String filterval = filterClauses[0].getValue().toString();
+		    	  // JApplication.clauseDesign[ii].setValue(filterClauses[0].getValue());
+		    	  if(filterval.startsWith("%"))
+		    		  filterval = filterval.replaceAll("%", "");
+		    	  JApplication.clauseDesign[ii].setValue(filterval);
+				  ii++;
 			    }
 		    }else{
 		    	// eidt s.inoue 2012/11/16
 		    	if (firstViewFlg){
 
-					DateFormat format = new SimpleDateFormat("yyyy");
-					// eidt s.inoue 2013/01/21
-					// 今年→本年度
-					// String cYear = format.format(new Date());
-					String cYear = String.valueOf(FiscalYearUtil.getThisYear());
+		    		// add s.inoue 2013/11/06
+		    		if(JApplication.clauseDesign != null){
+		    			for (int i = 0; i < JApplication.clauseDesign.length; i++) {
+			    			gridParams.getFilteredColumns().put(JApplication.clauseDesign[i].getAttributeName(),
+									new FilterWhereClause[] { JApplication.clauseDesign[i], null });
+						}
+		    		}else{
+						DateFormat format = new SimpleDateFormat("yyyy");
+						// eidt s.inoue 2013/01/21
+						// 今年→本年度
+						// String cYear = format.format(new Date());
+						String cYear = String.valueOf(FiscalYearUtil.getThisYear());
 
-			    	// 年度は健診実施日が空の場合があるので省略
-					FilterWhereClause clauseDesign = new FilterWhereClause();
-					clauseDesign.setAttributeName("NENDO");
-					clauseDesign.setOperator("=");
-					clauseDesign.setValue(cYear);
+				    	// 年度は健診実施日が空の場合があるので省略
+						FilterWhereClause clauseDesign = new FilterWhereClause();
+						clauseDesign.setAttributeName("NENDO");
+						clauseDesign.setOperator("=");
+						clauseDesign.setValue(cYear);
 
-					gridParams.getFilteredColumns().put(clauseDesign.getAttributeName(),
-							new FilterWhereClause[] { clauseDesign, null });
+						gridParams.getFilteredColumns().put(clauseDesign.getAttributeName(),
+								new FilterWhereClause[] { clauseDesign, null });
+		    		}
+		    		
+// del s.inoue 2013/11/19
+//		    		// add s.inoue 2013/11/06
+//		    		if(JApplication.currentSortedColumns != null){
+//		    			for (int i = 0; i < JApplication.currentSortedColumns.size(); i++) {
+//			    			gridParams.getCurrentSortedColumns().add(JApplication.currentSortedColumns.get(i));
+//						}
+//		    		}
+//
+//		    		if(JApplication.currentSortedVersusColumns != null){
+//		    			for (int i = 0; i < JApplication.currentSortedVersusColumns.size(); i++) {
+//			    			gridParams.getCurrentSortedVersusColumns().add(JApplication.currentSortedVersusColumns.get(i));
+//						}
+//		    		}
+
 		    	}
 		    }
 

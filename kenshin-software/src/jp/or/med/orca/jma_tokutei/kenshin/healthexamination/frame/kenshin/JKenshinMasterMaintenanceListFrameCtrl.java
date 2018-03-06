@@ -1,34 +1,31 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.kenshin;
 
-import org.apache.log4j.Logger;
-import org.openswing.swing.table.client.GridController;
-import java.util.*;
-
-import org.openswing.swing.message.receive.java.*;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.kenshinpattern.JKenshinpatternMasterMaintenanceListFrameCtrl;
 
-import org.openswing.swing.message.send.java.FilterWhereClause;
-import org.openswing.swing.table.java.GridDataLocator;
-import org.openswing.swing.table.client.Grid;
+import org.apache.log4j.Logger;
 import org.openswing.swing.client.GridControl;
+import org.openswing.swing.export.java.ExportOptions;
+import org.openswing.swing.message.receive.java.ErrorResponse;
+import org.openswing.swing.message.receive.java.Response;
+import org.openswing.swing.message.receive.java.VOListResponse;
+import org.openswing.swing.message.receive.java.VOResponse;
+import org.openswing.swing.message.receive.java.ValueObject;
+import org.openswing.swing.message.send.java.FilterWhereClause;
+import org.openswing.swing.message.send.java.GridParams;
 import org.openswing.swing.server.QueryUtil;
 import org.openswing.swing.server.UserSessionParameters;
-import org.openswing.swing.message.send.java.GridParams;
-import org.openswing.swing.util.client.ClientSettings;
-import org.openswing.swing.util.java.Consts;
-import org.openswing.swing.domains.java.Domain;
-import org.openswing.swing.export.java.ExportOptions;
-
-import sun.java2d.Disposer;
+import org.openswing.swing.table.client.GridController;
+import org.openswing.swing.table.java.GridDataLocator;
 
 /**
  * ˆê——Ctl‰æ–Ê
@@ -160,7 +157,11 @@ public class JKenshinMasterMaintenanceListFrameCtrl
 //			      System.out.println(filterClauses[0].getOperator());
 
 			      if (filterClauses[0].getOperator().equals("like")){
-			    	  filterClauses[0].setValue("%" + filterClauses[0].getValue() + "%");
+						// add s.inoue 2014/03/18
+					    String filterval = filterClauses[0].getValue().toString();
+					    if(!filterval.startsWith("%"))
+					      filterval = "%"+filterval+"%";
+					      filterClauses[0].setValue(filterval);
 
 						gridParams.getFilteredColumns().put(filterClauses[0].getAttributeName(),
 								new FilterWhereClause[] { filterClauses[0], null });
@@ -184,8 +185,9 @@ public class JKenshinMasterMaintenanceListFrameCtrl
 //			}
 
 			StringBuilder sb = new StringBuilder();
+			// eidt s.inoue 2013/06/18
 			sb.append("SELECT HKNJANUM,KOUMOKU_CD,KOUMOKU_NAME,KENSA_HOUHOU,HISU_FLG,DS_KAGEN,DS_JYOUGEN,JS_KAGEN,");
-			sb.append("JS_JYOUGEN,TANI,TANKA_KENSIN,BIKOU");
+			sb.append("JS_JYOUGEN,TANI,TANKA_KENSIN,BIKOU,JYOUGEN,KAGEN ");
 			sb.append(" FROM T_KENSHINMASTER");
 
 			// add s.inoue 2012/04/20
@@ -356,7 +358,7 @@ public class JKenshinMasterMaintenanceListFrameCtrl
 			  return validatedData.setJS_JYOUGEN((String)newValue);
 		  }else if (attributeName.equals("TANI")){
 			  return validatedData.setTANI((String)newValue);
-			  // del s.inoue 2013/05/10
+// del s.inoue 2013/05/10
 //		  }else if (attributeName.equals("KAGEN")){
 //			  return validatedData.setKAGEN((String)newValue);
 //		  }else if (attributeName.equals("JYOUGEN")){

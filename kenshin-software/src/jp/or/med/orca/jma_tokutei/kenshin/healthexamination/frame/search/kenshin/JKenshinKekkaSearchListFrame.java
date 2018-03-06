@@ -1,26 +1,38 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.kenshin;
 
-import javax.swing.*;
-
-import org.apache.log4j.Logger;
-import org.openswing.swing.client.*;
-import java.awt.*;
-
-import org.openswing.swing.table.columns.client.*;
-
-import java.sql.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.print.PrinterException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.EnumSet;
 import java.util.Hashtable;
 import java.util.TreeMap;
-import java.awt.event.*;
-import java.awt.print.PrinterException;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
+import jp.or.med.orca.jma_tokutei.common.app.JApplication.FlagEnum_Serche;
 import jp.or.med.orca.jma_tokutei.common.app.JPath;
-import jp.or.med.orca.jma_tokutei.common.component.ExtendedButton;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedImageIcon;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedLabel;
 import jp.or.med.orca.jma_tokutei.common.component.TitleLabel;
@@ -43,6 +55,14 @@ import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintNyuryoku;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Iraisho;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Kikan;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Kojin;
+
+import org.apache.log4j.Logger;
+import org.openswing.swing.client.GridControl;
+import org.openswing.swing.client.TextControl;
+import org.openswing.swing.table.columns.client.CheckBoxColumn;
+import org.openswing.swing.table.columns.client.ComboColumn;
+import org.openswing.swing.table.columns.client.TextColumn;
+import org.openswing.swing.util.java.Consts;
 
 /**
  * 一覧List画面
@@ -180,41 +200,51 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 		textColumn_Name.setColumnSortable(true);
 		textColumn_Name.setPreferredWidth(120);
 		// eidt s.inoue 2012/10/24
-		textColumn_Name.setColumnVisible(false);
 		textColumn_Name.setColumnFilterable(false);
 		textColumn_Name.setColumnSortable(false);
-
+		//add tanaka 2013/11/06
+		textColumn_Name.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.NAME));
+		// textColumn_Name.setColumnVisible(false);
+		
 		textColumn_HokensyoCode.setColumnFilterable(true);
 		textColumn_HokensyoCode.setColumnName("HIHOKENJYASYO_KIGOU");
 		textColumn_HokensyoCode.setColumnSortable(true);
 		textColumn_HokensyoCode.setPreferredWidth(110);
 		// eidt s.inoue 2012/10/24
-		textColumn_HokensyoCode.setColumnVisible(false);
 		textColumn_HokensyoCode.setColumnFilterable(false);
 		textColumn_HokensyoCode.setColumnSortable(false);
+		//add tanaka 2013/11/06
+		textColumn_HokensyoCode.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.HIHOKENJYASYO_KIGOU));
 
 		textColumn_HokensyoNumber.setColumnFilterable(true);
 		textColumn_HokensyoNumber.setColumnName("HIHOKENJYASYO_NO");
 		textColumn_HokensyoNumber.setColumnSortable(true);
 		textColumn_HokensyoNumber.setPreferredWidth(110);
 		// eidt s.inoue 2012/10/24
-		textColumn_HokensyoNumber.setColumnVisible(false);
 		textColumn_HokensyoNumber.setColumnFilterable(false);
 		textColumn_HokensyoNumber.setColumnSortable(false);
+		//add tanaka 2013/11/06
+		textColumn_HokensyoNumber.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.HIHOKENJYASYO_NO));
 
 		dateColumn_KenshinDate.setColumnFilterable(true);
 		dateColumn_KenshinDate.setColumnName("KENSA_NENGAPI");
 		dateColumn_KenshinDate.setColumnSortable(true);
 		dateColumn_KenshinDate.setPreferredWidth(80);
 
+		// edit s.inoue 2013/11/12
+		dateColumn_KenshinDate.setColumnFilterable(true);
+		dateColumn_KenshinDate.setColumnSortable(false);
+		dateColumn_KenshinDate.setColumnSelectable(false);
+		dateColumn_KenshinDate.setColumnVisible(false);
+		
 		// add s.inoue 2012/10/23
 		dateColumn_KenshinDateTo.setColumnFilterable(true);
 		dateColumn_KenshinDateTo.setColumnName("KENSA_NENGAPI");
-		dateColumn_KenshinDateTo.setColumnSortable(false);
+		dateColumn_KenshinDateTo.setColumnSortable(true);
+		dateColumn_KenshinDateTo.setColumnSelectable(true);//eidt tanaka 2013/11/08
 
-		dateColumn_KenshinDateTo.setColumnVisible(false);
-		dateColumn_KenshinDateTo.setColumnFilterable(true);
-		dateColumn_KenshinDateTo.setColumnSortable(false);
+		//add tanaka 2013/11/06
+		dateColumn_KenshinDateTo.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.KENSA_NENGAPI));
 
 // eidt s.inoue 2012/10/23
 //		textColumn_sex.setColumnFilterable(true);
@@ -229,20 +259,29 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 	    textColumn_sex.setEditableOnInsert(true);
 	    textColumn_sex.setColumnRequired(false);
 	    textColumn_sex.setDomainId("SEX");
+	    //add tanaka 2013/11/06
+	    textColumn_sex.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.SEX));
 
 		textColumn_birthdayFrom.setColumnFilterable(true);
 		textColumn_birthdayFrom.setColumnName("BIRTHDAY");
 		textColumn_birthdayFrom.setColumnSortable(true);
 		textColumn_birthdayFrom.setPreferredWidth(80);
 
+		// edit s.inoue 2013/11/12
+		textColumn_birthdayFrom.setColumnVisible(false);
+		textColumn_birthdayFrom.setColumnFilterable(true);
+		textColumn_birthdayFrom.setColumnSortable(false);
+		textColumn_birthdayFrom.setColumnSelectable(false);
+		
 		// eidt s.inoue 2012/10/24
 		textColumn_birthdayTo.setColumnName("BIRTHDAY");
 		textColumn_birthdayTo.setPreferredWidth(80);
-		textColumn_birthdayTo.setVisible(false);
 
-		textColumn_birthdayTo.setColumnVisible(false);
+		//add tanaka 2013/11/06
 		textColumn_birthdayTo.setColumnFilterable(true);
-		textColumn_birthdayTo.setColumnSortable(false);
+		textColumn_birthdayTo.setColumnSortable(true);
+		textColumn_birthdayTo.setColumnSelectable(true);//eidt tanaka 2013/11/08
+		textColumn_birthdayTo.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.BIRTHDAY));
 
 		// eidt s.inoue 2012/10/23
 //		textColumn_inputFlg.setColumnFilterable(true);
@@ -252,22 +291,30 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 		textColumn_inputFlg.setColumnFilterable(true);
 		textColumn_inputFlg.setColumnName("KEKA_INPUT_FLG");
 		textColumn_inputFlg.setColumnSortable(true);
+		
 		textColumn_inputFlg.setPreferredWidth(40);
 	    textColumn_inputFlg.setEditableOnEdit(true);
 	    textColumn_inputFlg.setEditableOnInsert(true);
 	    textColumn_inputFlg.setColumnRequired(false);
 	    textColumn_inputFlg.setDomainId("KEKA_INPUT_FLG");
+	    //add tanaka2013/11/06
+	    textColumn_inputFlg.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.KEKA_INPUT_FLG));
 
 		textColumn_jyushinSeiriNo.setColumnFilterable(true);
 		textColumn_jyushinSeiriNo.setColumnName("JYUSHIN_SEIRI_NO");
 		textColumn_jyushinSeiriNo.setColumnSortable(true);
 		textColumn_jyushinSeiriNo.setPreferredWidth(100);
 
+		// add s.inoue 2013/10/29
+		textColumn_jyushinSeiriNo.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.JYUSHIN_SEIRI_NO));
+
 		textColumn_hokenjaNo.setColumnFilterable(true);
 		textColumn_hokenjaNo.setColumnName("HKNJANUM");
 		textColumn_hokenjaNo.setColumnSortable(true);
 		textColumn_hokenjaNo.setPreferredWidth(250);
 		textColumn_hokenjaNo.setDomainId("T_HOKENJYA");
+		//add tanaka 2013/11/06
+		textColumn_hokenjaNo.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.HKNJANUM));
 
 		textColumn_shiharaiDaikouNo.setColumnFilterable(true);
 		textColumn_shiharaiDaikouNo.setColumnName("SIHARAI_DAIKOU_BANGO");
@@ -277,29 +324,35 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 		textColumn_shiharaiDaikouNo.setColumnVisible(false);
 		textColumn_shiharaiDaikouNo.setColumnFilterable(false);
 		textColumn_shiharaiDaikouNo.setColumnSortable(false);
+		//add tanaka 2013/11/06
+		textColumn_shiharaiDaikouNo.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.SIHARAI_DAIKOU_BANGO));
 
 		textColumn_kanaName.setColumnFilterable(true);
 		textColumn_kanaName.setColumnName("KANANAME");
 		textColumn_kanaName.setColumnSortable(true);
 		textColumn_kanaName.setPreferredWidth(175);
-
+		//add tanaka 2013/11/06
+		textColumn_kanaName.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.KANANAME));
+		
 		textColumn_hanteiNengapi.setColumnFilterable(true);
 		textColumn_hanteiNengapi.setColumnName("HANTEI_NENGAPI");
 		textColumn_hanteiNengapi.setColumnSortable(true);
 		textColumn_hanteiNengapi.setPreferredWidth(80);
 		// eidt s.inoue 2012/10/24
-		textColumn_hanteiNengapi.setColumnVisible(false);
 		textColumn_hanteiNengapi.setColumnFilterable(false);
 		textColumn_hanteiNengapi.setColumnSortable(false);
+		//add tanaka 2013/11/06
+		textColumn_hanteiNengapi.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.HANTEI_NENGAPI));
 
 		textColumn_tutiNengapi.setColumnFilterable(true);
 		textColumn_tutiNengapi.setColumnName("TUTI_NENGAPI");
 		textColumn_tutiNengapi.setColumnSortable(true);
 		textColumn_tutiNengapi.setPreferredWidth(80);
 		// eidt s.inoue 2012/10/24
-		textColumn_tutiNengapi.setColumnVisible(false);
 		textColumn_tutiNengapi.setColumnFilterable(false);
 		textColumn_tutiNengapi.setColumnSortable(false);
+		//add tanaka 2013/11/06
+		textColumn_tutiNengapi.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.TUTI_NENGAPI));
 
 		textColumn_nendo.setColumnFilterable(true);
 		textColumn_nendo.setColumnName("NENDO");
@@ -307,18 +360,23 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 		textColumn_nendo.setPreferredWidth(40);
 		// add s.inoue 2012/10/24
 		textColumn_nendo.setColumnSortable(true);
+		textColumn_nendo.setColumnSelectable(true);
 
 		textColumn_nendo.setEditableOnEdit(true);
 		textColumn_nendo.setEditableOnInsert(true);
 		textColumn_nendo.setColumnDuplicable(true);
 		textColumn_nendo.setColumnRequired(false);
 		textColumn_nendo.setSelectDataOnEdit(true);
+		//add tanaka 2013/11/06
+		textColumn_nendo.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.NENDO));
 
 // del s.inoue 2012/11/28
 		checkColumn_checkBox.setColumnFilterable(false);
 		checkColumn_checkBox.setColumnSortable(false);
 		checkColumn_checkBox.setColumnName("CHECKBOX_COLUMN");
 		checkColumn_checkBox.setPreferredWidth(50);
+		//add tanaka 2013/11/06
+		checkColumn_checkBox.setColumnVisible(!JApplication.flag.contains(FlagEnum_Serche.CHECKBOX_COLUMN));
 		// eidt s.inoue 2012/11/28
 		checkColumn_checkBox.setEditableOnEdit(true);
 		checkColumn_checkBox.setEditableOnInsert(true);
@@ -336,6 +394,35 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 		// eidt s.inoue 2012/11/29
 		checkColumn_checkBox.setEnableInReadOnlyMode(true);
 		checkColumn_checkBox.setAllowNullValue(false);
+
+		// add s.inoue 2013/11/19
+		if(JApplication.currentSortedColumns != null){
+			
+			for (int i = 0; i < JApplication.currentSortedColumns.size(); i++) {
+    			String sortclumn = (String)JApplication.currentSortedColumns.get(i);
+    			if(sortclumn.equals("KANANAME")){
+    				textColumn_kanaName.setSortingOrder(i+1);
+    				
+    				String sort = JApplication.currentSorted.get(i);
+    	  			if(sort.equals("ASC")){
+        				textColumn_kanaName.setSortVersus(Consts.ASC_SORTED);
+        			}else if (sort.equals("DESC")){
+        				textColumn_kanaName.setSortVersus(Consts.DESC_SORTED);
+        			}
+    			}
+    			
+    			if(sortclumn.equals("JYUSHIN_SEIRI_NO")){
+    				textColumn_kanaName.setSortingOrder(i+1);
+    				
+    				String sort = JApplication.currentSorted.get(i);
+    	  			if(sort.equals("ASC")){
+        				textColumn_jyushinSeiriNo.setSortVersus(Consts.ASC_SORTED);
+        			}else if (sort.equals("DESC")){
+        				textColumn_jyushinSeiriNo.setSortVersus(Consts.DESC_SORTED);
+        			}
+    			}
+			}
+		}
 
 		// openswing s.inoue 2011/01/25
 		/* button */
@@ -393,8 +480,10 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 	        	if (JApplication.selectedHistoryRows == null)return;
 	    		for (int i = 0; i < JApplication.selectedHistoryRows.size(); i++) {
 	    			grid.getVOListTableModel().setValueAt("N", JApplication.selectedHistoryRows.get(i), 0);
-	    			JApplication.selectedHistoryRows.remove(i);
+	    			// eidt s.inoue 2013/11/07
+	    			// JApplication.selectedHistoryRows.remove(i);
 	    		}
+	    		JApplication.selectedHistoryRows.removeAll(JApplication.selectedHistoryRows);
 	          }
 	    });
 
@@ -528,6 +617,8 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 				setCheckBoxValue();
 		   	}else if (source == buttonClose){
 				logger.info(buttonClose.getText());
+				// add s.inoue 2013/10/29
+				preservColumnStatus();
 				adaptee.closeButtton_actionPerformed(e);
 			/* 結果データ入力ボタン */
 			}else if (source == buttonKekkaInputCall){
@@ -1729,6 +1820,116 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 //			return sel;
 //		}
 	}
+	
+	// add s.inoue 2013/10/29
+	private void preservColumnStatus(){
+		// JApplication.flag = EnumSet.noneOf(FlagEnum.class);
+		if (textColumn_jyushinSeiriNo.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.JYUSHIN_SEIRI_NO));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.JYUSHIN_SEIRI_NO))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.JYUSHIN_SEIRI_NO));
+		}
+		
+		//add tanaka 2013/11/06
+		if (textColumn_HokensyoCode.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.HIHOKENJYASYO_KIGOU));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.HIHOKENJYASYO_KIGOU))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.HIHOKENJYASYO_KIGOU));
+		}
+		
+		if (textColumn_HokensyoNumber.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.HIHOKENJYASYO_NO));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.HIHOKENJYASYO_NO))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.HIHOKENJYASYO_NO));
+		}
+		
+		if (dateColumn_KenshinDateTo.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.KENSA_NENGAPI));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.KENSA_NENGAPI))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.KENSA_NENGAPI));
+		}
+		
+		if (textColumn_sex.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.SEX));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.SEX))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.SEX));
+		}
+		
+		if (textColumn_birthdayTo.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.BIRTHDAY));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.BIRTHDAY))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.BIRTHDAY));
+		}
+		
+		if (textColumn_inputFlg.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.KEKA_INPUT_FLG));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.KEKA_INPUT_FLG))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.KEKA_INPUT_FLG));
+		}
+		
+		if (textColumn_hokenjaNo.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.HKNJANUM));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.HKNJANUM))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.HKNJANUM));
+		}
+		
+		if (textColumn_shiharaiDaikouNo.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.SIHARAI_DAIKOU_BANGO));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.SIHARAI_DAIKOU_BANGO))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.SIHARAI_DAIKOU_BANGO));
+		}
+		
+		if (textColumn_Name.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.NAME));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.NAME))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.NAME));
+		}
+
+		if (textColumn_kanaName.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.KANANAME));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.KANANAME))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.KANANAME));
+		}
+
+		if (textColumn_hanteiNengapi.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.HANTEI_NENGAPI));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.HANTEI_NENGAPI))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.HANTEI_NENGAPI));
+		}
+		
+		if (textColumn_tutiNengapi.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.TUTI_NENGAPI));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.TUTI_NENGAPI))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.TUTI_NENGAPI));
+		}
+		
+		if (textColumn_nendo.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.NENDO));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.NENDO))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.NENDO));
+		}
+		
+		if (checkColumn_checkBox.isVisible()){
+			JApplication.flag.removeAll(EnumSet.of(FlagEnum_Serche.CHECKBOX_COLUMN));
+		}else{
+			if (!JApplication.flag.contains(FlagEnum_Serche.CHECKBOX_COLUMN))
+				JApplication.flag.addAll(EnumSet.of(FlagEnum_Serche.CHECKBOX_COLUMN));
+		}
+	}
 
 	/* ボタンアクション */
 	public void closeButtton_actionPerformed(ActionEvent e) {
@@ -1736,10 +1937,11 @@ public class JKenshinKekkaSearchListFrame extends JFrame implements KeyListener,
 
 		// add s.inoue 2013/04/05
 		if (JApplication.selectedHistoryRows.size() == 0)return;
-		// add s.inoue 2012/11/08
-		for (int i=0;i < grid.getVOListTableModel().getRowCount(); i++) {
-			JApplication.selectedHistoryRows.remove(i);
-		}
+		// eidt s.inoue 2013/11/07
+//		for (int i=0;i < grid.getVOListTableModel().getRowCount(); i++) {
+//			JApplication.selectedHistoryRows.remove(i);
+//		}
+		JApplication.selectedHistoryRows.removeAll(JApplication.selectedHistoryRows);
 	}
 	/* ボタンアクション */
 	public void closeButtton_keyPerformed(KeyEvent e) {

@@ -6,17 +6,15 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.SortedMap;
 import java.util.TreeMap;
-
-import org.apache.log4j.Logger;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintDefine;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintShukeiList;
 import jp.or.med.orca.jma_tokutei.common.origine.JKenshinPatternMaintenanceEditFrameData;
 import jp.or.med.orca.jma_tokutei.common.util.FiscalYearUtil;
+import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintDefine;
+
+import org.apache.log4j.Logger;
 
 /**
  * 非特定検診（追加の検診）分のデータを取得するクラス
@@ -168,7 +166,7 @@ public class AddMedical {
 //						getZenGetuKensaKekkaSql(coumokuCd.size(),inFlg), params);
 //			/* 今回用  */
 //			}else{
-
+			
 			// 今年度かどうか
 			boolean blnYear = FiscalYearUtil.getJugeThisYear(kensaNenGappi);
 
@@ -201,6 +199,10 @@ public class AddMedical {
 			if (KihonKensaKoumoku.TSUIKA_CODES.contains(code) ||
 					dokuji.contains(code)) {
 				rtnList.add(item);
+				// System.out.println("追" + item.get(PrintDefine.COLUMN_NAME_KOUMOKU_NAME));
+			}else{
+				// add s.inoue 2014/02/20
+				// System.out.println("基" + item.get(PrintDefine.COLUMN_NAME_KOUMOKU_NAME));
 			}
 		}
 		return rtnList;
@@ -213,11 +215,13 @@ public class AddMedical {
 		// edit s.inoue 2009/10/28
 		queryAll.append("TK.MAX_BYTE_LENGTH,TS.KENSA_NENGAPI,TK.KOUMOKU_CD,TK.KOUMOKU_NAME,TK.KENSA_HOUHOU, TK.TANI, TK.DS_JYOUGEN, TK.DS_KAGEN, ");
 		queryAll.append("TK.JS_JYOUGEN, TK.JS_KAGEN, TS.JISI_KBN, TS.H_L, TK.HISU_FLG, TK.DATA_TYPE ");
-		// add s.inoue 2009/09/15 TS.KEKA_TIの代わり
-		queryAll.append(" ,case when TK.KOUMOKU_CD = '9N401000000000011' then ");
-		queryAll.append(" (SELECT CODE_NAME FROM T_DATA_TYPE_CODE ");
-		queryAll.append(" WHERE KOUMOKU_CD = '9N401000000000011' AND CODE_NUM = TS.KEKA_TI) ");
-		queryAll.append(" else TS.KEKA_TI end KEKA_TI ");
+		queryAll.append(",TS.KEKA_TI ");
+// del s.inoue 2014/03/19 なぜ下のコードを追加したのか謎(エラーの原因)なので、削除
+//		// add s.inoue 2009/09/15 TS.KEKA_TIの代わり
+//		queryAll.append(" ,case when TK.KOUMOKU_CD = '9N401000000000011' then ");
+//		queryAll.append(" (SELECT CODE_NAME FROM T_DATA_TYPE_CODE ");
+//		queryAll.append(" WHERE KOUMOKU_CD = '9N401000000000011' AND CODE_NUM = TS.KEKA_TI) ");
+//		queryAll.append(" else TS.KEKA_TI end KEKA_TI ");
 		queryAll.append("FROM T_KENSAKEKA_SONOTA TS,T_KENSHINMASTER TK, ");
 		queryAll.append("  (SELECT TN.UKETUKE_ID,TK.KENSA_NENGAPI ");
 		queryAll.append("  FROM T_NAYOSE TN,T_KENSAKEKA_TOKUTEI TK ");
@@ -244,11 +248,13 @@ public class AddMedical {
 		// edit s.inoue 2009/10/28
 		queryFirst.append("TK.MAX_BYTE_LENGTH,TS.KENSA_NENGAPI,TK.KOUMOKU_CD,TK.KOUMOKU_NAME,TK.KENSA_HOUHOU, TK.TANI, TK.DS_JYOUGEN, TK.DS_KAGEN, ");
 		queryFirst.append("TK.JS_JYOUGEN, TK.JS_KAGEN, TS.JISI_KBN, TS.H_L, TK.HISU_FLG, TK.DATA_TYPE,TK.XMLITEM_SEQNO ");
-		// add s.inoue 2009/09/15 TS.KEKA_TIの代わり
-		queryFirst.append(" ,case when TK.KOUMOKU_CD = '9N401000000000011' then ");
-		queryFirst.append(" (SELECT CODE_NAME FROM T_DATA_TYPE_CODE ");
-		queryFirst.append(" WHERE KOUMOKU_CD = '9N401000000000011' AND CODE_NUM = TS.KEKA_TI) ");
-		queryFirst.append(" else TS.KEKA_TI end KEKA_TI");
+		queryFirst.append(",TS.KEKA_TI ");
+		// del s.inoue 2014/03/19 なぜ下のコードを追加したのか謎(エラーの原因)なので、削除
+//		// add s.inoue 2009/09/15 TS.KEKA_TIの代わり
+//		queryFirst.append(" ,case when TK.KOUMOKU_CD = '9N401000000000011' then ");
+//		queryFirst.append(" (SELECT CODE_NAME FROM T_DATA_TYPE_CODE ");
+//		queryFirst.append(" WHERE KOUMOKU_CD = '9N401000000000011' AND CODE_NUM = TS.KEKA_TI) ");
+//		queryFirst.append(" else TS.KEKA_TI end KEKA_TI");
 		queryFirst.append(" From T_KENSAKEKA_SONOTA TS LEFT JOIN T_KENSHINMASTER TK ");
 		queryFirst.append(" ON TS.KOUMOKU_CD = TK.KOUMOKU_CD ");
 
@@ -441,8 +447,12 @@ public class AddMedical {
 		// eidt s.inoue 2013/01/22
 		// 29個から25個へ変更？？？なぜ変更
 		// buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
-		buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		// buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
+		// edit s.inoue 2014/07/04　25個から29個へ 通知表に影響します
+		// buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
+		
 		// add s.inoue 2013/01/21
 //		String bf = "";
 //		for (int i = 0; i < paramLength; i++) {
@@ -475,6 +485,9 @@ public class AddMedical {
 		buffer.append(" AND TS.KOUMOKU_CD = TK.KOUMOKU_CD");
 		buffer.append(" AND TK.HKNJANUM = ? ");
 		buffer.append(" AND TS.KOUMOKU_CD IN");
+
+		// edit s.inoue 2014/07/04　25個から29個へ 通知表に影響します
+		// buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
 		buffer.append(" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )");
 
 		return buffer.toString();

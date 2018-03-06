@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -314,58 +313,190 @@ public class JOutputGetujiSearchListFrameCtl
 			attribute2dbField.put("UPDATE_TIMESTAMP","UPDATE_TIMESTAMP");
 			// 月次
 			attribute2dbField.put("JISI_KBN","GET_JISIKBN.JISI_KBN_WK");
-			attribute2dbField.put("OUTPUT_HL7","OUTPUT_HL7");
+			// eidt s.inoue 2013/07/30
+			// attribute2dbField.put("HENKAN_NITIJI","TOKUTEI.HENKAN_NITIJI");
+			// attribute2dbField.put("OUTPUT_HL7","OUTPUT_HL7");
+			attribute2dbField.put("HENKAN_NITIJI","HENKAN_NITIJI");
 
 			GridParams gridParams = new GridParams(action, startIndex,
 					filteredColumns, currentSortedColumns,
 					currentSortedVersusColumns, otherGridParams);
 
-			// 初期値 又は あいまい検索の設定
-		    if (filteredColumns.values().iterator().hasNext()){
-				Iterator it_dt = filteredColumns.values().iterator();
-			    FilterWhereClause[] filterClauses = null;
+			
+			// add s.inoue 2013/11/06
+						// 初期値 又は あいまい検索の設定
+					    if (currentSortedColumns.iterator().hasNext()){
+							Iterator it_dt = currentSortedColumns.iterator();
+							String sortClauses = null;
 
-			    while(it_dt.hasNext()) {
-			      filterClauses = (FilterWhereClause[])it_dt.next();
-			      // comment
-//			      System.out.println(filterClauses[0].getAttributeName());
-//			      System.out.println(filterClauses[0].getValue());
-//			      System.out.println(filterClauses[0].getOperator());
+						    // add s.inoue 2013/11/06
+						    JApplication.currentSortedColumns = new ArrayList();
 
-			      if (filterClauses[0].getOperator().equals("like")){
-			    	  filterClauses[0].setValue("%" + filterClauses[0].getValue() + "%");
+						    while(it_dt.hasNext()) {
+						      sortClauses = (String)it_dt.next();
+						      // add s.inoue 2013/11/06
+						      JApplication.currentSortedColumns.add(sortClauses);
+						    }
+					    }
 
-						gridParams.getFilteredColumns().put(filterClauses[0].getAttributeName(),
-								new FilterWhereClause[] { filterClauses[0], null });
-			      }
-			    }
-		    }else{
-		    	// eidt s.inoue 2012/11/16
-		    	DateFormat format = new SimpleDateFormat("yyyy");
-		    	// eidt s.inoue 2013/01/21
-		    	// String cYear = format.format(new Date());
-		    	String cYear = String.valueOf(FiscalYearUtil.getThisYear());
+					    if (currentSortedVersusColumns.iterator().hasNext()){
+							Iterator it_dt = currentSortedVersusColumns.iterator();
+							String sortClauses = null;
 
-		    	// eidt s.inoue 2012/11/16
-		    	if (firstViewFlg){
-					FilterWhereClause clauseDesign = new FilterWhereClause();
-					clauseDesign.setAttributeName("NENDO");
-					clauseDesign.setOperator("=");
-					clauseDesign.setValue(cYear);
+						    // add s.inoue 2013/11/06
+						    JApplication.currentSortedVersusColumns = new ArrayList();
 
-					gridParams.getFilteredColumns().put(clauseDesign.getAttributeName(),
-							new FilterWhereClause[] { clauseDesign, null });
+						    while(it_dt.hasNext()) {
+						      sortClauses = (String)it_dt.next();
+						      // add s.inoue 2013/11/06
+						      JApplication.currentSortedVersusColumns.add(sortClauses);
+						    }
+					    }
 
-					// eidt s.inoue 2012/10/29
-					FilterWhereClause clauseDesign2 = new FilterWhereClause();
-					clauseDesign2.setAttributeName("JISI_KBN");
-					clauseDesign2.setOperator("=");
-					clauseDesign2.setValue("1");
+						
+						// 初期値 又は あいまい検索の設定
+					    if (filteredColumns.values().iterator().hasNext()){
+							Iterator it_dt = filteredColumns.values().iterator();
+						    FilterWhereClause[] filterClauses = null;
 
-					gridParams.getFilteredColumns().put(clauseDesign2.getAttributeName(),
-							new FilterWhereClause[] { clauseDesign2, null });
-		    	}
-		    }
+						    // add s.inoue 2013/11/06
+						    int ii = 0;
+						    JApplication.clauseDesign = new FilterWhereClause[filteredColumns.size()];
+						    
+						    // add s.inoue 2013/03/25
+						    while(it_dt.hasNext()) {
+						      filterClauses = (FilterWhereClause[])it_dt.next();
+
+						      if (filterClauses[0].getOperator().equals("like")){
+					 			  // add s.inoue 2014/03/18
+						    	  String filterval = filterClauses[0].getValue().toString();
+						    	  if(!filterval.startsWith("%"))
+						    		  filterval = "%"+filterval+"%";
+						    	  filterClauses[0].setValue(filterval);
+
+									gridParams.getFilteredColumns().put(filterClauses[0].getAttributeName(),
+											new FilterWhereClause[] { filterClauses[0], null });
+			// eidt s.inoue 2013/03/25
+//						      }else if (filterClauses[0].getOperator().equals("like")){
+//						    	  System.out.println("");
+			// del s.inoue 2013/03/26
+//						      }else{
+//						    	  filterClauses[0].setValue(filterClauses[0].getValue());
+//						    	  JApplication.gridParams.getFilteredColumns().put(filterClauses[0].getAttributeName(),
+//											new FilterWhereClause[] { filterClauses[0], null });
+
+//							      // add s.inoue 2013/11/05
+//							      JApplication.filterClauses = (FilterWhereClause[])it_dt.next();
+//							      JApplication.filterClauses[filter_i] = filterClauses[0];
+//							      filter_i++;
+						      }
+
+						      // add s.inoue 2013/11/06
+						      JApplication.clauseDesign[ii] = new FilterWhereClause();
+							  JApplication.clauseDesign[ii].setAttributeName(filterClauses[0].getAttributeName());
+							  JApplication.clauseDesign[ii].setOperator(filterClauses[0].getOperator());
+							  // edit s.inoue 2014/03/18
+					    	  String filterval = filterClauses[0].getValue().toString();
+					    	  // JApplication.clauseDesign[ii].setValue(filterClauses[0].getValue());
+					    	  if(filterval.startsWith("%"))
+					    		  filterval = filterval.replaceAll("%", "");
+					    	  JApplication.clauseDesign[ii].setValue(filterval);
+							  ii++;
+						      
+						    }
+					    }else{
+					    	
+					    	// edit s.inoue 2014/06/23
+					    	if (firstViewFlg){
+				    		// add s.inoue 2013/11/06
+				    		if(JApplication.clauseDesign != null){
+				    			for (int i = 0; i < JApplication.clauseDesign.length; i++) {
+					    			gridParams.getFilteredColumns().put(JApplication.clauseDesign[i].getAttributeName(),
+											new FilterWhereClause[] { JApplication.clauseDesign[i], null });
+								}
+				    		}else{
+								DateFormat format = new SimpleDateFormat("yyyy");
+								// eidt s.inoue 2013/01/21
+								// 今年→本年度
+								// String cYear = format.format(new Date());
+								String cYear = String.valueOf(FiscalYearUtil.getThisYear());
+
+						    	// 年度は健診実施日が空の場合があるので省略
+								FilterWhereClause clauseDesign = new FilterWhereClause();
+								clauseDesign.setAttributeName("NENDO");
+								clauseDesign.setOperator("=");
+								clauseDesign.setValue(cYear);
+
+								gridParams.getFilteredColumns().put(clauseDesign.getAttributeName(),
+										new FilterWhereClause[] { clauseDesign, null });
+				    		}
+// del s.inoue 2014/06/23					    	
+//				    		// add s.inoue 2013/11/06
+//				    		if(JApplication.currentSortedColumns != null){
+//				    			for (int i = 0; i < JApplication.currentSortedColumns.size(); i++) {
+//					    			gridParams.getCurrentSortedColumns().add(JApplication.currentSortedColumns.get(i));
+//								}
+//				    		}
+//
+//				    		if(JApplication.currentSortedVersusColumns != null){
+//				    			for (int i = 0; i < JApplication.currentSortedVersusColumns.size(); i++) {
+//					    			gridParams.getCurrentSortedVersusColumns().add(JApplication.currentSortedVersusColumns.get(i));
+//								}
+//				    		}
+					    	}
+					    }
+			
+// del s.inoue 2014/06/23			
+//			// 初期値 又は あいまい検索の設定
+//		    if (filteredColumns.values().iterator().hasNext()){
+//				Iterator it_dt = filteredColumns.values().iterator();
+//			    FilterWhereClause[] filterClauses = null;
+//
+//			    while(it_dt.hasNext()) {
+//			      filterClauses = (FilterWhereClause[])it_dt.next();
+//			      // comment
+////			      System.out.println(filterClauses[0].getAttributeName());
+////			      System.out.println(filterClauses[0].getValue());
+////			      System.out.println(filterClauses[0].getOperator());
+//
+//			      if (filterClauses[0].getOperator().equals("like")){
+//		 			  // add s.inoue 2014/03/18
+//			    	  String filterval = filterClauses[0].getValue().toString();
+//			    	  if(!filterval.startsWith("%"))
+//			    		  filterval = "%"+filterval+"%";
+//			    	  filterClauses[0].setValue(filterval);
+//
+//						gridParams.getFilteredColumns().put(filterClauses[0].getAttributeName(),
+//								new FilterWhereClause[] { filterClauses[0], null });
+//			      }
+//			    }
+//		    }else{
+//		    	// eidt s.inoue 2012/11/16
+//		    	DateFormat format = new SimpleDateFormat("yyyy");
+//		    	// eidt s.inoue 2013/01/21
+//		    	// String cYear = format.format(new Date());
+//		    	String cYear = String.valueOf(FiscalYearUtil.getThisYear());
+//
+//		    	// eidt s.inoue 2012/11/16
+//		    	if (firstViewFlg){
+//					FilterWhereClause clauseDesign = new FilterWhereClause();
+//					clauseDesign.setAttributeName("NENDO");
+//					clauseDesign.setOperator("=");
+//					clauseDesign.setValue(cYear);
+//
+//					gridParams.getFilteredColumns().put(clauseDesign.getAttributeName(),
+//							new FilterWhereClause[] { clauseDesign, null });
+//
+//					// eidt s.inoue 2012/10/29
+//					FilterWhereClause clauseDesign2 = new FilterWhereClause();
+//					clauseDesign2.setAttributeName("JISI_KBN");
+//					clauseDesign2.setOperator("=");
+//					clauseDesign2.setValue("1");
+//
+//					gridParams.getFilteredColumns().put(clauseDesign2.getAttributeName(),
+//							new FilterWhereClause[] { clauseDesign2, null });
+//		    	}
+//		    }
 
 			// eidt s.inoue 2011/04/28
 			int curpage = startIndex/JApplication.gridViewSearchCount + action;
@@ -424,7 +555,9 @@ public class JOutputGetujiSearchListFrameCtl
 
 		StringBuffer sb = new StringBuffer();
 		// TOKUTEI.HENKAN_NITIJI HENKAN_NITIJI,
-		sb.append("SELECT DISTINCT TOKUTEI.HENKAN_NITIJI OUTPUT_HL7,");
+		// eidt s.inoue 2013/07/30
+		// sb.append("SELECT DISTINCT TOKUTEI.HENKAN_NITIJI OUTPUT_HL7,");
+		sb.append("SELECT DISTINCT TOKUTEI.HENKAN_NITIJI HENKAN_NITIJI,");
 
 		// edit s.inoue 2012/10/26
 		// sb.append("case when KESAI_WK.JISI_KBN is not null then '済' else '未' end JISI_KBN,");

@@ -263,7 +263,10 @@ public class JKikanDBBackupFrameCtrl extends JKikanDBBackupFrame {
 			+ JApplication.FILE_SEPARATOR + JApplication.versionNumber + "_" + stringTimeStamp + JPath.DATA_BASE_EXTENSION;
 
 			JFileChooser dirSelect = new JFileChooser(savePath);
-			dirSelect.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			// eidt s.inoue 2013/05/23
+			// dirSelect.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			dirSelect.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
 			dirSelect.setApproveButtonText("•Û‘¶");
 			dirSelect.setSelectedFile(new File(savePath));
 			// UIManager.put("FileChooser.readOnly", Boolean.FALSE);

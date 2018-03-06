@@ -3,7 +3,6 @@ package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
@@ -67,18 +66,22 @@ public class PrintKihonChkList {
 
 		if(blnYear && kensaNenList.size() > 1){
 			if (tmpChkListKeys.size() > 0){
-				tmpChkList = addM.getKihonChk(kojinData, kensaNengappi, Arrays.asList(JConstantString.codesSeikatuKinou),tmpChkListKeys.get(0));
+				// edit s.inoue 2014/07/04 JConstantString.codesSeikatuKinou Å®codesSeikatuKinouPrint
+				tmpChkList = addM.getKihonChk(kojinData, kensaNengappi, Arrays.asList(JConstantString.codesSeikatuKinouPrint),tmpChkListKeys.get(0));
 			}
 			if  (tmpChkListKeys.size() > 1){
-				zTmpChkList = addM.getKihonChk(kojinData, zKensaNengappi, Arrays.asList(JConstantString.codesSeikatuKinou),tmpChkListKeys.get(1));
+				// edit s.inoue 2014/07/04 JConstantString.codesSeikatuKinou Å®codesSeikatuKinouPrint
+				zTmpChkList = addM.getKihonChk(kojinData, zKensaNengappi, Arrays.asList(JConstantString.codesSeikatuKinouPrint),tmpChkListKeys.get(1));
 			}
 			if  (tmpChkListKeys.size() > 2){
-				zzTmpChkList = addM.getKihonChk(kojinData, zzKensaNengappi, Arrays.asList(JConstantString.codesSeikatuKinou),tmpChkListKeys.get(2));
+				// edit s.inoue 2014/07/04 JConstantString.codesSeikatuKinou Å®codesSeikatuKinouPrint
+				zzTmpChkList = addM.getKihonChk(kojinData, zzKensaNengappi, Arrays.asList(JConstantString.codesSeikatuKinouPrint),tmpChkListKeys.get(2));
 			}
 			createPdf(kensaNenList,tmpPath,tmpChkList,zTmpChkList,zzTmpChkList,kikanData,kojinData,ishiName,div,printSelect);
 		}else{
 			if (tmpChkListKeys.size() > 0){
-				tmpChkList = addM.getKihonChk(kojinData, kensaNengappi, Arrays.asList(JConstantString.codesSeikatuKinou),tmpChkListKeys.get(0));
+				// edit s.inoue 2014/07/04 JConstantString.codesSeikatuKinou Å®codesSeikatuKinouPrint
+				tmpChkList = addM.getKihonChk(kojinData, kensaNengappi, Arrays.asList(JConstantString.codesSeikatuKinouPrint),tmpChkListKeys.get(0));
 			}
 			createPdf(kensaNenList,tmpPath,tmpChkList,null,null,kikanData,kojinData,ishiName,div,printSelect);
 		}

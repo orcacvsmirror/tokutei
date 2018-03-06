@@ -1,15 +1,16 @@
 package jp.or.med.orca.jma_tokutei.common.validate;
 
-import java.io.*;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-
-import java.text.*;
-
-import org.apache.log4j.Logger;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.convert.JCalendarConvert;
 import jp.or.med.orca.jma_tokutei.common.convert.JZenkakuKatakanaToHankakuKatakana;
+
+import org.apache.log4j.Logger;
 
 /**
  * •¶š—ñŒŸØA•ÏŠ·—pƒNƒ‰ƒX
@@ -589,8 +590,9 @@ public class JValidate {
 		if ( str.isEmpty() )
 			return str;
 
-		//‘SŠpˆÈŠO‚ğ‹–‰Â‚µ‚È‚¢
-		if( !JValidate.isAllZenkaku(str) )
+		// edit s.inoue 2014/02/10
+		//‘SŠp/”¼ŠpˆÈŠO‚ğ‹–‰Â‚µ‚È‚¢
+		if( !(JValidate.isAllZenkaku(str) || JValidate.isAllHankaku(str)) )
 		{
 			return null;
 		}
@@ -612,12 +614,12 @@ public class JValidate {
 		if ( str.isEmpty() )
 			return str;
 
-		//‘SŠpˆÈŠO‚ğ‹–‰Â‚µ‚È‚¢
-		if( !JValidate.isAllZenkaku(str) )
+		//‘SŠp/”¼ŠpˆÈŠO‚ğ‹–‰Â‚µ‚È‚¢
+		if( !(JValidate.isAllZenkaku(str) || JValidate.isAllHankaku(str)) )
 		{
 			return null;
 		}
-
+		
 		if( str.getBytes().length > 40)
 		{
 			return null;

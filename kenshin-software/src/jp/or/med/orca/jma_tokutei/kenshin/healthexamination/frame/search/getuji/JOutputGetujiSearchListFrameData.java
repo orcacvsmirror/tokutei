@@ -34,7 +34,10 @@ public class JOutputGetujiSearchListFrameData extends ValueObjectImpl {
 	// åééü
 	private String SHUBETU_CODE;
 	private String JISI_KBN;
-	private String OUTPUT_HL7;
+	// eidt s.inoue 2013/07/30
+	private String HENKAN_NITIJI;
+	// private String OUTPUT_HL7;
+
 	// edit s.inoue 2009/09/18
 	private ArrayList<JOutputHL7Directory> JOutputDirs
 		= new ArrayList<JOutputHL7Directory>();
@@ -281,15 +284,15 @@ public class JOutputGetujiSearchListFrameData extends ValueObjectImpl {
 		}
 		return JISI_KBN;
 	}
-	/**
-	 * @return the OUTPUT_HL7
-	 */
-	public String getOUTPUT_HL7() {
-		if (OUTPUT_HL7 == null ) {
-			OUTPUT_HL7 = "";
-		}
-		return OUTPUT_HL7;
-	}
+//	/**
+//	 * @return the OUTPUT_HL7
+//	 */
+//	public String getOUTPUT_HL7() {
+//		if (OUTPUT_HL7 == null ) {
+//			OUTPUT_HL7 = "";
+//		}
+//		return OUTPUT_HL7;
+//	}
 
 	/**
 	 * @param CHECKBOX_COLUMN the CHECKBOX_COLUMN to set
@@ -489,12 +492,28 @@ public class JOutputGetujiSearchListFrameData extends ValueObjectImpl {
 		this.JISI_KBN = JISI_KBN;
 
 	}
+//	/**
+//	 * @param OUTPUT_HL7 the OUTPUT_HL7 to set
+//	 */
+//	public void setOUTPUT_HL7(String OUTPUT_HL7) {
+//
+//		this.OUTPUT_HL7 = OUTPUT_HL7;
+//
+//	}
+
 	/**
-	 * @param OUTPUT_HL7 the OUTPUT_HL7 to set
+	 * HENKAN_NITIJIÇéÊìæÇµÇ‹Ç∑ÅB
+	 * @return HENKAN_NITIJI
 	 */
-	public void setOUTPUT_HL7(String OUTPUT_HL7) {
+	public String getHENKAN_NITIJI() {
+	    return HENKAN_NITIJI;
+	}
 
-		this.OUTPUT_HL7 = OUTPUT_HL7;
-
+	/**
+	 * HENKAN_NITIJIÇê›íËÇµÇ‹Ç∑ÅB
+	 * @param HENKAN_NITIJI HENKAN_NITIJI
+	 */
+	public void setHENKAN_NITIJI(String HENKAN_NITIJI) {
+	    this.HENKAN_NITIJI = HENKAN_NITIJI;
 	}
 }

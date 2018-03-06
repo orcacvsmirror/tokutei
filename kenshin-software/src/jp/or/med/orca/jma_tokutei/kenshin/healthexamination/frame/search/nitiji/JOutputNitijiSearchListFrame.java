@@ -1,21 +1,37 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.nitiji;
 
-import javax.swing.*;
-
-import java.awt.*;
-import java.sql.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.print.PrinterException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Hashtable;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.awt.event.*;
-import java.awt.print.PrinterException;
 
-import org.apache.log4j.Logger;
-import org.openswing.swing.client.*;
-import org.openswing.swing.table.columns.client.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
+import jp.or.med.orca.jma_tokutei.common.app.JApplication.FlagEnum_Nitiji;
 import jp.or.med.orca.jma_tokutei.common.app.JPath;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedComboBox;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedImageIcon;
@@ -32,15 +48,22 @@ import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenFilterButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenGenericButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedReloadButton;
 import jp.or.med.orca.jma_tokutei.common.scene.JScene;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.hokenja.JHokenjyaMasterMaintenanceListFrameCtrl;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.hantei.JHanteiSearchResultListFrameData;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.search.kenshin.JKenshinKekkaSearchListFrameData;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.outputhl7.JKessaiProcess;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.outputhl7.JKessaiProcessData;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.outputhl7.JSyuukeiProcess;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.print.PrintSeikyuNitiji;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Kikan;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.printdata.Nikeihyo;
+
+import org.apache.log4j.Logger;
+import org.openswing.swing.client.EditButton;
+import org.openswing.swing.client.GridControl;
+import org.openswing.swing.client.InsertButton;
+import org.openswing.swing.client.NavigatorBar;
+import org.openswing.swing.client.TextControl;
+import org.openswing.swing.table.columns.client.CheckBoxColumn;
+import org.openswing.swing.table.columns.client.ComboColumn;
+import org.openswing.swing.table.columns.client.TextColumn;
 
 /**
  * àÍóóListâÊñ 
@@ -182,6 +205,9 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		textColumn_Name.setColumnVisible(false);
 		textColumn_Name.setColumnFilterable(false);
 		textColumn_Name.setColumnSortable(false);
+		//add tanaka 2013/11/07
+		textColumn_Name.setColumnVisible(true);
+		textColumn_Name.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.NAME));
 
 		textColumn_HokensyoCode.setColumnFilterable(true);
 		textColumn_HokensyoCode.setColumnName("HIHOKENJYASYO_KIGOU");
@@ -191,6 +217,9 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		textColumn_HokensyoCode.setColumnVisible(false);
 		textColumn_HokensyoCode.setColumnFilterable(false);
 		textColumn_HokensyoCode.setColumnSortable(false);
+		//add tanaka 2013/11/07
+		textColumn_HokensyoCode.setColumnVisible(true);
+		textColumn_HokensyoCode.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.HIHOKENJYASYO_KIGOU));
 
 		textColumn_HokensyoNumber.setColumnFilterable(true);
 		textColumn_HokensyoNumber.setColumnName("HIHOKENJYASYO_NO");
@@ -200,20 +229,25 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		textColumn_HokensyoNumber.setColumnVisible(false);
 		textColumn_HokensyoNumber.setColumnFilterable(false);
 		textColumn_HokensyoNumber.setColumnSortable(false);
+		//add tanaka 2013/11/07
+		textColumn_HokensyoNumber.setColumnVisible(true);
+		textColumn_HokensyoNumber.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.HIHOKENJYASYO_NO));
 
-		dateColumn_KenshinDateFrom.setColumnFilterable(true);
 		dateColumn_KenshinDateFrom.setColumnName("KENSA_NENGAPI");
-		dateColumn_KenshinDateFrom.setColumnSortable(true);
 		dateColumn_KenshinDateFrom.setPreferredWidth(80);
+		// edit s.inoue 2013/11/12
+		dateColumn_KenshinDateFrom.setColumnFilterable(true);
+		dateColumn_KenshinDateFrom.setColumnSortable(false);
+		dateColumn_KenshinDateFrom.setColumnSelectable(false);
+		dateColumn_KenshinDateFrom.setColumnVisible(false);
 
 		// add s.inoue 2012/10/23
-		dateColumn_KenshinDateTo.setColumnFilterable(true);
 		dateColumn_KenshinDateTo.setColumnName("KENSA_NENGAPI");
-		dateColumn_KenshinDateTo.setColumnSortable(false);
-
-		dateColumn_KenshinDateTo.setColumnVisible(false);
 		dateColumn_KenshinDateTo.setColumnFilterable(true);
-		dateColumn_KenshinDateTo.setColumnSortable(false);
+		dateColumn_KenshinDateTo.setColumnSortable(true);
+		dateColumn_KenshinDateTo.setColumnSelectable(true);
+		
+		dateColumn_KenshinDateTo.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.KENSA_NENGAPI));
 
 		textColumn_sex.setColumnFilterable(true);
 		textColumn_sex.setColumnName("SEX");
@@ -223,6 +257,9 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		textColumn_sex.setColumnVisible(false);
 		textColumn_sex.setColumnFilterable(false);
 		textColumn_sex.setColumnSortable(false);
+		//add tanaka 2013/11/07
+		textColumn_sex.setColumnVisible(true);
+		textColumn_sex.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.SEX));
 
 		textColumn_birthday.setColumnFilterable(true);
 		textColumn_birthday.setColumnName("BIRTHDAY");
@@ -232,28 +269,43 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		textColumn_birthday.setColumnVisible(false);
 		textColumn_birthday.setColumnFilterable(false);
 		textColumn_birthday.setColumnSortable(false);
+		//add tanaka 2013/11/07
+		textColumn_birthday.setColumnVisible(true);
+		textColumn_birthday.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.BIRTHDAY));
 
 		textColumn_jyushinSeiriNo.setColumnFilterable(true);
 		textColumn_jyushinSeiriNo.setColumnName("JYUSHIN_SEIRI_NO");
 		textColumn_jyushinSeiriNo.setColumnSortable(true);
 		textColumn_jyushinSeiriNo.setPreferredWidth(100);
+		//add tanaka 2013/11/07
+		textColumn_jyushinSeiriNo.setColumnVisible(true);
+		textColumn_jyushinSeiriNo.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.JYUSHIN_SEIRI_NO));
 
 		textColumn_hokenjaNo.setColumnFilterable(true);
 		textColumn_hokenjaNo.setColumnName("HKNJANUM");
 		textColumn_hokenjaNo.setColumnSortable(true);
 		textColumn_hokenjaNo.setPreferredWidth(220);
 		textColumn_hokenjaNo.setDomainId("T_HOKENJYA");
+		//add tanaka 2013/11/07
+		textColumn_hokenjaNo.setColumnVisible(true);
+		textColumn_hokenjaNo.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.HKNJANUM));
 
 		textColumn_shiharaiDaikouNo.setColumnFilterable(true);
 		textColumn_shiharaiDaikouNo.setColumnName("SIHARAI_DAIKOU_BANGO");
 		textColumn_shiharaiDaikouNo.setColumnSortable(true);
 		textColumn_shiharaiDaikouNo.setPreferredWidth(220);
 		textColumn_shiharaiDaikouNo.setDomainId("T_SHIHARAI");
+		//add tanaka 2013/11/07
+		textColumn_shiharaiDaikouNo.setColumnVisible(true);
+		textColumn_shiharaiDaikouNo.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.SIHARAI_DAIKOU_BANGO));
 
 		textColumn_kanaName.setColumnFilterable(true);
 		textColumn_kanaName.setColumnName("KANANAME");
 		textColumn_kanaName.setColumnSortable(true);
 		textColumn_kanaName.setPreferredWidth(175);
+		//add tanaka 2013/11/07
+		textColumn_kanaName.setColumnVisible(true);
+		textColumn_kanaName.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.KANANAME));
 
 //		textColumn_hanteiNengapi.setColumnFilterable(true);
 //		textColumn_hanteiNengapi.setColumnName("HANTEI_NENGAPI");
@@ -269,6 +321,9 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		textColumn_nendo.setColumnName("NENDO");
 		textColumn_nendo.setColumnSortable(true);
 		textColumn_nendo.setPreferredWidth(40);
+		//add tanaka 2013/11/07
+		textColumn_nendo.setColumnVisible(true);
+		textColumn_nendo.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.NENDO));
 
 		textColumn_tankaGoukei.setColumnFilterable(true);
 		textColumn_tankaGoukei.setColumnName("TANKA_GOUKEI");
@@ -278,6 +333,9 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		textColumn_tankaGoukei.setColumnVisible(false);
 		textColumn_tankaGoukei.setColumnFilterable(false);
 		textColumn_tankaGoukei.setColumnSortable(false);
+		//add tanaka 2013/11/07
+		textColumn_tankaGoukei.setColumnVisible(true);
+		textColumn_tankaGoukei.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.TANKA_GOUKEI));
 
 		textColumn_madoGoukei.setColumnFilterable(true);
 		textColumn_madoGoukei.setColumnName("MADO_FUTAN_GOUKEI");
@@ -287,6 +345,9 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		textColumn_madoGoukei.setColumnVisible(false);
 		textColumn_madoGoukei.setColumnFilterable(false);
 		textColumn_madoGoukei.setColumnSortable(false);
+		//add tanaka 2013/11/07
+		textColumn_madoGoukei.setColumnVisible(true);
+		textColumn_madoGoukei.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.MADO_FUTAN_GOUKEI));
 
 		textColumn_seikyuGoukei.setColumnFilterable(true);
 		textColumn_seikyuGoukei.setColumnName("SEIKYU_KINGAKU");
@@ -296,6 +357,9 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		textColumn_seikyuGoukei.setColumnVisible(false);
 		textColumn_seikyuGoukei.setColumnFilterable(false);
 		textColumn_seikyuGoukei.setColumnSortable(false);
+		//add tanaka 2013/11/07
+		textColumn_seikyuGoukei.setColumnVisible(true);
+		textColumn_seikyuGoukei.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.SEIKYU_KINGAKU));
 
 		textColumn_updateTimeStamp.setColumnFilterable(false);
 		textColumn_updateTimeStamp.setColumnName("UPDATE_TIMESTAMP");
@@ -305,12 +369,18 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		textColumn_updateTimeStamp.setColumnVisible(false);
 		textColumn_updateTimeStamp.setColumnFilterable(false);
 		textColumn_updateTimeStamp.setColumnSortable(false);
+		//add tanaka 2013/11/07
+		textColumn_updateTimeStamp.setColumnVisible(true);
+		textColumn_updateTimeStamp.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.UPDATE_TIMESTAMP));
 
 		textColumn_nitijiFlg.setColumnFilterable(true);
 		textColumn_nitijiFlg.setColumnName("JISI_KBN");
 		textColumn_nitijiFlg.setColumnSortable(true);
 		textColumn_nitijiFlg.setPreferredWidth(40);
 		textColumn_nitijiFlg.setDomainId("JISI_KBN");
+		//add tanaka 2013/11/07
+		textColumn_nitijiFlg.setColumnVisible(true);
+		textColumn_nitijiFlg.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.JISI_KBN));
 
 		// eidt s.inoue 2011/04/20
 		checkColumn_checkBox.setColumnFilterable(false);
@@ -325,6 +395,9 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		checkColumn_checkBox.setColumnRequired(false);
 		checkColumn_checkBox.setEnableInReadOnlyMode(true);
 		checkColumn_checkBox.setAllowNullValue(false);
+		//add tanaka 2013/11/07
+		checkColumn_checkBox.setColumnVisible(true);
+		checkColumn_checkBox.setColumnVisible(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.CHECKBOX_COLUMN));
 
 		/* button */
 		setJButtons();
@@ -560,6 +633,8 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 				setCheckBoxValue();
 		   	}else if (btn == buttonclose){
 				logger.info(buttonclose.getText());
+				//add tanaka 2013/11/07
+				preservColumnStatus();
 				adaptee.closeButtton_actionPerformed(e);
 			/* êøãÅ */
 			}else if (btn == buttonSeikyu){
@@ -598,6 +673,137 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 //			reload.start();
 
 		  }
+		private void preservColumnStatus() {
+			try{
+			if(textColumn_Name.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.NAME));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.NAME))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.NAME));
+			}
+			
+			if(textColumn_HokensyoCode.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.HIHOKENJYASYO_KIGOU));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.HIHOKENJYASYO_KIGOU))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.HIHOKENJYASYO_KIGOU));
+			}
+			
+			if(textColumn_HokensyoNumber.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.HIHOKENJYASYO_NO));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.HIHOKENJYASYO_NO))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.HIHOKENJYASYO_NO));
+			}
+			
+//			if(dateColumn_KenshinDateFrom.isVisible()) {
+//				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.KENSA_NENGAPI));
+//			} else {
+//				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.KENSA_NENGAPI))
+//					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.KENSA_NENGAPI));
+//			}
+			
+			if(dateColumn_KenshinDateTo.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.KENSA_NENGAPI));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.KENSA_NENGAPI))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.KENSA_NENGAPI));
+			}
+			
+			if(textColumn_sex.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.SEX));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.SEX))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.SEX));
+			}
+			
+			if(textColumn_birthday.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.BIRTHDAY));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.BIRTHDAY))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.BIRTHDAY));
+			}
+			
+			if(textColumn_jyushinSeiriNo.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.JYUSHIN_SEIRI_NO));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.JYUSHIN_SEIRI_NO))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.JYUSHIN_SEIRI_NO));
+			}
+			
+			if(textColumn_hokenjaNo.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.HKNJANUM));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.HKNJANUM))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.HKNJANUM));
+			}
+			
+			if(textColumn_shiharaiDaikouNo.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.SIHARAI_DAIKOU_BANGO));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.SIHARAI_DAIKOU_BANGO))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.SIHARAI_DAIKOU_BANGO));
+			}
+			
+			if(textColumn_kanaName.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.KANANAME));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.KANANAME))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.KANANAME));
+			}
+			
+			if(textColumn_nendo.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.NENDO));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.NENDO))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.NENDO));
+			}
+			
+			if(textColumn_tankaGoukei.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.TANKA_GOUKEI));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.TANKA_GOUKEI))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.TANKA_GOUKEI));
+			}
+			
+			if(textColumn_madoGoukei.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.MADO_FUTAN_GOUKEI));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.MADO_FUTAN_GOUKEI))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.MADO_FUTAN_GOUKEI));
+			}
+			
+			if(textColumn_seikyuGoukei.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.SEIKYU_KINGAKU));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.SEIKYU_KINGAKU))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.SEIKYU_KINGAKU));
+			}
+			
+			if(textColumn_updateTimeStamp.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.UPDATE_TIMESTAMP));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.UPDATE_TIMESTAMP))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.UPDATE_TIMESTAMP));
+			}
+			
+			if(textColumn_nitijiFlg.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.JISI_KBN));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.JISI_KBN))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.JISI_KBN));
+			}
+			
+			if(checkColumn_checkBox.isVisible()) {
+				JApplication.flag_Nitiji.removeAll(EnumSet.of(FlagEnum_Nitiji.CHECKBOX_COLUMN));
+			} else {
+				if(!JApplication.flag_Nitiji.contains(FlagEnum_Nitiji.CHECKBOX_COLUMN))
+					JApplication.flag_Nitiji.addAll(EnumSet.of(FlagEnum_Nitiji.CHECKBOX_COLUMN));
+			}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		@Override
 		public void keyPressed(KeyEvent e) {
 		}
@@ -684,13 +890,14 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		// eidt s.inoue 2012/11/08
 		// ëIëèÛë‘Çï€éùÇ∑ÇÈ
 		// ArrayList<Integer> selectedRows = table.getselectedRows(modelfixed,table);
-		JApplication.selectedHistoryRows = new ArrayList<Integer>();
-		JOutputNitijiSearchListFrameData chk = null;
-		for (int i = 0; i < grid.getVOListTableModel().getRowCount(); i++) {
-			chk = (JOutputNitijiSearchListFrameData)grid.getVOListTableModel().getObjectForRow(i);
-			if (chk.getCHECKBOX_COLUMN().equals("Y"))
-				JApplication.selectedHistoryRows.add(i);
-		}
+		// del s.inoue 2013/11/18
+//		JApplication.selectedHistoryRows = new ArrayList<Integer>();
+//		JOutputNitijiSearchListFrameData chk = null;
+//		for (int i = 0; i < grid.getVOListTableModel().getRowCount(); i++) {
+//			chk = (JOutputNitijiSearchListFrameData)grid.getVOListTableModel().getObjectForRow(i);
+//			if (chk.getCHECKBOX_COLUMN().equals("Y"))
+//				JApplication.selectedHistoryRows.add(i);
+//		}
 
 		// êøãÅÉ{É^Éìêßå¿âèú
 		int count = 0;
@@ -777,7 +984,10 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 		// searchRefresh();
 	}
 
-	// eidt s.inoue 2012/01/20
+	// eidt s.inoue 2013/06/20
+	private boolean existFlg = false;
+	private boolean notExistFlg = false;
+
 	public JKessaiProcessData getKesaiItemData(JOutputNitijiSearchListFrameData vo){
 		// Hashtable<String, String> item = result.get(i);
 		boolean notExtMessage = false;
@@ -867,11 +1077,13 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 				dataItem.KensaDate,
 				dataItem.seikyuKubun);
 
-		if (registKensa != null){
+		if (registKensa != null && !existFlg){
 			// edit s.inoue 20081119
 			if (!notExtMessage){
 				JErrorMessage.show("M3635", this);
 				notExtMessage = true;
+				// eidt s.inoue 2013/06/20
+				existFlg = true;
 			}
 		}
 
@@ -881,10 +1093,12 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 				dataItem.KensaDate,
 				dataItem.seikyuKubun);
 
-		if (existKensa != null){
+		if (existKensa != null && !notExistFlg){
 			if (!notExtMessage){
 				JErrorMessage.show("M3636", this );
 				notExtMessage = true;
+				// eidt s.inoue 2013/06/20
+				notExistFlg = true;
 			}
 		}
 		return dataItem;
@@ -1061,6 +1275,10 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 //				JErrorMessage.show("M4758", this);
 //				return;
 //			}
+
+		// add s.inoue 2013/11/11
+		JApplication.selectedHistoryRows = new ArrayList<Integer>();
+
 			ArrayList<Integer> selectedRows = new ArrayList<Integer>();
 			JOutputNitijiSearchListFrameData chk = null;
 			int jcnt = 0;
@@ -1069,6 +1287,8 @@ public class JOutputNitijiSearchListFrame extends JFrame implements KeyListener,
 				chk = (JOutputNitijiSearchListFrameData)grid.getVOListTableModel().getObjectForRow(i);
 				if (chk.getCHECKBOX_COLUMN().equals("Y")){
 					jcnt++;selectedRows.add(i);
+					// add s.inoue 2013/11/11
+					JApplication.selectedHistoryRows = new ArrayList<Integer>();
 				}
 			}
 			// eidt s.inoue 2012/03/01

@@ -116,6 +116,8 @@ public class JPath {
 	final public static String Ico_System_User =IcoPath + "7-2.png";
 	final public static String Ico_System_Backup =IcoPath + "7-3.png";
 	final public static String Ico_System_Usability =IcoPath + "7-4.png";
+	// add s.inoue 2013/11/07
+	final public static String Ico_System_Log =IcoPath + "7-5.png";
 
 	/* Œ‹‰Ê“ü—Í */
 	final public static String Ico_Kekka_Delete =IcoPath + "kekkaInput_DelKekka.png";

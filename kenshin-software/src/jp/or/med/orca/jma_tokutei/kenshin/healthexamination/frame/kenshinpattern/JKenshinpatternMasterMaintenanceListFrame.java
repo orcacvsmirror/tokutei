@@ -612,7 +612,7 @@ public class JKenshinpatternMasterMaintenanceListFrame extends JFrame implements
 			reader = new JCSVReaderStream();
 
 			try {
-				reader.openCSV(filePath,JApplication.CSV_CHARSET);
+				reader.openCSV(filePath,JApplication.CSV_CHARSET,',');
 			} catch (IOException e) {
 				JErrorMessage.show("M3939",this);
 				logger.error(e.getMessage());

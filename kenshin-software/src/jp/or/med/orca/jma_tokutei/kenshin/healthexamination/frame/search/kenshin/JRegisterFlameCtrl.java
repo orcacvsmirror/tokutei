@@ -158,6 +158,7 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 
 	// メタボ、保健指導によりフィールド順がずれる事による調整値
 	protected int posHokensido = 0;
+	protected int posMetabo = 0;
 
 	private boolean fnc_yearOld_flg = false;
 //	private boolean fnc_print_flg = false;
@@ -577,6 +578,10 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 						kenshinPatternNumber =kenshinPattern;
 					}
 				}
+			// eidt s.inoue 2013/07/09
+			}else{
+				posHokensido = 0;
+				posMetabo = 0;
 			}
 		} else {
 			// add s.inoue 2012/04/24
@@ -606,8 +611,9 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			/**** ↓↓↓↓↓ add s.inoue 2012/03/22 */
 			// tokuteiにデータが無いパターン
 			jComboBox_SeikyuKubun.setSelectedIndex(0);
-			jComboBox_MetaboHantei.setSelectedIndex(1);
-			jComboBox_HokenSidouLevel.setSelectedIndex(1);
+			// eidt s.inoue 2013/07/23 1 → 0 ？なんで
+			jComboBox_MetaboHantei.setSelectedIndex(0);
+			jComboBox_HokenSidouLevel.setSelectedIndex(0);
 
 			if (srcData != null){
 				jLabel_Name.setText(srcData.getNAME());
@@ -720,6 +726,10 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 			recordCount = tableResult.size();
 		}
 
+		// add s.inoue 2013/07/24
+//		boolean flgm = false;
+//		boolean flgh = false;
+
 		// 通常Tab
 		for (int i = 0; i < recordCount; i++) {
 
@@ -737,6 +747,9 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 
 			// メタボ判定、保健指導レベルは別処理
 			if (koumokuCD.equals(JConstantString.COMBO_METABO_CODE)){
+				// eidt s.inoue 2013/07/24
+//				flgm = true;
+					posMetabo = i;
 				if (kekkaTi.equals("")){
 					jComboBox_MetaboHantei.setSelectedIndex(0);
 				}else{
@@ -744,7 +757,9 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 					jComboBox_MetaboHantei.setSelectedIndex(Integer.valueOf(kekkaTi));
 				}
 			}else if (koumokuCD.equals(JConstantString.COMBO_HOKENSIDO_CODE)){
-				posHokensido = i;
+				// eidt s.inoue 2013/07/24
+//				flgh = true;
+					posHokensido = i;
 				if (kekkaTi.equals("")){
 					jComboBox_HokenSidouLevel.setSelectedIndex(0);
 				}else{
@@ -782,6 +797,12 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 				irowAll++;
 			}
 		}
+
+//		// add s.inoue 2013/07/24
+//		if (!myTab && (!flgh || !flgm)){
+//			posHokensido = 0;
+//			posMetabo = 0;
+//		}
 		// タブ毎のパネル設定処理
 		setInnerTranPanel(myTab);
 	}
@@ -1817,9 +1838,17 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 	public void editingStopped(int irow,String txt) {
 
 		// 注意）ロジック都合、位置調整用
+		// eidt s.inoue 2013/07/10
 		int choseiRow = irow;
-		if (irow > posHokensido)
-				choseiRow += 2;
+		if (irow > posHokensido){
+			choseiRow += 1;
+		}
+		if (irow > posMetabo){
+			choseiRow += 1;
+		}
+//		if ((irow > posHokensido) &&
+//			(irow > posMetabo))
+//				choseiRow += 2;
 
 		// フォーマット文字列を取得する
 		Map<String, String> recordMap = tableResult.get(choseiRow);
@@ -2144,7 +2173,10 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 
 		// no eidt s.inoue 2013/04/10
 		// ここを変えると表示文字の重複のバグとなる
-		sql.append(" ORDER BY HISU_FLG,XMLITEM_SEQNO ");
+		// eidt s.inoue 2013/11/07
+		// 再度修正、パターン順にしたい
+		// sql.append(" ORDER BY HISU_FLG,XMLITEM_SEQNO ");
+		sql.append(" ORDER BY HISU_FLG,LOW_ID ");
 
 		System.out.println(sql.toString());
 
@@ -2944,6 +2976,35 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 		String errMessage = "";
 		String errhisuMessage = "";
 
+
+		// move s.inoue 2013/08/13
+		// メタボ、保健指導なし判定
+		ArrayList<Hashtable<String, String>> codeResultm = null;
+		// eidt s.inoue 2013/08/12
+		String querym = new String("SELECT K_P_NO FROM T_KENSHIN_P_S WHERE (KOUMOKU_CD = "
+		+ JQueryConvert.queryConvert("9N501000000000011") +" OR KOUMOKU_CD = "+ JQueryConvert.queryConvert("9N506000000000011")
+		+ ") AND K_P_NO = " +kenshinPatternNumber
+		+ " AND K_P_NO <> '9999' AND K_P_NO <> '-1'" );
+
+		try {
+			codeResultm = JApplication.kikanDatabase.sendExecuteQuery(querym);
+
+			if (codeResultm.size() < 2){
+				JErrorMessage.show("M3645", this);
+				JApplication.kikanDatabase.getMConnection().rollback();
+				return false;
+			}
+		} catch (SQLException e) {
+			logger.warn(e.getMessage());
+			JErrorMessage.show("M3645", this);
+			try {
+				JApplication.kikanDatabase.getMConnection().rollback();
+			} catch (SQLException e1) {
+			}
+			return false;
+		}
+
+
 		for (int irow = 0; irow < tableResult.size(); irow++) {
 
 			resultItem = tableResult.get(irow);
@@ -2971,8 +3032,45 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 
 			// 注意）ロジック都合、位置調整用
 			int choseiRow = irow;
-			if (irow > posHokensido)
-					choseiRow -= 2;
+
+			// eidt s.inoue 2013/07/09
+			if (irow > posHokensido){
+				choseiRow -= 1;
+			}
+			if (irow > posMetabo){
+				choseiRow -= 1;
+			}
+//			if ((irow > posHokensido){
+//				(irow > posMetabo))
+//					choseiRow -= 2;
+
+// del s.inoue 2013/08/13
+//			// eidt s.inoue 2013/08/12
+//			// メタボ、保健指導なし判定
+//			ArrayList<Hashtable<String, String>> codeResultm = null;
+//			// eidt s.inoue 2013/08/12
+//			String querym = new String("SELECT K_P_NO FROM T_KENSHIN_P_S WHERE (KOUMOKU_CD = "
+//			+ JQueryConvert.queryConvert("9N501000000000011") +" OR KOUMOKU_CD = "+ JQueryConvert.queryConvert("9N506000000000011")
+//			+ " AND K_P_NO = " +kenshinPatternNumber
+//			+ ") AND K_P_NO <> '9999' AND K_P_NO <> '-1'" );
+//
+//			try {
+//				codeResultm = JApplication.kikanDatabase.sendExecuteQuery(querym);
+//			} catch (SQLException e) {
+//				logger.warn(e.getMessage());
+//			}
+//
+//			// eidt s.inoue 2013/05/23
+//			if (codeResultm.size() == 0){
+//				JErrorMessage.show("M3645", this);
+//				try {
+//					JApplication.kikanDatabase.getMConnection().rollback();
+//					return false;
+//				} catch (SQLException e) {
+//					logger.warn(e.getMessage());
+//				}
+//				return false;
+//			}
 
 			// 4.2.タイプ別処理
 			// add s.inoue 2012/06/27
@@ -3150,6 +3248,12 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 						if (tDate <= Integer.parseInt(validatedData.getKensaJissiDate())){
 							if (!validatedData.getKekka().equals("")){
 								JErrorMessage.show("M3643", this);
+								// eidt s.inoue 2013/05/23
+								try {
+									JApplication.kikanDatabase.getMConnection().rollback();
+								} catch (SQLException e) {
+									logger.warn(e.getMessage());
+								}
 								return false;
 							}
 						}
@@ -3164,6 +3268,12 @@ public class JRegisterFlameCtrl extends JRegisterFlame {
 						if (tDate > Integer.parseInt(validatedData.getKensaJissiDate())){
 							if (!validatedData.getKekka().equals("")){
 								JErrorMessage.show("M3644", this);
+								// eidt s.inoue 2013/05/23
+								try {
+									JApplication.kikanDatabase.getMConnection().rollback();
+								} catch (SQLException e) {
+									logger.warn(e.getMessage());
+								}
 								return false;
 							}
 						}

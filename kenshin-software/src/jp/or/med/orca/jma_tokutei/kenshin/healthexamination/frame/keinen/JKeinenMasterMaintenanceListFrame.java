@@ -417,6 +417,11 @@ public class JKeinenMasterMaintenanceListFrame extends JFrame implements KeyList
 
 			// add s.inoue 2013/02/25
 			this.conn = JApplication.kikanDatabase.getMConnection();
+			
+			// add n.ohkubo 2014/08/22
+			//Ver2.1.1Ç…çáÇÌÇπÇÈÇΩÇﬂÇ…í«â¡
+			reloadButton.doClick();
+			
 		} catch (SQLException ex) {
 			logger.error(ex.getMessage());
 		}

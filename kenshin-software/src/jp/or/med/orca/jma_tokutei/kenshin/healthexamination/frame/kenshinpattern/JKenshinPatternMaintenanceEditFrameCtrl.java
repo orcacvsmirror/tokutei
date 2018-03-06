@@ -1,14 +1,13 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.kenshinpattern;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -17,7 +16,6 @@ import jp.or.med.orca.jma_tokutei.common.app.JApplication;
 import jp.or.med.orca.jma_tokutei.common.convert.JQueryConvert;
 import jp.or.med.orca.jma_tokutei.common.errormessage.JErrorMessage;
 import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
-import jp.or.med.orca.jma_tokutei.common.focus.JFocusTraversalPolicy;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
 import jp.or.med.orca.jma_tokutei.common.origine.JKenshinPatternMaintenanceEditFrameData;
@@ -348,6 +346,11 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 
 			result = JApplication.kikanDatabase.sendExecuteQuery(queryDokuji.toString());
 
+			// add s.inoue 2013/06/07
+			boolean flg = false;
+			if (leftTable.getRowCount() ==0)
+				flg= true;
+
 			for( int i = 0;i < result.size();i++ )
 			{
 				resultItem = result.get(i);
@@ -361,7 +364,8 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 					row[3] = resultItem.get("HISU_FLG");
 					row[4] = resultItem.get("XMLITEM_SEQNO");
 
-					if((row[0].equals(CODE_METABO_HANTEI))||(row[0].equals(CODE_HOKEN_SHIDOU))){
+					// eidt s.inoue 2013/06/17 ÄC³
+					if(flg && (row[0].equals(CODE_METABO_HANTEI)||(row[0].equals(CODE_HOKEN_SHIDOU)))){
 						leftTable.addData(row);
 					}else{
 						rightTable.addData(row);
@@ -458,6 +462,25 @@ public class JKenshinPatternMaintenanceEditFrameCtrl extends JKenshinPatternMain
 //			}
 //		}
 
+		// add s.inoue 2013/07/23
+		// leftTable
+		int jj = 0;
+		boolean flgh = false;
+		boolean flgm = false;
+
+		for (jj = 0; jj < leftTable.getRowCount(); jj++) {
+			String code = (String)leftTable.getData(jj,0);
+			if (code.equals(CODE_METABO_HANTEI)){
+				flgh = true;
+			}else if(code.equals(CODE_HOKEN_SHIDOU)) {
+				flgm = true;
+			}
+		}
+
+		if(!flgh || !flgm){
+			JErrorMessage.show("M5524", this);
+			return;
+		}
 
 		String Query = null;
 		try{

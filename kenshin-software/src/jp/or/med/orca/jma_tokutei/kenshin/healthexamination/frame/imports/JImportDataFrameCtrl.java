@@ -1115,7 +1115,7 @@ public class JImportDataFrameCtrl extends JImportDataFrame
 
 		try {
 
-			Reader.openCSV(FilePath,JApplication.CSV_CHARSET);
+			Reader.openCSV(FilePath,JApplication.CSV_CHARSET,',');
 
 			CSVItems = Reader.readAllTable();
 
@@ -1193,7 +1193,7 @@ public class JImportDataFrameCtrl extends JImportDataFrame
 
 		try {
 
-			Reader.openCSV(FilePath,JApplication.CSV_CHARSET);
+			Reader.openCSV(FilePath,JApplication.CSV_CHARSET,',');
 
 			CSVItems = Reader.readAllTable();
 

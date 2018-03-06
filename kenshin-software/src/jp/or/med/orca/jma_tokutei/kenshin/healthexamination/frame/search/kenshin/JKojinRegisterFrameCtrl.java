@@ -111,6 +111,9 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 	private static final String TANKA_HANTEI_KIHON = "1";
 	private static final String TANKA_HANTEI_DOC = "2";
 
+	// eidt s.inoue 2013/07/01
+	private String kensanengapi = "";
+
 	/**
 	 * ìoò^É{É^ÉìÇâüÇµÇΩç€ÇÃïKê{çÄñ⁄Ç»Ç«Çåüèÿ
 	 */
@@ -584,8 +587,8 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 		isFromKekkaRegster = true;
 
 		String uketukeId = data.getUKETUKE_ID();
-		// eidt s.inoue 2011/08/03
-		String kensanengapi = data.getKENSA_NENGAPI();
+		// eidt s.inoue 2013/07/01
+		kensanengapi = data.getKENSA_NENGAPI();
 
 		setKojinDataFromDB(uketukeId,kensanengapi);
 	}
@@ -2888,15 +2891,28 @@ public class JKojinRegisterFrameCtrl extends JKojinRegisterFrame {
 					return;
 				}
 
-				// eidt s.inoue 2012/06/28
-				// jTextField_YearOld.setText(String.valueOf(FiscalYearUtil.getFiscalYear(selectedItem)));
-				String age ="";
+				// eidt s.inoue 2013/07/01
+//				String age ="";
+//				if (yearOld_flg){
+//					age = String.valueOf(FiscalYearUtil.getFiscalYear(selectedItem));
+//				}else{
+//					age = JYearAge.getAge(selectedItem);
+//				}
+				int age =0;
 				if (yearOld_flg){
-					age = String.valueOf(FiscalYearUtil.getFiscalYear(selectedItem));
+					if (!kensanengapi.equals("")){
+						age = FiscalYearUtil.getFiscalYear(selectedItem,kensanengapi);
+					}else{
+						age = FiscalYearUtil.getFiscalYear(selectedItem);
+					}
 				}else{
-					age = JYearAge.getAge(selectedItem);
+					if (!kensanengapi.equals("")){
+						age = Integer.parseInt(JYearAge.getAge(selectedItem,kensanengapi));
+					}else{
+						age = Integer.parseInt(JYearAge.getAge(selectedItem));
+					}
 				}
-				jTextField_YearOld.setText(age);
+				jTextField_YearOld.setText(String.valueOf(age));
 
 			}else if(txt.getParent().equals(this.jTextField_ZipCode)){
 					if (jTextField_ZipCode.getTextTrim().equals(""))

@@ -555,7 +555,7 @@ public class JHokenjyaMasterMaintenanceListFrame extends JFrame implements KeyLi
 			reader = new JCSVReaderStream();
 
 			try {
-				reader.openCSV(filePath,JApplication.CSV_CHARSET);
+				reader.openCSV(filePath,JApplication.CSV_CHARSET,',');
 			} catch (IOException e) {
 				JErrorMessage.show("M3207",this);
 				logger.error(e.getMessage());

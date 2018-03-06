@@ -1934,9 +1934,17 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 				String hokenjaTxt = jTextField_HokenjyaNumber.getText();
 				if (hokenjaTxt.equals(""))
 					return;
-				if (hokenjaTxt.length() != 8)
+
+				// eidt s.inoue 2013/06/07
+				// if (hokenjaTxt.length() != 8)
+				// 	return;
+				JValidate val = new JValidate();
+				if (!val.isNumber(hokenjaTxt))
 					return;
-				// eidt s.inoue 2013/03/25
+
+//				// eidt s.inoue 2013/03/25
+//				if ()
+
 				boolean ret = setHokenjyaOrcaInfo(hokenjaTxt);
 				if (ret){
 					jButton_ORCA.setEnabled(true);
@@ -1962,10 +1970,27 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 			System.exit(1);
 		}
 
+		// add s.inoue 2013/06/10
+		if (hokenjaTxt.length() == 8 && hokenjaTxt.substring(0, 2).equals("00")){
+			hokenjaTxt = hokenjaTxt.substring(2);
+		}
+
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT INSURER_NO, INSURER_NAME, INSURER_ADDRESS1 || INSURER_ADDRESS2 INSURER_ADDRESS,INSURER_POST,INSURER_TEL,SUBSTRING(LAST_TIME from 1 for 10) LAST_TIME ");
-		sb.append(" FROM M_INSURER");
-		sb.append(" WHERE INSURER_NO = ");
+		// eidt s.inoue 2013/06/10
+//		sb.append("SELECT INSURER_NO, INSURER_NAME, INSURER_ADDRESS1 || INSURER_ADDRESS2 INSURER_ADDRESS,INSURER_POST,INSURER_TEL,SUBSTRING(LAST_TIME from 1 for 10) LAST_TIME ");
+//		sb.append(" FROM M_INSURER");
+//		sb.append(" WHERE INSURER_NO = ");
+
+		sb.append("select a.INSURER_NO, INSURER_NAME, INSURER_ADDRESS1 || INSURER_ADDRESS2 INSURER_ADDRESS,INSURER_POST,INSURER_TEL,SUBSTRING(LAST_TIME from 1 for 10) LAST_TIME");
+		sb.append(" FROM M_INSURER a");
+		sb.append(" where  char_length(a.INSURER_NO)=8 ");
+		sb.append(" and a.INSURER_NO = ");
+		sb.append(JQueryConvert.queryConvert(hokenjaTxt));
+		sb.append(" union all ");
+		sb.append(" select '00' || a.INSURER_NO, INSURER_NAME, INSURER_ADDRESS1 || INSURER_ADDRESS2 INSURER_ADDRESS,INSURER_POST,INSURER_TEL,SUBSTRING(LAST_TIME from 1 for 10) LAST_TIME");
+		sb.append(" FROM M_INSURER a");
+		sb.append(" where  char_length(a.INSURER_NO)<8");
+		sb.append(" and a.INSURER_NO = ");
 		sb.append(JQueryConvert.queryConvert(hokenjaTxt));
 
 		ArrayList<Hashtable<String, String>> result = null;
@@ -1981,6 +2006,13 @@ public class JHokenjyaMasterMaintenanceEditFrameCtrl extends
 
 		Hashtable<String, String> item = result.get(0);
 		// this.jTextField_HokenjyaNumber.setText(item.get("INSURER_NO"));
+
+// edit s.inoue 2013/06/10
+		if (hokenjaTxt.length() != 8){
+			hokenjaTxt = String.format("%1$08d", Integer.parseInt(hokenjaTxt));
+			this.jTextField_HokenjyaNumber.setText(hokenjaTxt);
+		}
+
 		this.jTextField_HokenjyaName.setText(item.get("INSURER_NAME"));
 		this.jTextField_Address.setText(item.get("INSURER_ADDRESS"));
 		this.jTextField_Zipcode.setText(item.get("INSURER_POST"));

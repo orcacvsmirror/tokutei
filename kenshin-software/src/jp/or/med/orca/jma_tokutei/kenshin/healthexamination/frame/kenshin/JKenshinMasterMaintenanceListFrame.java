@@ -1,33 +1,36 @@
 package jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.kenshin;
 
-import javax.swing.*;
-
-import org.apache.log4j.Logger;
-import org.openswing.swing.client.*;
-import org.openswing.swing.domains.java.Domain;
-
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import org.openswing.swing.table.columns.client.*;
-import org.openswing.swing.message.receive.java.Response;
-import org.openswing.swing.message.receive.java.VOListResponse;
-import org.openswing.swing.message.send.java.GridParams;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
 
 import jp.or.med.orca.jma_tokutei.common.app.JApplication;
+import jp.or.med.orca.jma_tokutei.common.app.JApplication.FlagEnum_Master;
 import jp.or.med.orca.jma_tokutei.common.app.JPath;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedImageIcon;
 import jp.or.med.orca.jma_tokutei.common.component.ExtendedLabel;
@@ -40,23 +43,27 @@ import jp.or.med.orca.jma_tokutei.common.errormessage.RETURN_VALUE;
 import jp.or.med.orca.jma_tokutei.common.frame.ViewSettings;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.DialogFactory;
 import jp.or.med.orca.jma_tokutei.common.frame.dialog.IDialog;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedDelButton;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenDeleteButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenEditButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenExportButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenFilterButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenGenericButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenImportButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenInsertButton;
-import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenReloadButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedOpenSaveButton;
 import jp.or.med.orca.jma_tokutei.common.openswing.ExtendedReloadButton;
 import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.dataimport.JImportMasterErrorKenshinResultFrameData;
-import jp.or.med.orca.jma_tokutei.kenshin.healthexamination.frame.kenshinpattern.JKenshinpatternMasterMaintenanceListFrame;
 
+import org.apache.log4j.Logger;
+import org.openswing.swing.client.GenericButton;
+import org.openswing.swing.client.GridControl;
+import org.openswing.swing.client.NavigatorBar;
+import org.openswing.swing.domains.java.Domain;
+import org.openswing.swing.message.receive.java.Response;
+import org.openswing.swing.message.receive.java.VOListResponse;
+import org.openswing.swing.message.send.java.GridParams;
+import org.openswing.swing.table.columns.client.ComboColumn;
+import org.openswing.swing.table.columns.client.TextColumn;
 import org.openswing.swing.util.client.ClientUtils;
-
-import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
 
 /**
  * 一覧List画面
@@ -226,6 +233,9 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_HokenjaNumber.setPreferredWidth(200);
 		textColumn_HokenjaNumber.setColumnRequired(true);
 		textColumn_HokenjaNumber.setDomainId("T_HOKENJYA");
+		/*add tanaka 2013/11/15*/
+//		textColumn_HokenjaNumber.setColumnVisible(true);
+		textColumn_HokenjaNumber.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.HKNJANUM));
 
 		// 項目コード(*)
 		textColumn_KoumokuCd.setColumnFilterable(true);
@@ -233,6 +243,9 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_KoumokuCd.setColumnSortable(true);
 		textColumn_KoumokuCd.setPreferredWidth(150);
 		textColumn_KoumokuCd.setColumnRequired(true);
+		/*add tanaka 2013/11/15*/
+//		textColumn_KoumokuCd.setColumnVisible(true);
+		textColumn_KoumokuCd.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.KOUMOKU_CD));
 
 		// eidt s.inoue 2011/06/02
 		// 項目名
@@ -241,14 +254,20 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_KoumokuNm.setColumnSortable(true);
 		textColumn_KoumokuNm.setPreferredWidth(200);
 		textColumn_KoumokuNm.setColumnRequired(false);
-
+		/*add tanaka 2013/11/15*/
+//		textColumn_KoumokuNm.setColumnVisible(true);
+		textColumn_KoumokuNm.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.KOUMOKU_NAME));
+		
 		// 検査方法
 		textColumn_KensaHouhou.setColumnFilterable(true);
 		textColumn_KensaHouhou.setColumnName("KENSA_HOUHOU");
 		textColumn_KensaHouhou.setColumnSortable(true);
 		textColumn_KensaHouhou.setPreferredWidth(180);
 		textColumn_KensaHouhou.setColumnRequired(false);
-
+		/*add tanaka 2013/11/15*/
+//		textColumn_KensaHouhou.setColumnVisible(true);
+		textColumn_KensaHouhou.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.KENSA_HOUHOU));
+		
 		// 必須フラグ(編集可)
 		textColumn_HisuFlg.setColumnFilterable(true);
 		textColumn_HisuFlg.setColumnName("HISU_FLG");
@@ -259,7 +278,10 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 	    textColumn_HisuFlg.setColumnRequired(false);
 
 	    textColumn_HisuFlg.setDomainId("HISU_FLG");
-
+	    /*add tanaka 2013/11/15*/
+//	    textColumn_HisuFlg.setColumnVisible(true);
+	    textColumn_HisuFlg.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.HISU_FLG));
+	    
 		// 基準値下限(編集可)
 		textColumn_DSKagen.setColumnFilterable(true);
 		textColumn_DSKagen.setColumnName("DS_KAGEN");
@@ -272,7 +294,10 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_DSKagen.setColumnVisible(true);
 		textColumn_DSKagen.setColumnFilterable(false);
 		textColumn_DSKagen.setColumnSortable(false);
-
+		/*add tanaka 2013/11/15*/
+//		textColumn_DSKagen.setColumnVisible(true);
+		textColumn_DSKagen.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.DS_KAGEN));
+		
 		// 基準値上限(編集可)
 		textColumn_DSJyougen.setColumnFilterable(true);
 		textColumn_DSJyougen.setColumnName("DS_JYOUGEN");
@@ -285,6 +310,9 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_DSJyougen.setColumnVisible(true);
 		textColumn_DSJyougen.setColumnFilterable(false);
 		textColumn_DSJyougen.setColumnSortable(false);
+		/*add tanaka 2013/11/15*/
+//		textColumn_DSJyougen.setColumnVisible(true);
+		textColumn_DSJyougen.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.DS_JYOUGEN));
 
 		// 基準値上限値(編集可)
 		textColumn_JSKagen.setColumnFilterable(true);
@@ -297,6 +325,9 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_JSKagen.setColumnVisible(true);
 		textColumn_JSKagen.setColumnFilterable(false);
 		textColumn_JSKagen.setColumnSortable(false);
+		/*add tanaka 2013/11/15*/
+//		textColumn_JSKagen.setColumnVisible(true);
+		textColumn_JSKagen.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.JS_KAGEN));
 
 		// 基準値下限値(編集可)
 		textColumn_JSJyougen.setColumnFilterable(true);
@@ -310,7 +341,10 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_JSJyougen.setColumnVisible(true);
 		textColumn_JSJyougen.setColumnFilterable(false);
 		textColumn_JSJyougen.setColumnSortable(false);
-
+		/*add tanaka 2013/11/15*/
+//		textColumn_JSJyougen.setColumnVisible(true);
+		textColumn_JSJyougen.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.JS_JYOUGEN));
+		
 		// 単位
 		textColumn_Tani.setColumnFilterable(true);
 		textColumn_Tani.setColumnName("TANI");
@@ -321,6 +355,9 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_Tani.setColumnVisible(true);
 		textColumn_Tani.setColumnFilterable(false);
 		textColumn_Tani.setColumnSortable(false);
+		/*add tanaka 2013/11/15*/
+//		textColumn_Tani.setColumnVisible(true);
+		textColumn_Tani.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.TANI));
 
 		// 下限値
 		textColumn_Kagen.setColumnFilterable(true);
@@ -332,6 +369,9 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_Kagen.setColumnVisible(true);
 		textColumn_Kagen.setColumnFilterable(false);
 		textColumn_Kagen.setColumnSortable(false);
+		/*add tanaka 2013/11/15*/
+//		textColumn_Kagen.setColumnVisible(true);
+		textColumn_Kagen.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.KAGEN));
 
 		// 上限値
 		textColumn_Jyogen.setColumnFilterable(true);
@@ -343,6 +383,9 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_Jyogen.setColumnVisible(true);
 		textColumn_Jyogen.setColumnFilterable(false);
 		textColumn_Jyogen.setColumnSortable(false);
+		/*add tanaka 2013/11/15*/
+//		textColumn_Jyogen.setColumnVisible(true);
+		textColumn_Jyogen.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.JYOUGEN));
 
 		// 基準値範囲
 		textColumn_KijyuntiHani.setColumnFilterable(true);
@@ -354,6 +397,9 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_KijyuntiHani.setColumnVisible(true);
 		textColumn_KijyuntiHani.setColumnFilterable(false);
 		textColumn_KijyuntiHani.setColumnSortable(false);
+		/*add tanaka 2013/11/15*/
+//		textColumn_KijyuntiHani.setColumnVisible(true);
+		textColumn_KijyuntiHani.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.KIJYUNTI_HANI));
 
 		// 単価健診
 		textColumn_TankaKenshin.setColumnFilterable(true);
@@ -367,6 +413,9 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_TankaKenshin.setColumnVisible(true);
 		textColumn_TankaKenshin.setColumnFilterable(false);
 		textColumn_TankaKenshin.setColumnSortable(false);
+		/*add tanaka 2013/11/15*/
+//		textColumn_TankaKenshin.setColumnVisible(true);
+		textColumn_TankaKenshin.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.TANKA_KENSIN));
 
 		// 備考
 		textColumn_Bikou.setColumnFilterable(true);
@@ -380,6 +429,9 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 		textColumn_Bikou.setColumnVisible(true);
 		textColumn_Bikou.setColumnFilterable(false);
 		textColumn_Bikou.setColumnSortable(false);
+		/*add tanaka 2013/11/15*/
+//		textColumn_Bikou.setColumnVisible(true);
+		textColumn_Bikou.setColumnVisible(!JApplication.flag_Master.contains(FlagEnum_Master.BIKOU));
 
 		/* button */
 		setJButtons();
@@ -545,6 +597,7 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 			  Object source = e.getSource();
 			  if (source == buttonClose){
 				  logger.info(buttonClose.getText());
+				  presevColumnStatus();//add tanaka 2013/11/15
 				  adaptee.closeButtton_actionPerformed(e);
 			  }else if(source == buttonExport){
 				  logger.info(buttonExport.getText());
@@ -554,6 +607,112 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 				  pushedImportButton(e);
 			  }
 		  }
+		private void presevColumnStatus() {
+			if(!textColumn_HokenjaNumber.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.HKNJANUM))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.HKNJANUM));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.HKNJANUM));
+			}
+			
+			if(!textColumn_KoumokuCd.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.KOUMOKU_CD))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.KOUMOKU_CD));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.KOUMOKU_CD));
+			}
+			
+			if(!textColumn_KoumokuNm.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.KOUMOKU_NAME))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.KOUMOKU_NAME));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.KOUMOKU_NAME));
+			}
+			
+			if(!textColumn_KensaHouhou.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.KENSA_HOUHOU))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.KENSA_HOUHOU));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.KENSA_HOUHOU));
+			}
+			
+			if(!textColumn_HisuFlg.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.HISU_FLG))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.HISU_FLG));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.HISU_FLG));
+			}
+			
+			if(!textColumn_DSKagen.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.DS_KAGEN))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.DS_KAGEN));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.DS_KAGEN));
+			}
+			
+			if(!textColumn_DSJyougen.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.DS_JYOUGEN))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.DS_JYOUGEN));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.DS_JYOUGEN));
+			}
+			
+			if(!textColumn_JSKagen.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.JS_KAGEN))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.JS_KAGEN));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.JS_KAGEN));
+			}
+			
+			if(!textColumn_JSJyougen.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.JS_JYOUGEN))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.JS_JYOUGEN));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.JS_JYOUGEN));
+			}
+			
+			if(!textColumn_Tani.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.TANI))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.TANI));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.TANI));
+			}
+			
+			if(!textColumn_Kagen.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.KAGEN))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.KAGEN));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.KAGEN));
+			}
+			
+			if(!textColumn_Jyogen.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.JYOUGEN))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.JYOUGEN));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.JYOUGEN));
+			}
+			
+			if(!textColumn_KijyuntiHani.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.KIJYUNTI_HANI))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.KIJYUNTI_HANI));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.KIJYUNTI_HANI));
+			}
+			
+			if(!textColumn_TankaKenshin.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.TANKA_KENSIN))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.TANKA_KENSIN));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.TANKA_KENSIN));
+			}
+			
+			if(!textColumn_Bikou.isVisible()) {
+				if(!JApplication.flag_Master.contains(FlagEnum_Master.BIKOU))
+					JApplication.flag_Master.addAll(EnumSet.of(FlagEnum_Master.BIKOU));
+			} else {
+				JApplication.flag_Master.removeAll(EnumSet.of(FlagEnum_Master.BIKOU));
+			}
+		}
 		@Override
 		public void keyPressed(KeyEvent e) {
 			adaptee.closeButtton_keyPerformed(e);
@@ -817,7 +976,7 @@ public class JKenshinMasterMaintenanceListFrame extends JFrame implements KeyLis
 			reader = new JCSVReaderStream();
 
 			try {
-				reader.openCSV(filePath,JApplication.CSV_CHARSET);
+				reader.openCSV(filePath,JApplication.CSV_CHARSET,',');
 			} catch (IOException e) {
 				JErrorMessage.show("M3824",this);
 				logger.error(e.getMessage());
